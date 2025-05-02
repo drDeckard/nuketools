@@ -1,0 +1,1835 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+push 0
+Group {
+ inputs 2
+ name BlurDivideMult
+ selected true
+ xpos -566
+ ypos -118
+ addUserKnob {20 User}
+ addUserKnob {41 mix l "Color Transfer" T Copy_COLOR.mix}
+ addUserKnob {6 maskcolor l mask -STARTLINE}
+ maskcolor true
+ addUserKnob {41 mix_1 l "Luma Transfer" T Copy_LUMA.mix}
+ addUserKnob {6 maskluma l mask -STARTLINE}
+ maskluma true
+ addUserKnob {7 detail l "Detail Transfer" t "Mix in detail from A to B. Going over 1 is cranking extra contrast in detail." R 0 2}
+ addUserKnob {6 maskdetail l mask -STARTLINE}
+ maskdetail true
+ addUserKnob {26 ""}
+ addUserKnob {14 blura l "Blur Size A" t "Blur Input A. Should match the frequency / size of detail you want to adjust." R 0 100}
+ blura 200
+ addUserKnob {14 blurb l "Blur Size B" t "Blur Input B. Should match the frequency / size of detail you want to copy from B." R 0 100}
+ blurb 200
+ addUserKnob {41 detailsize l "Detail Size" t "Blur size for detail divide." T BlurDetail.size}
+ addUserKnob {26 ""}
+ addUserKnob {6 copyalpha l "Premult A with B" t "Copy over Alpha and premult everything with B's Alpha." +STARTLINE}
+ addUserKnob {6 logmode l "Process in log" t "Do operation in Log" -STARTLINE}
+ addUserKnob {6 unpremulta l "A is premultipied" t "Unpremult and edgeextend A." +STARTLINE}
+ addUserKnob {6 unpremultb l "B is premultiplied" t "Unpremult and edgeextend B." -STARTLINE}
+ unpremultb true
+ addUserKnob {20 extra l Settings n 1}
+ extra 0
+ addUserKnob {6 clampneg l "Clamp Neg / Nan / Inf / Crazy Sat" t "Limits crazy values to avoid division problems." +STARTLINE}
+ clampneg true
+ addUserKnob {6 lumamax l "Lift Transfer" t "Luminance at least as bright as blurred A" +STARTLINE}
+ addUserKnob {7 lumamaxslider l "" t "Luminance at least as bright as blurred A" -STARTLINE}
+ lumamaxslider 1
+ addUserKnob {6 lumamin l "Gain Transfer" t "Luminance less than blurred A" +STARTLINE}
+ addUserKnob {7 lumaminslider l "" t "Luminance less than blurred A" -STARTLINE}
+ lumaminslider 1
+ addUserKnob {6 satmincheck l "Saturation Transfer" t "Saturation B equal to saturation of blurred A." +STARTLINE}
+ addUserKnob {7 satmin l "" t "Saturation B be maximum the saturation of blurred A." -STARTLINE}
+ satmin 1
+ addUserKnob {6 detailminmax l "Detail Min Max" t "0 = Detail is merged Min\n1 = Detail is merged Max" +STARTLINE}
+ addUserKnob {7 detailminmaxslider l "" t "0 = Detail is merged Min\n1 = Detail is merged Max" -STARTLINE}
+ detailminmaxslider 1
+ addUserKnob {6 rolloffa l "Clamp A above" +STARTLINE}
+ addUserKnob {7 highlightsa l "" -STARTLINE R 0 10}
+ highlightsa 1
+ addUserKnob {6 rolloffb l "Clamp B above" +STARTLINE}
+ addUserKnob {7 highlightsb l "" -STARTLINE R 0 10}
+ highlightsb 1
+ addUserKnob {6 extraextend l "Edge extend Mult" t "If amount of edge extending is not covering A, add extra edge extending." +STARTLINE}
+ addUserKnob {7 edgeextend l "" -STARTLINE R 1 10}
+ edgeextend 1
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {4 outputmode l Output t "Use multiply if you need to tweak the B stream before it goes into the node. Be aware Outputmode Multiply in Log need to be applied in Log and on a unpremulted image." M {Result Multiply "A Preview" "B Preview" "" "" "" "" "" "" "" ""}}
+ addUserKnob {26 ""}
+ addUserKnob {41 which l mix T DissolveMIX.which}
+ addUserKnob {26 Info l "" t "Blurs inputs and blend color and luma from A to B. Also possible to transfer details but rarely  recomended.\n\nOften good to use similiar size of blur of both inputs. When choosing blur size, think of what frequence of light you are after. Use Output preview to see A B blurred before operation.\n\nWhen combining log space and output multiply, you must multiply result in log space." +STARTLINE T "\nBlurDivideMult 2.0"}
+}
+ Input {
+  inputs 0
+  name A
+  xpos 393
+  ypos -1769
+  number 1
+ }
+ Shuffle {
+  name Shuffle3
+  xpos 393
+  ypos -1717
+ }
+set N60e28800 [stack 0]
+ Input {
+  inputs 0
+  name B
+  xpos 1080
+  ypos -1764
+ }
+ Shuffle {
+  name Shuffle1
+  xpos 1080
+  ypos -1717
+ }
+set Nf6feb400 [stack 0]
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input0] ? 0 : 1"}}
+  name Switch9
+  xpos 1080
+  ypos -1627
+ }
+ Dot {
+  name Dot28
+  xpos 1114
+  ypos -1540
+ }
+set N73a92800 [stack 0]
+ Dot {
+  name Dot36
+  xpos 990
+  ypos -1540
+ }
+ Dot {
+  name Dot33
+  xpos 990
+  ypos -1471
+ }
+set Ne68a2800 [stack 0]
+ Expression {
+  expr0 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:r
+  expr1 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:g
+  expr2 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:b
+  expr3 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:a
+  name nan_killer_ReplaceWithZero
+  xpos 886
+  ypos -1452
+ }
+ Clamp {
+  channels rgba
+  maximum_enable false
+  name Clamp2
+  label "CLAMP NEG"
+  xpos 886
+  ypos -1418
+ }
+set N4825a800 [stack 0]
+ Keyer {
+  operation "saturation key"
+  range {0.99 1 1 1}
+  name Keyer4
+  xpos 772
+  ypos -1375
+ }
+push $N4825a800
+ Saturation {
+  inputs 1+1
+  saturation 0.99
+  name Saturation4
+  xpos 886
+  ypos -1310
+ }
+push $Ne68a2800
+ Switch {
+  inputs 2
+  which {{parent.clampneg}}
+  name ClampNegNanInf1
+  xpos 956
+  ypos -1259
+ }
+ Dot {
+  name Dot40
+  xpos 990
+  ypos -1063
+ }
+set Nb959e800 [stack 0]
+ Dot {
+  name Dot12
+  xpos 903
+  ypos -978
+ }
+ Dot {
+  name Dot6
+  xpos 903
+  ypos -777
+ }
+set N75498800 [stack 0]
+ Dot {
+  name Dot62
+  xpos 903
+  ypos -651
+ }
+set Ne90c2800 [stack 0]
+ Unpremult {
+  name Unpremult10
+  xpos 767
+  ypos -654
+  disable {{!parent.unpremultb}}
+ }
+ Group {
+  name SuperWhite
+  tile_color 0xffffffff
+  label Rolloff
+  xpos 767
+  ypos -615
+  addUserKnob {20 User}
+  addUserKnob {41 StartRolloff T Controller1.StartRolloff}
+  addUserKnob {41 RolloffRange T Controller1.RolloffRange}
+  addUserKnob {7 LumaBack}
+  addUserKnob {41 mix T Controller1.mix}
+  addUserKnob {26 ""}
+  addUserKnob {26 Info l "" +STARTLINE T "Tool for rolling off super bright highlights and keeping the channel ratios\nthe same (preserving color). StartRolloff is when the rolloff starts. \nRolloffRange is the range that the rolloff will happen in: larger the value, \nthe more gradual the rolloff will be. Luma back can be a better way of \"mixing\" \nthe effect down (0 does nothing, 1 will fully restore luma).\n\n(c) Riley Gray 2019 -  v1.01     "}
+ }
+  NoOp {
+   inputs 0
+   name StartGamma1
+   label Curve
+   xpos 1141
+   ypos -180
+   addUserKnob {20 User}
+   addUserKnob {7 Start_Gamma_Curve}
+   Start_Gamma_Curve {{curve l x1 1.36 k 1.24681481 x4 1.1 1 x12 0.92 x20 0.88 l x40 0.8499557972}}
+  }
+  NoOp {
+   inputs 0
+   name Controller1
+   xpos 1138
+   ypos -371
+   addUserKnob {20 User}
+   addUserKnob {7 StartRolloff}
+   StartRolloff {{highlightsb}}
+   addUserKnob {7 EndRolloff}
+   EndRolloff {{"StartRolloff + RolloffRange"}}
+   addUserKnob {7 MaxValue}
+   MaxValue {{"(EndRolloff - StartRolloff)/2 + StartRolloff"}}
+   addUserKnob {7 RolloffRange}
+   RolloffRange 0.05
+   addUserKnob {7 mix}
+   mix 1
+  }
+  NoOp {
+   inputs 0
+   name RangeGamma1
+   label Curve
+   xpos 1139
+   ypos -252
+   addUserKnob {20 User}
+   addUserKnob {7 Range_Gamma_Curve}
+   Range_Gamma_Curve {{curve x1 0.55 x4 0.6081367731 x6 0.6440570354 x12 0.75 L l x20 0.79095432}}
+  }
+  Input {
+   inputs 0
+   name image
+   xpos 509
+   ypos -487
+  }
+  Dot {
+   name Dot12
+   xpos 543
+   ypos -444
+  }
+set N4aa81400 [stack 0]
+  Dot {
+   name Dot2
+   xpos 327
+   ypos -444
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace1
+   xpos 293
+   ypos 155
+  }
+push $N4aa81400
+  Dot {
+   name Dot13
+   xpos 904
+   ypos -444
+  }
+  Saturation {
+   saturation 0
+   mode Maximum
+   name MaxPixel1
+   xpos 870
+   ypos -412
+  }
+  Dot {
+   name Dot14
+   xpos 904
+   ypos -366
+  }
+set N5cd4f800 [stack 0]
+  Add {
+   channels rgb
+   value {{parent.Controller1.StartRolloff/-1 i}}
+   name Offset1
+   xpos 1009
+   ypos -369
+  }
+  Grade {
+   multiply {{1/(parent.Controller1.EndRolloff-parent.Controller1.StartRolloff)}}
+   white_clamp true
+   name Normalize1
+   xpos 1009
+   ypos -322
+  }
+  Grade {
+   gamma {{parent.RangeGamma1.Range_Gamma_Curve(parent.Controller1.RolloffRange)}}
+   name RangeGammaCurve1
+   xpos 1009
+   ypos -243
+  }
+  Grade {
+   gamma {{parent.StartGamma1.Start_Gamma_Curve(parent.Controller1.StartRolloff)}}
+   name StartGammaCurve1
+   xpos 1009
+   ypos -175
+  }
+  Grade {
+   multiply {{1-(parent.Controller1.MaxValue/parent.Controller1.EndRolloff)}}
+   name MaxValue1
+   xpos 1009
+   ypos -82
+  }
+  Dot {
+   name Dot15
+   xpos 1043
+   ypos -31
+  }
+  Expression {
+   expr0 1-r
+   expr1 1-r
+   expr2 1-r
+   expr3 1-r
+   name Expression4
+   xpos 738
+   ypos -34
+  }
+push $N4aa81400
+  Dot {
+   name Dot16
+   xpos 543
+   ypos -351
+  }
+set N21e04800 [stack 0]
+  Dot {
+   name Dot17
+   xpos 778
+   ypos -351
+  }
+  Clamp {
+   channels rgb
+   minimum_enable false
+   maximum {{parent.Controller1.EndRolloff}}
+   name Clamp2
+   xpos 744
+   ypos -306
+  }
+push $N5cd4f800
+  Dot {
+   name Dot18
+   xpos 904
+   ypos -244
+  }
+  Merge2 {
+   inputs 2
+   operation divide
+   output rgb
+   name Merge4
+   xpos 744
+   ypos -247
+  }
+  Saturation {
+   saturation 0
+   mode Maximum
+   name Maximum1
+   xpos 744
+   ypos -170
+  }
+push $N21e04800
+  Merge2 {
+   inputs 2
+   operation multiply
+   output rgb
+   mix {{parent.Controller1.mix}}
+   name Merge5
+   xpos 509
+   ypos -170
+  }
+  Merge2 {
+   inputs 2
+   operation multiply
+   output rgb
+   mix {{parent.Controller1.mix}}
+   name Merge6
+   xpos 509
+   ypos -34
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace2
+   xpos 509
+   ypos 101
+  }
+  Copy {
+   inputs 2
+   from0 rgba.red
+   to0 rgba.red
+   mix {{"parent.LumaBack * parent.Controller1.mix"}}
+   name Copy2
+   xpos 509
+   ypos 149
+   disable {{"\[exists parent.input0] ? 0 : 1"}}
+  }
+  Colorspace {
+   colorspace_in CIE-Lab
+   name Colorspace3
+   selected true
+   xpos 509
+   ypos 204
+  }
+  Output {
+   name Output1
+   xpos 509
+   ypos 301
+  }
+ end_group
+ Premult {
+  name Premult5
+  xpos 767
+  ypos -569
+  disable {{!parent.unpremultb}}
+ }
+push $Ne90c2800
+ Switch {
+  inputs 2
+  which {{parent.rolloffb}}
+  name Switch3
+  label "KILL HIGHLIGHTS"
+  xpos 869
+  ypos -503
+ }
+set N47893000 [stack 0]
+ Dot {
+  name Dot32
+  xpos 759
+  ypos -494
+ }
+ Blur {
+  channels rgba
+  size {{parent.blurb}}
+  name Blur141
+  xpos 725
+  ypos -439
+ }
+ Dot {
+  name Dot25
+  xpos 759
+  ypos -385
+ }
+ Dot {
+  name Dot24
+  xpos 759
+  ypos -90
+ }
+set Ncc550c00 [stack 0]
+ Dot {
+  name Dot26
+  xpos 759
+  ypos -19
+ }
+push $Ncc550c00
+push $N47893000
+ Unpremult {
+  name Unpremult8
+  xpos 869
+  ypos -445
+ }
+ Grade {
+  channels alpha
+  blackpoint 0.01
+  name Grade1
+  xpos 869
+  ypos -421
+ }
+ Premult {
+  name Premult3
+  xpos 869
+  ypos -385
+ }
+ Unpremult {
+  name Unpremult2
+  xpos 869
+  ypos -350
+ }
+ Group {
+  name BinaryAlpha3
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 869
+  ypos -326
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{parent.Blur140.size}}
+  mix {{parent.Blur140.mix}}
+  name Blur1
+  xpos 869
+  ypos -282
+ }
+ Unpremult {
+  name Unpremult4
+  xpos 869
+  ypos -248
+ }
+ Group {
+  name BinaryAlpha4
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 869
+  ypos -209
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   selected true
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{"extraextend ? parent.Blur140.size*parent.edgeextend : parent.Blur140.size"}}
+  quality 5
+  mix {{parent.Blur140.mix}}
+  name Blur5
+  xpos 869
+  ypos -171
+ }
+ Unpremult {
+  name Unpremult7
+  xpos 869
+  ypos -134
+ }
+ Merge2 {
+  inputs 2
+  bbox B
+  name Merge2
+  xpos 869
+  ypos -93
+ }
+ Switch {
+  inputs 2
+  which {{!parent.unpremultb}}
+  name Switch5
+  label PREMULT
+  xpos 869
+  ypos -28
+ }
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace compositing_log
+  name OCIOColorSpace1
+  xpos 869
+  ypos 198
+  disable {{!parent.logmode x1008 1}}
+ }
+set N33896400 [stack 0]
+ Dot {
+  name Dot20
+  xpos 1493
+  ypos 201
+ }
+ Dot {
+  name Dot47
+  xpos 1493
+  ypos 1516
+ }
+ Dot {
+  name Dot21
+  xpos 1493
+  ypos 1912
+ }
+push $N75498800
+push $Nf6feb400
+push $N60e28800
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input1] ? 0 : 1"}}
+  name Switch12
+  xpos 393
+  ypos -1627
+ }
+ Dot {
+  name Dot8
+  xpos 427
+  ypos -1510
+ }
+set N71a4e400 [stack 0]
+ Expression {
+  expr0 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:r
+  expr1 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:g
+  expr2 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:b
+  expr3 (isnan(r)||isnan(g)||isnan(b)||isnan(a))||(isinf(r)||isinf(g)||isinf(b)||isinf(a))?0:a
+  name nan_killer_ReplaceWithZero1
+  xpos 303
+  ypos -1459
+ }
+ Clamp {
+  channels rgba
+  maximum_enable false
+  name Clamp3
+  label "CLAMP NEG"
+  xpos 303
+  ypos -1419
+ }
+set N624ea400 [stack 0]
+ Keyer {
+  operation "saturation key"
+  range {0.99 1 1 1}
+  name Keyer2
+  xpos 159
+  ypos -1361
+ }
+push $N624ea400
+ Saturation {
+  inputs 1+1
+  saturation 0.99
+  name Saturation2
+  xpos 303
+  ypos -1312
+ }
+push $N71a4e400
+ Switch {
+  inputs 2
+  which {{parent.clampneg}}
+  name ClampNegNanInf2
+  xpos 393
+  ypos -1260
+ }
+ Dot {
+  name Dot37
+  xpos 427
+  ypos -1064
+ }
+set N60e28400 [stack 0]
+ Dot {
+  name Dot2
+  xpos 427
+  ypos -838
+ }
+set Nd18aa400 [stack 0]
+ Dot {
+  name Dot1
+  xpos 541
+  ypos -838
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy2
+  xpos 507
+  ypos -786
+ }
+ Premult {
+  name Premult2
+  xpos 507
+  ypos -726
+ }
+ Dot {
+  name Dot14
+  xpos 541
+  ypos -688
+ }
+push $Nd18aa400
+ Switch {
+  inputs 2
+  which {{parent.copyalpha}}
+  name Switch1
+  label "copy alpha"
+  xpos 393
+  ypos -697
+ }
+ Dot {
+  name Dot31
+  xpos 427
+  ypos -645
+ }
+set Nd18bc400 [stack 0]
+ Unpremult {
+  name Unpremult11
+  xpos 257
+  ypos -648
+  disable {{!parent.unpremulta}}
+ }
+ Group {
+  name SuperWhite1
+  tile_color 0xffffffff
+  label Rolloff
+  xpos 257
+  ypos -618
+  addUserKnob {20 User}
+  addUserKnob {41 StartRolloff T Controller1.StartRolloff}
+  addUserKnob {41 RolloffRange T Controller1.RolloffRange}
+  addUserKnob {7 LumaBack}
+  addUserKnob {41 mix T Controller1.mix}
+  addUserKnob {26 ""}
+  addUserKnob {26 Info l "" +STARTLINE T "Tool for rolling off super bright highlights and keeping the channel ratios\nthe same (preserving color). StartRolloff is when the rolloff starts. \nRolloffRange is the range that the rolloff will happen in: larger the value, \nthe more gradual the rolloff will be. Luma back can be a better way of \"mixing\" \nthe effect down (0 does nothing, 1 will fully restore luma).\n\n(c) Riley Gray 2019 -  v1.01     "}
+ }
+  NoOp {
+   inputs 0
+   name StartGamma1
+   label Curve
+   xpos 1141
+   ypos -180
+   addUserKnob {20 User}
+   addUserKnob {7 Start_Gamma_Curve}
+   Start_Gamma_Curve {{curve l x1 1.36 k 1.24681481 x4 1.1 1 x12 0.92 x20 0.88 l x40 0.8499557972}}
+  }
+  NoOp {
+   inputs 0
+   name Controller1
+   xpos 1138
+   ypos -371
+   addUserKnob {20 User}
+   addUserKnob {7 StartRolloff}
+   StartRolloff {{highlightsa}}
+   addUserKnob {7 EndRolloff}
+   EndRolloff {{"StartRolloff + RolloffRange"}}
+   addUserKnob {7 MaxValue}
+   MaxValue {{"(EndRolloff - StartRolloff)/2 + StartRolloff"}}
+   addUserKnob {7 RolloffRange}
+   RolloffRange 0.05
+   addUserKnob {7 mix}
+   mix 1
+  }
+  NoOp {
+   inputs 0
+   name RangeGamma1
+   label Curve
+   xpos 1139
+   ypos -252
+   addUserKnob {20 User}
+   addUserKnob {7 Range_Gamma_Curve}
+   Range_Gamma_Curve {{curve x1 0.55 x4 0.6081367731 x6 0.6440570354 x12 0.75 L l x20 0.79095432}}
+  }
+  Input {
+   inputs 0
+   name image
+   xpos 509
+   ypos -487
+  }
+  Dot {
+   name Dot12
+   xpos 543
+   ypos -444
+  }
+set N4a9b0400 [stack 0]
+  Dot {
+   name Dot2
+   xpos 327
+   ypos -444
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace1
+   xpos 293
+   ypos 155
+  }
+push $N4a9b0400
+  Dot {
+   name Dot13
+   xpos 904
+   ypos -444
+  }
+  Saturation {
+   saturation 0
+   mode Maximum
+   name MaxPixel1
+   xpos 870
+   ypos -412
+  }
+  Dot {
+   name Dot14
+   xpos 904
+   ypos -366
+  }
+set N59e0c400 [stack 0]
+  Add {
+   channels rgb
+   value {{parent.Controller1.StartRolloff/-1 i}}
+   name Offset1
+   xpos 1009
+   ypos -369
+  }
+  Grade {
+   multiply {{1/(parent.Controller1.EndRolloff-parent.Controller1.StartRolloff)}}
+   white_clamp true
+   name Normalize1
+   xpos 1009
+   ypos -322
+  }
+  Grade {
+   gamma {{parent.RangeGamma1.Range_Gamma_Curve(parent.Controller1.RolloffRange)}}
+   name RangeGammaCurve1
+   xpos 1009
+   ypos -243
+  }
+  Grade {
+   gamma {{parent.StartGamma1.Start_Gamma_Curve(parent.Controller1.StartRolloff)}}
+   name StartGammaCurve1
+   xpos 1009
+   ypos -175
+  }
+  Grade {
+   multiply {{1-(parent.Controller1.MaxValue/parent.Controller1.EndRolloff)}}
+   name MaxValue1
+   xpos 1009
+   ypos -82
+  }
+  Dot {
+   name Dot15
+   xpos 1043
+   ypos -31
+  }
+  Expression {
+   expr0 1-r
+   expr1 1-r
+   expr2 1-r
+   expr3 1-r
+   name Expression4
+   xpos 738
+   ypos -34
+  }
+push $N4a9b0400
+  Dot {
+   name Dot16
+   xpos 543
+   ypos -351
+  }
+set N5cd4ec00 [stack 0]
+  Dot {
+   name Dot17
+   xpos 778
+   ypos -351
+  }
+  Clamp {
+   channels rgb
+   minimum_enable false
+   maximum {{parent.Controller1.EndRolloff}}
+   name Clamp2
+   xpos 744
+   ypos -306
+  }
+push $N59e0c400
+  Dot {
+   name Dot18
+   xpos 904
+   ypos -244
+  }
+  Merge2 {
+   inputs 2
+   operation divide
+   output rgb
+   name Merge4
+   xpos 744
+   ypos -247
+  }
+  Saturation {
+   saturation 0
+   mode Maximum
+   name Maximum1
+   xpos 744
+   ypos -170
+  }
+push $N5cd4ec00
+  Merge2 {
+   inputs 2
+   operation multiply
+   output rgb
+   mix {{parent.Controller1.mix}}
+   name Merge5
+   xpos 509
+   ypos -170
+  }
+  Merge2 {
+   inputs 2
+   operation multiply
+   output rgb
+   mix {{parent.Controller1.mix}}
+   name Merge6
+   xpos 509
+   ypos -34
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace2
+   xpos 509
+   ypos 101
+  }
+  Copy {
+   inputs 2
+   from0 rgba.red
+   to0 rgba.red
+   mix {{"parent.LumaBack * parent.Controller1.mix"}}
+   name Copy2
+   xpos 509
+   ypos 149
+   disable {{"\[exists parent.input0] ? 0 : 1"}}
+  }
+  Colorspace {
+   colorspace_in CIE-Lab
+   name Colorspace3
+   xpos 509
+   ypos 204
+  }
+  Output {
+   name Output1
+   xpos 509
+   ypos 301
+  }
+ end_group
+ Premult {
+  name Premult6
+  xpos 257
+  ypos -582
+  disable {{!parent.unpremulta}}
+ }
+push $Nd18bc400
+ Switch {
+  inputs 2
+  which {{parent.rolloffa}}
+  name Switch10
+  label "KILL HIGHLIGHTS"
+  xpos 393
+  ypos -530
+ }
+set Nda399800 [stack 0]
+ Dot {
+  name Dot11
+  xpos 266
+  ypos -521
+ }
+ Blur {
+  channels rgba
+  size {{parent.blura}}
+  name Blur140
+  xpos 232
+  ypos -444
+ }
+ Dot {
+  name Dot23
+  xpos 266
+  ypos -381
+ }
+ Dot {
+  name Dot22
+  xpos 266
+  ypos -88
+ }
+set Ne7452400 [stack 0]
+ Dot {
+  name Dot27
+  xpos 266
+  ypos -17
+ }
+push $Ne7452400
+push $Nda399800
+ Unpremult {
+  name Unpremult9
+  xpos 393
+  ypos -486
+ }
+ Grade {
+  channels alpha
+  blackpoint 0.01
+  name Grade2
+  xpos 393
+  ypos -434
+ }
+ Premult {
+  name Premult4
+  xpos 393
+  ypos -398
+ }
+ Unpremult {
+  name Unpremult3
+  xpos 393
+  ypos -359
+ }
+ Group {
+  name BinaryAlpha1
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 393
+  ypos -328
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{parent.Blur140.size}}
+  mix {{parent.Blur140.mix}}
+  name Blur2
+  xpos 393
+  ypos -292
+ }
+ Unpremult {
+  name Unpremult5
+  xpos 393
+  ypos -250
+ }
+ Group {
+  name BinaryAlpha2
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 393
+  ypos -216
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{"extraextend ? parent.Blur140.size*parent.edgeextend : parent.Blur140.size"}}
+  quality 5
+  mix {{parent.Blur140.mix}}
+  name Blur3
+  xpos 393
+  ypos -178
+ }
+ Unpremult {
+  name Unpremult6
+  xpos 393
+  ypos -139
+ }
+ Merge2 {
+  inputs 2
+  bbox B
+  name Merge1
+  xpos 393
+  ypos -91
+ }
+ Switch {
+  inputs 2
+  which {{"!parent.unpremulta && !parent.copyalpha"}}
+  name Switch6
+  label PREMULT
+  xpos 393
+  ypos -26
+ }
+ Dot {
+  name Dot45
+  xpos 427
+  ypos 107
+ }
+set Nc22800 [stack 0]
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace compositing_log
+  name OCIOColorSpace5
+  xpos 393
+  ypos 198
+  disable {{!parent.logmode}}
+ }
+set N7cd73800 [stack 0]
+ Dot {
+  name Dot18
+  xpos 72
+  ypos 201
+ }
+ Dot {
+  name Dot19
+  xpos 72
+  ypos 1912
+ }
+push $Nb959e800
+ Unpremult {
+  name Unpremult1
+  xpos 956
+  ypos 606
+  disable {{!parent.unpremultb x1 1 x36 1 x1039 1}}
+ }
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace compositing_log
+  name OCIOColorSpace4
+  xpos 956
+  ypos 674
+  disable {{!parent.logmode}}
+ }
+set N64d1e000 [stack 0]
+ Dot {
+  name Dot4
+  xpos 990
+  ypos 751
+ }
+set N5a242000 [stack 0]
+ Dot {
+  name Dot30
+  xpos 990
+  ypos 1430
+ }
+ Input {
+  inputs 0
+  name mask
+  xpos -595
+  ypos 1029
+  number 2
+ }
+set N33896000 [stack 0]
+push $N64d1e000
+ Dot {
+  name Dot10
+  tile_color 0x949494ff
+  note_font_size 22
+  note_font_color 0xffffffff
+  xpos 265
+  ypos 677
+ }
+ Colorspace {
+  colorspace_out CIE-Lab
+  name Colorspace2
+  xpos 231
+  ypos 937
+ }
+set Nc85d0000 [stack 0]
+ Dot {
+  name Dot34
+  xpos -227
+  ypos 940
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 white -1 -1 rgba.red 0 0 white -1 -1 rgba.green 0 1 white -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name Shuffle7
+  xpos -261
+  ypos 977
+ }
+set N32246000 [stack 0]
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] && parent.maskcolor ? 1 : 0"}}
+  name Switch7
+  label IFMASKCOLOR
+  xpos -261
+  ypos 1152
+ }
+set N71a4e000 [stack 0]
+push $N7cd73800
+push $N33896400
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge337
+  xpos 628
+  ypos 389
+ }
+ Dot {
+  name Dot57
+  xpos 662
+  ypos 667
+ }
+push $N5a242000
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge338
+  xpos 628
+  ypos 748
+ }
+ Dot {
+  name Dot50
+  xpos 662
+  ypos 961
+ }
+set N2ca96000 [stack 0]
+ Dot {
+  name Dot59
+  xpos 759
+  ypos 961
+ }
+ Colorspace {
+  colorspace_out HSV
+  name Colorspace10
+  xpos 725
+  ypos 1126
+ }
+set N60e28000 [stack 0]
+push $N7cd73800
+ Dot {
+  name Dot52
+  xpos 427
+  ypos 529
+ }
+set Nd18aa000 [stack 0]
+ Dot {
+  name Dot35
+  xpos 869
+  ypos 529
+ }
+ Dot {
+  name Dot44
+  xpos 869
+  ypos 930
+ }
+ Colorspace {
+  colorspace_out HSV
+  name Colorspace7
+  xpos 835
+  ypos 1026
+ }
+ Merge2 {
+  inputs 2
+  operation from
+  Achannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  Bchannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  output {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  name Merge7
+  xpos 835
+  ypos 1126
+ }
+ Dot {
+  name Dot15
+  xpos 869
+  ypos 1177
+ }
+push $N60e28000
+ Merge2 {
+  inputs 2
+  operation plus
+  Achannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  Bchannels {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  output {-rgba.red rgba.green -rgba.blue -rgba.alpha}
+  mix {{satmin}}
+  name Merge9
+  xpos 725
+  ypos 1174
+ }
+ Dot {
+  name Dot55
+  xpos 759
+  ypos 1300
+ }
+push $N71a4e000
+push $N2ca96000
+ Colorspace {
+  colorspace_out CIE-Lab
+  name Colorspace1
+  xpos 628
+  ypos 1029
+ }
+set N4e626000 [stack 0]
+ Dot {
+  name Dot7
+  xpos 662
+  ypos 1161
+ }
+push $N33896000
+push $N32246000
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] && parent.maskluma ? 1 : 0"}}
+  name Switch4
+  label IFMASKLUMA
+  xpos -331
+  ypos 1023
+ }
+ Dot {
+  name Dot48
+  xpos 130
+  ypos 1032
+ }
+push $Nd18aa000
+ Colorspace {
+  colorspace_out CIE-Lab
+  name Colorspace4
+  xpos 393
+  ypos 937
+ }
+set N4a9b0000 [stack 0]
+push $N4a9b0000
+push $N4e626000
+ Merge2 {
+  inputs 2
+  operation max
+  Achannels {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  Bchannels {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  output {rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  mix {{parent.lumamaxslider}}
+  name Merge18
+  xpos 484
+  ypos 1029
+  disable {{!parent.lumamax}}
+ }
+ Merge2 {
+  inputs 2
+  operation min
+  mix {{parent.lumaminslider}}
+  name Merge6
+  xpos 393
+  ypos 1029
+  disable {{!parent.lumamin}}
+ }
+push $Nc85d0000
+ Copy {
+  inputs 2+1
+  from0 rgba.red
+  to0 rgba.red
+  name Copy_LUMA
+  xpos 231
+  ypos 1023
+ }
+ Copy {
+  inputs 2+1
+  from0 rgba.green
+  to0 rgba.green
+  from1 rgba.blue
+  to1 rgba.blue
+  name Copy_COLOR
+  xpos 231
+  ypos 1146
+ }
+set Nea838000 [stack 0]
+ Dot {
+  name Dot54
+  xpos 422
+  ypos 1189
+ }
+ Colorspace {
+  colorspace_in CIE-Lab
+  colorspace_out HSV
+  name Colorspace5
+  xpos 388
+  ypos 1221
+ }
+ Copy {
+  inputs 2+1
+  from0 rgba.green
+  to0 rgba.green
+  mix {{parent.Copy_COLOR.mix*parent.satmin}}
+  name Copy3
+  xpos 388
+  ypos 1291
+ }
+ Colorspace {
+  colorspace_in HSV
+  name Colorspace6
+  xpos 388
+  ypos 1327
+ }
+ Dot {
+  name Dot51
+  xpos 422
+  ypos 1367
+ }
+push $Nea838000
+ Colorspace {
+  colorspace_in CIE-Lab
+  name Colorspace3
+  xpos 231
+  ypos 1217
+ }
+ Switch {
+  inputs 2
+  which {{parent.satmincheck}}
+  name Saturation
+  xpos 231
+  ypos 1364
+ }
+ Dot {
+  name Dot49
+  xpos 265
+  ypos 1388
+ }
+set N5cbd0000 [stack 0]
+ Dot {
+  name Dot53
+  xpos 375
+  ypos 1428
+ }
+set N5cd4e000 [stack 0]
+ Dot {
+  name Dot61
+  xpos 375
+  ypos 1496
+ }
+push $N5cd4e000
+push $N33896000
+push $N32246000
+ Dot {
+  name Dot16
+  xpos -151
+  ypos 980
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] && parent.maskdetail ? 1 : 0"}}
+  name Switch8
+  label IFMASKDETAIL
+  xpos -185
+  ypos 1366
+ }
+ Dot {
+  name Dot5
+  xpos 144
+  ypos 1375
+ }
+push $N60e28400
+ Dot {
+  name Dot43
+  xpos -44
+  ypos -1064
+ }
+ Dot {
+  name Dot42
+  xpos -44
+  ypos -71
+ }
+push $Nc22800
+ Merge2 {
+  inputs 2
+  name Merge4
+  xpos -78
+  ypos 104
+ }
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace compositing_log
+  name OCIOColorSpace2
+  xpos -78
+  ypos 143
+  disable {{!parent.logmode}}
+ }
+ Group {
+  name Contrast
+  tile_color 0x335959ff
+  note_font_color 0xffffffff
+  xpos -78
+  ypos 180
+  disable {{"parent.detail <= 1"}}
+  addUserKnob {20 Contrast}
+  addUserKnob {41 channels T Gamma1.channels}
+  addUserKnob {41 contrast T Input.contrast}
+  addUserKnob {41 pivot T Input.pivot}
+  addUserKnob {26 ""}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos 10
+   ypos -191
+   addUserKnob {20 User}
+   addUserKnob {18 contrast R 0 3}
+   contrast {{detail}}
+   addUserKnob {6 contrast_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {18 pivot}
+   pivot 0.18
+   addUserKnob {6 pivot_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  }
+  Gamma {
+   channels rgba
+   value {{1/Input.contrast.r} {1/Input.contrast.g} {1/Input.contrast.b} 0}
+   name Gamma1
+   xpos 10
+   ypos -114
+  }
+  Multiply {
+   channels {{{parent.Gamma1.channels}}}
+   value {{"pow(0.18, 1-Input.contrast.r)"} {"pow(0.18, 1-Input.contrast.g)"} {"pow(0.18, 1-Input.contrast.b)"} 0}
+   name Multiply1
+   xpos 97
+   ypos -24
+  }
+  Output {
+   name Output
+   xpos 10
+   ypos 136
+  }
+ end_group
+ Dot {
+  name Dot29
+  xpos -44
+  ypos 252
+ }
+set Nda398c00 [stack 0]
+push $Nda398c00
+ Blur {
+  channels rgb
+  size 10
+  name BlurDetail
+  label DetailSize
+  xpos -238
+  ypos 243
+ }
+ Dot {
+  name Dot17
+  xpos -204
+  ypos 315
+ }
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge3
+  xpos -78
+  ypos 312
+ }
+ Saturation {
+  saturation 0
+  name Saturation3
+  xpos -78
+  ypos 351
+ }
+ Dot {
+  name Dot41
+  xpos -44
+  ypos 1434
+ }
+push $N5cbd0000
+ Merge2 {
+  inputs 2+1
+  operation multiply
+  mix {{clamp(parent.detail)}}
+  name MergeDetail
+  label TRANSFERDETAIL
+  xpos 231
+  ypos 1425
+  disable {{!this.mix x1 1 x1052 0}}
+ }
+ Merge2 {
+  inputs 2
+  operation max
+  mix {{parent.detailminmaxslider}}
+  name Merge12
+  xpos 231
+  ypos 1470
+  disable {{!parent.detailminmax}}
+ }
+ Merge2 {
+  inputs 2
+  operation min
+  mix {{1-parent.detailminmaxslider}}
+  name Merge13
+  xpos 231
+  ypos 1494
+  disable {{!parent.detailminmax}}
+ }
+ OCIOColorSpace {
+  in_colorspace compositing_log
+  out_colorspace scene_linear
+  name OCIOColorSpace3
+  xpos 231
+  ypos 1518
+  disable {{"!parent.logmode || !parent.outputmode != 1"}}
+ }
+ Dot {
+  name Dot3
+  tile_color 0x949494ff
+  note_font_size 22
+  note_font_color 0xffffffff
+  xpos 265
+  ypos 1556
+ }
+ Merge {
+  inputs 2
+  A rgb
+  operation divide
+  swap true
+  B rgb
+  output rgb
+  name Merge16
+  label "\[if \{\[value swap]\} \{return \"(A&B swapped)\"\}]"
+  xpos 956
+  ypos 1547
+  disable {{"outputmode != 1" x1 1 x36 1}}
+ }
+ Dot {
+  name Dot58
+  xpos 990
+  ypos 1597
+ }
+push $N73a92800
+ Dot {
+  name Dot46
+  xpos 1114
+  ypos 1228
+ }
+ Dot {
+  name Dot56
+  xpos 1114
+  ypos 1349
+ }
+ Shuffle {
+  name Shuffle2
+  xpos 1080
+  ypos 1406
+ }
+set Nbfd52c00 [stack 0]
+ Copy {
+  inputs 2
+  channels rgb
+  bbox B
+  name Copy1
+  xpos 1080
+  ypos 1582
+ }
+ Premult {
+  name Premult1
+  xpos 1080
+  ypos 1630
+  disable {{"!parent.unpremultb || outputmode == 1"}}
+ }
+push $Nbfd52c00
+ Dot {
+  name Dot9
+  tile_color 0x949494ff
+  note_font_size 22
+  note_font_color 0xffffffff
+  xpos 1262
+  ypos 1409
+ }
+set Ndcf7e800 [stack 0]
+ Dot {
+  name Dot39
+  xpos 1352
+  ypos 1409
+ }
+ Remove {
+  channels rgb
+  name Remove1
+  xpos 1318
+  ypos 1509
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 white -1 -1 rgba.red 0 0 white -1 -1 rgba.green 0 1 white -1 -1 rgba.blue 0 2 rgba.alpha 0 3 rgba.alpha 0 3"
+  name Shuffle6
+  xpos 1318
+  ypos 1558
+ }
+ Dot {
+  name Dot38
+  xpos 1352
+  ypos 1801
+ }
+push $Ndcf7e800
+ Switch {
+  inputs 2
+  which {{parent.outputmode}}
+  name Switch11
+  label OUTPUTMODE
+  xpos 1228
+  ypos 1792
+ }
+ Dissolve {
+  inputs 2
+  which 1
+  name DissolveMIX
+  xpos 1080
+  ypos 1792
+ }
+set N64b9d800 [stack 0]
+ Dot {
+  name Dot13
+  tile_color 0x949494ff
+  note_font_size 22
+  note_font_color 0xffffffff
+  xpos 1199
+  ypos 1859
+ }
+push $N64b9d800
+ Switch {
+  inputs 4
+  which {{parent.outputmode}}
+  name Switch2
+  label OUTPUTMODE
+  xpos 1080
+  ypos 1903
+ }
+ Output {
+  name Output1
+  xpos 1080
+  ypos 2027
+ }
+end_group

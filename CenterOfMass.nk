@@ -1,0 +1,214 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+name Center
+label "Of Mass"
+selected true
+xpos 1260
+ypos 34
+addUserKnob {20 User}
+addUserKnob {12 pos l position}
+pos {{CurveToolExport.intensitydata.r+offset.x} {CurveToolExport.intensitydata.g+offset.y}}
+addUserKnob {12 offset}
+addUserKnob {41 go l "Bake Position" T CurveToolExport.go}
+addUserKnob {41 reset l "Clear Position" -STARTLINE T CurveCtrl.reset}
+addUserKnob {26 ""}
+addUserKnob {4 previewdropdown l output M {None "Point Overlay" Transform "" "" "" "" "" "" ""}}
+previewdropdown Transform
+addUserKnob {41 ref l "reference frame" T Transform1.ref}
+addUserKnob {41 current l "set to current frame" -STARTLINE T Transform1.current}
+addUserKnob {41 invert l transform T Transform1.invert}
+addUserKnob {26 info l "" +STARTLINE T "\nCenter of Mass 1.0 Calle Granström \nbased on blink script from Julian Kreusser / nodesarentscary"}
+}
+Constant {
+ inputs 0
+ channels rgb
+ name Constant1
+ xpos 532
+ ypos -348
+}
+Input {
+ inputs 0
+ name Input1
+ xpos 396
+ ypos -395
+}
+Switch {
+ inputs 2
+ which {{"\[exists parent.input0] ? 0 : 1"}}
+ name Switch2
+ label Noinput
+ xpos 396
+ ypos -330
+}
+Dot {
+ name Dot1
+ xpos 430
+ ypos -250
+}
+set N218df000 [stack 0]
+Dot {
+ name Dot5
+ xpos 430
+ ypos 31
+}
+set N218df400 [stack 0]
+Transform {
+ translate {{center-(center(ref))} {center-(center(ref))}}
+ center {{parent.CurveToolExport.intensitydata.r+offset.x} {parent.CurveToolExport.intensitydata.g+offset.y}}
+ invert_matrix {{!invert}}
+ name Transform1
+ xpos 517
+ ypos 134
+ addUserKnob {20 User}
+ addUserKnob {3 ref l "reference frame"}
+ ref 1001
+ addUserKnob {22 current l "set to current frame" -STARTLINE T "nuke.thisNode()\['ref'].setValue(nuke.frame())"}
+ addUserKnob {4 invert l transform M {stabilize matchmove ""}}
+}
+push $N218df000
+Dot {
+ name Dot6
+ xpos 41
+ ypos -250
+}
+Expression {
+ expr0 a
+ expr1 a
+ expr2 a
+ expr3 a
+ name Expression1
+ xpos 7
+ ypos -201
+}
+set N316a0000 [stack 0]
+Crop {
+ box {0 0 {width} {height}}
+ crop false
+ name Crop1
+ xpos 7
+ ypos -122
+}
+BlinkScript {
+ recompileCount 11
+ ProgramGroup 1
+ KernelDescription "2 \"CenterOfMassKernel\" iterate pixelWise 91bd16ae48979d124a233a8e808664cecc972e38b3fc1e7a8a1fba1903084e7d 2 \"src\" Read Random \"dst\" Write Random 0 0 3 \"sum\" Float 2 1 AAAAAAAAAAA= \"center\" Float 2 1 AAAAAAAAAAA= \"c\" Int 2 1 AAAAAAAAAAA="
+ kernelSource "\nkernel CenterOfMassKernel : public ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessRandom, eEdgeClamped> src;\n  Image<eWrite, eAccessRandom> dst; // the output image\n\n  local:\n    float2 sum;\n    float2 center;\n    int2 c;\n\n\n  void init() \{\n    c.x = 0;\n    sum.x = 0;\n    sum.y = 0;\n  \}\n\n  void process(int2 pos) \{\n    if (pos.x == 0 && pos.y== 0) \{\n      for (int j = src.bounds.y1; j < src.bounds.y2; j++) \{ \n        for (int i = src.bounds.x1; i < src.bounds.x2; i++) \{\n          if (src(i,j,0) > 0.0) \{\n            sum.x += i;\n            sum.y += j;\n            c.x++;\n            \}\n        \}\n    \}\n    if (c.x != 0) \{\n      center.x = sum.x / c.x;\n      center.y = sum.y / c.x;\n      \}\n    dst (center.x, center.y) = 1;\n    \}\n  \}\n\};"
+ rebuild ""
+ rebuild_finalise ""
+ name BlinkScript2
+ xpos 7
+ ypos -83
+}
+Multiply {
+ channels rgb
+ value 700
+ name Multiply1
+ xpos 7
+ ypos -24
+}
+Blur {
+ channels rgb
+ size 15
+ name Blur1
+ xpos 7
+ ypos 14
+}
+Shuffle2 {
+ fromInput1 {{0} B}
+ fromInput2 {{0} B}
+ mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.red 0 0 rgba.alpha 0 3 rgba.red 0 0 rgba.green 0 1 rgba.red 0 0 rgba.blue 0 2"
+ name Shuffle1
+ xpos 7
+ ypos 73
+}
+Clamp {
+ channels rgba
+ name Clamp1
+ xpos 7
+ ypos 103
+}
+push $N218df400
+Clamp {
+ channels rgb
+ name Clamp2
+ xpos 154
+ ypos 28
+}
+Invert {
+ channels rgb
+ name Invert1
+ xpos 154
+ ypos 52
+}
+Copy {
+ inputs 2
+ from0 rgba.alpha
+ to0 rgba.alpha
+ name Copy1
+ xpos 154
+ ypos 97
+}
+Premult {
+ name Premult1
+ xpos 154
+ ypos 133
+}
+push $N218df400
+Merge2 {
+ inputs 2
+ bbox B
+ name Merge1
+ xpos 298
+ ypos 133
+}
+push $N218df400
+Switch {
+ inputs 3
+ which {{parent.previewdropdown}}
+ name Switch1
+ xpos 396
+ ypos 241
+}
+Output {
+ name Output1
+ xpos 396
+ ypos 344
+}
+NoOp {
+ inputs 0
+ name CurveCtrl
+ xpos 750
+ ypos -119
+ addUserKnob {20 User}
+ addUserKnob {22 reset l "Clear Position" T "curvetool = nuke.toNode('CurveToolExport')\nknob = curvetool\['intensitydata']\nknob.clearAnimated()\nknob.setValue(\[0,0,0,0])" +STARTLINE}
+}
+push $N316a0000
+Dot {
+ name Dot4
+ xpos 650
+ ypos -198
+}
+BlinkScript {
+ recompileCount 8
+ ProgramGroup 1
+ KernelDescription "2 \"CenterOfMassKernel\" iterate pixelWise 8a1825d8e48b816db29db10aad3a90a804ad00f2405f3255e64a44c58b4fcd88 2 \"src\" Read Random \"dst\" Write Random 0 0 3 \"sum\" Float 2 1 AAAAAAAAAAA= \"center\" Float 2 1 AAAAAAAAAAA= \"c\" Int 2 1 AAAAAAAAAAA="
+ kernelSource "\nkernel CenterOfMassKernel : public ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessRandom, eEdgeClamped> src;\n  Image<eWrite, eAccessRandom> dst; // the output image\n\n  local:\n    float2 sum;\n    float2 center;\n    int2 c;\n\n\n  void init() \{\n    c.x = 0;\n    sum.x = 0;\n    sum.y = 0;\n  \}\n\n  void process(int2 pos) \{\n    if (pos.x == 0 && pos.y== 0) \{\n      for (int j = src.bounds.y1; j < src.bounds.y2; j++) \{ \n        for (int i = src.bounds.x1; i < src.bounds.x2; i++) \{\n          if (src(i,j,0) > 0.0) \{\n            sum.x += i;\n            sum.y += j;\n            c.x++;\n            \}\n        \}\n    \}\n    if (c.x != 0) \{\n      center.x = sum.x / c.x;\n      center.y = sum.y / c.x;\n      \}\n    //dst (center.x, center.y) = 1;\n\tdst (0,0,0) = center.x;\n\tdst (0,0,1) = center.y;\n    \}\n  \}\n\};"
+ rebuild ""
+ format "1 1 0 0 1 1 1 1px"
+ specifiedFormat true
+ rebuild_finalise ""
+ name BlinkScript1
+ xpos 616
+ ypos -127
+}
+CurveTool {
+ ROI {0 0 1 1}
+ autocropdata {512 389 1536 1167}
+ intensitydata {0 0 0 0}
+ name CurveToolExport
+ xpos 616
+ ypos -63
+}
+end_group

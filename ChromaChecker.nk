@@ -1,0 +1,375 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+ name ChromaChecker
+ selected true
+ xpos 4341
+ ypos -408
+ addUserKnob {20 User}
+ addUserKnob {7 size l "grid size" R 0 200}
+ size 80
+ addUserKnob {7 sat l saturation}
+ sat 1
+ addUserKnob {7 highpass l "high pass"}
+ addUserKnob {7 cornersize l "corner size" R 2 8}
+ cornersize 4
+ addUserKnob {6 corners l "corner check" +STARTLINE}
+ addUserKnob {6 toggle l "disable grid" +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 _1 l "" +STARTLINE T "ChromaChecker 1.1 © Calle Granström"}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 794
+  ypos -661
+ }
+ Dot {
+  name Dot6
+  xpos 828
+  ypos -615
+ }
+set Nd00ef400 [stack 0]
+ Dot {
+  name Dot5
+  xpos 938
+  ypos -615
+ }
+ Dot {
+  name Dot4
+  xpos 941
+  ypos -13
+ }
+ CheckerBoard2 {
+  inputs 0
+  boxsize {{int((parent.CheckerBoard2.boxsize-parent.CheckerBoard2.boxsize%2)/2)}}
+  color0 0
+  color1 1
+  color2 0
+  color3 1
+  centerlinecolor 0
+  centerlinewidth 0
+  name CheckerBoard3
+  xpos 507
+  ypos -205
+ }
+push $Nd00ef400
+ Blur {
+  size 4
+  name Blur6
+  xpos 581
+  ypos -624
+ }
+ Grade {
+  channels all
+  multiply 0.8
+  black_clamp false
+  name Grade1
+  xpos 581
+  ypos -570
+ }
+push $Nd00ef400
+ Merge2 {
+  inputs 2
+  operation from
+  Achannels none
+  Bchannels none
+  output none
+  also_merge all
+  name Merge1
+  label "\[ expr \{ \[value mix] == 1 ? \" \" : \[concat Mix: \[value mix]] \}]"
+  xpos 689
+  ypos -516
+ }
+ Multiply {
+  value 5
+  name Multiply1
+  label "\[value value]"
+  xpos 689
+  ypos -466
+ }
+push $Nd00ef400
+ Dissolve {
+  inputs 2
+  which {{parent.highpass}}
+  name Highpass
+  xpos 794
+  ypos -394
+ }
+ Saturation {
+  saturation 2
+  name Saturation2
+  xpos 794
+  ypos -313
+ }
+set N14e79800 [stack 0]
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Shuffle3
+  xpos 794
+  ypos -181
+ }
+ CheckerBoard2 {
+  inputs 0
+  boxsize {{parent.size-parent.size%2}}
+  color0 0
+  color1 1
+  color2 0
+  color3 1
+  centerlinecolor 0
+  centerlinewidth 0
+  name CheckerBoard2
+  xpos 507
+  ypos -278
+ }
+push $N14e79800
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 black -1 -1 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Shuffle2
+  xpos 727
+  ypos -254
+ }
+push $N14e79800
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 rgba.red 0 0 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Shuffle1
+  xpos 617
+  ypos -313
+ }
+ Keymix {
+  inputs 3
+  name Keymix5
+  xpos 617
+  ypos -260
+ }
+ Keymix {
+  inputs 3
+  name Keymix6
+  xpos 617
+  ypos -187
+ }
+set Nfd08b000 [stack 0]
+push $Nfd08b000
+ Saturation {
+  saturation 0
+  mode Maximum
+  name Saturation1
+  xpos 728
+  ypos -131
+ }
+ Group {
+  inputs 2
+  name Color_Merge
+  tile_color 0xff55d4ff
+  xpos 617
+  ypos -82
+  addUserKnob {20 tab1 l "Color Merge"}
+  addUserKnob {41 mix_1 l "Color Transfer" T Copy3.mix}
+  addUserKnob {41 maskChannelMask_1 l "" -STARTLINE T Copy3.maskChannelMask}
+  addUserKnob {41 mix l "Luma Transfer" T Copy2.mix}
+  addUserKnob {41 maskChannelMask l "" -STARTLINE T Copy2.maskChannelMask}
+ }
+  Input {
+   inputs 0
+   name B
+   xpos -325
+   ypos -759
+  }
+  Dot {
+   name Dot1
+   xpos -291
+   ypos -710
+  }
+set N6a96c000 [stack 0]
+  Dot {
+   name Dot2
+   xpos 4
+   ypos -710
+  }
+  Dot {
+   name Dot4
+   xpos 4
+   ypos -336
+  }
+  Input {
+   inputs 0
+   name mask
+   xpos -149
+   ypos -549
+   number 2
+  }
+set N6a96cc00 [stack 0]
+  Dot {
+   name Dot3
+   xpos -115
+   ypos -471
+  }
+  Input {
+   inputs 0
+   name A
+   xpos -539
+   ypos -626
+   number 1
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace1
+   xpos -539
+   ypos -549
+  }
+set N6a96d800 [stack 0]
+  Dot {
+   name Dot6
+   xpos -505
+   ypos -471
+  }
+push $N6a96cc00
+push $N6a96d800
+push $N6a96c000
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace2
+   xpos -325
+   ypos -635
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.red
+   to0 rgba.red
+   mix 0
+   name Copy2
+   xpos -325
+   ypos -555
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.green
+   to0 rgba.green
+   from1 rgba.blue
+   to1 rgba.blue
+   mix {{parent.parent.sat/2}}
+   name Copy3
+   xpos -325
+   ypos -486
+  }
+  Colorspace {
+   colorspace_in CIE-Lab
+   name Colorspace3
+   selected true
+   xpos -325
+   ypos -413
+  }
+  Switch {
+   inputs 2
+   which {{parent.disable}}
+   name Switch1
+   xpos -325
+   ypos -339
+  }
+  Output {
+   name Output1
+   xpos -325
+   ypos -276
+  }
+ end_group
+ Switch {
+  inputs 2
+  which {{toggle}}
+  name Switch2
+  xpos 617
+  ypos -16
+ }
+ Dot {
+  name Dot3
+  xpos 651
+  ypos 134
+ }
+set Ncb6e5c00 [stack 0]
+ Dot {
+  name Dot1
+  xpos 1250
+  ypos 134
+ }
+set N8e73a000 [stack 0]
+ Crop {
+  box {{width} 0 {width-(width/parent.cornersize)} {height/parent.cornersize}}
+  reformat true
+  crop false
+  name Crop20
+  xpos 1216
+  ypos 241
+ }
+push $N8e73a000
+ Crop {
+  box {0 0 {width/parent.cornersize} {height/parent.cornersize}}
+  reformat true
+  crop false
+  name Crop19
+  xpos 1077
+  ypos 237
+ }
+push $N8e73a000
+ Crop {
+  box {{width} {height} {width-(width/parent.cornersize)} {height-height/parent.cornersize}}
+  reformat true
+  crop false
+  name Crop21
+  xpos 1342
+  ypos 239
+ }
+push $N8e73a000
+ Crop {
+  box {0 {height} {width/parent.cornersize} {height-height/parent.cornersize}}
+  reformat true
+  crop false
+  name Crop22
+  xpos 1466
+  ypos 237
+ }
+ ContactSheet {
+  inputs 4
+  width {{input.width*columns*resMult}}
+  height {{input.height*rows*resMult}}
+  rows {{"\[expr \{int( (sqrt( \[numvalue inputs] ) ) )\} ] * \[expr \{int( ceil ( (\[numvalue inputs] /(sqrt( \[numvalue inputs] ) ) )) )\} ] < \[numvalue inputs]   ? \[expr \{int( (sqrt( \[numvalue inputs] ) ) )\} ] +1 : \[expr \{int( (sqrt( \[numvalue inputs] ) ) )\} ]"}}
+  columns {{"\[expr \{int( ceil ( (\[numvalue inputs] /(sqrt( \[numvalue inputs] )) )) )\} ]"}}
+  center true
+  roworder TopBottom
+  name ContactSheetAuto
+  tile_color 0xff69f7ff
+  xpos 1216
+  ypos 322
+  addUserKnob {20 Settings}
+  addUserKnob {7 resMult l "Resolution Multiplier" R 0.1 2}
+  resMult 1
+ }
+ Reformat {
+  name Reformat1
+  xpos 1216
+  ypos 355
+ }
+ Dot {
+  name Dot2
+  xpos 1250
+  ypos 400
+ }
+push $Ncb6e5c00
+ Switch {
+  inputs 2
+  which {{corners}}
+  name Switch1
+  xpos 617
+  ypos 397
+ }
+ Output {
+  name Output1
+  xpos 617
+  ypos 500
+ }
+end_group

@@ -1,0 +1,221 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+ name FrameBlender
+ selected true
+ xpos 1122
+ ypos 22
+ addUserKnob {20 User}
+ addUserKnob {7 speed l Speed t "Amount of frame reduction. Speed = 5; every 5th frame is used and the frames in between is recreated." R 1 20}
+ speed 10
+ addUserKnob {7 size l Downrez t "If used for low frequency deflickering and such, lower resolution is faster and will give as good result."}
+ size 1
+ addUserKnob {41 inputfirst l "Input Range" T DualRetime.inputfirst}
+ addUserKnob {41 inputlast l "" -STARTLINE T DualRetime.inputlast}
+ addUserKnob {41 python_button l Reset -STARTLINE T DualRetime.python_button}
+ addUserKnob {41 type l Type T DualRetime.type}
+ addUserKnob {41 method l Method T DualRetime.method}
+ addUserKnob {6 log l "process in log" +STARTLINE}
+ addUserKnob {26 info l "" +STARTLINE T "\nFrameBlender 1.0 © Calle Granström"}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 507
+  ypos -169
+ }
+ Dot {
+  name Dot4
+  xpos 541
+  ypos -120
+ }
+ AdjBBox {
+  numpixels 2
+  name AdjBBox1
+  xpos 507
+  ypos -83
+ }
+ Log2Lin {
+  channels rgba
+  operation lin2log
+  name Log2Lin1
+  xpos 507
+  ypos -48
+  disable {{!parent.log}}
+ }
+ Reformat {
+  type scale
+  scale {{parent.size}}
+  pbb true
+  name Reformat1
+  xpos 507
+  ypos -13
+  disable {{"size == 1"}}
+ }
+ Dot {
+  name Dot2
+  xpos 541
+  ypos 33
+ }
+set N72cae000 [stack 0]
+ Dot {
+  name Dot3
+  xpos 681
+  ypos 33
+ }
+ Dot {
+  name Dot1
+  xpos 681
+  ypos 186
+ }
+push $N72cae000
+ TimeWarp {
+  lookup {{clamp((frame-first_frame)*parent.speed+first_frame,first_frame,last_frame) C x1001 1001 x1107 1107}}
+  time ""
+  filter none
+  name TimeWarp1
+  xpos 507
+  ypos 81
+ }
+ Group {
+  name DualRetime
+  knobChanged "\nn = nuke.thisNode()\nk = nuke.thisKnob()\n\n# type\nt = n\[\"type\"]\ntry:\n    option = t.enumName(int(t.value()))\nexcept:\n    option = str(t.value())\n\nall_knobs = \[\"smoothness\", \"motionEstimation\"]\n\nfor name in all_knobs:\n    if name in n.knobs():\n        n\[name].setVisible(False)\n\nif option == \"Kronos\":\n    for name in \[\"motionEstimation\"]:\n        if name in n.knobs():\n            n\[name].setVisible(True)\n        \n    if n\[\"motionEstimation\"].value() == \"Local\":\n        n\[\"smoothness\"].setVisible(True)\n\nelif option == \"OFlow\":\n    for name in \[\"smoothness\"]:\n        if name in n.knobs():\n            n\[name].setVisible(True)\n\n# motionEstimation\nt = n\[\"motionEstimation\"]\ntry:\n    option = t.enumName(int(t.value()))\nexcept:\n    option = str(t.value())\n\nall_knobs = \[\"smoothness\"]\n\nfor name in all_knobs:\n    if name in n.knobs():\n        n\[name].setVisible(False)\n\nif option == \"Regularized\":\n    for name in \[\"smoothness\"]:\n        if name in n.knobs():\n            n\[name].setVisible(False)\n    n.begin()\n    kn = nuke.toNode(\"Kronos\")\n    kn\[\"motionEstimation\"].setValue(\"Regularized\")\n    n.end()\n\nelif option == \"Local\":\n    for name in \[\"smoothness\"]:\n        if name in n.knobs():\n            n\[name].setVisible(True)\n        n.begin()\n    kn = nuke.toNode(\"Kronos\")\n    kn\[\"motionEstimation\"].setValue(\"Local\")\n    n.end()\n\n# filter\nt = n\[\"filter\"]\n\ntry:\n    option = t.enumName(int(t.value()))\nexcept:\n    option = str(t.value())\n\nn.begin()\nkn = nuke.toNode(\"Kronos\")\nofn = nuke.toNode(\"OFlow\")\nkn\[\"resampleType\"].setValue(option)\nofn\[\"resampleType\"].setValue(option)\nn.end()\n\n# method\nt = n\[\"method\"]\n\ntry:\n    option = t.enumName(int(t.value()))\nexcept:\n    option = str(t.value())\n\nMOTION_KNOBS = \[\"vectorDetail\", \"strength\", \"filter\", \"motionEstimation\", \"smoothness\"]\n\nif option != \"Motion\":\n    for name in MOTION_KNOBS:\n        n\[name].setEnabled(False)\nelse:\n    for name in MOTION_KNOBS:\n        n\[name].setEnabled(True)\n\nn.begin()\nkn = nuke.toNode(\"Kronos\")\nofn = nuke.toNode(\"OFlow\")\nkn\[\"interpolation\"].setValue(option)\nofn\[\"interpolation\"].setValue(option)\nn.end()\n"
+  tile_color 0xb0a45dff
+  xpos 507
+  ypos 128
+  addUserKnob {20 User l DualRetime}
+  addUserKnob {41 retimedChannels l Channels T Kronos.retimedChannels}
+  addUserKnob {4 type l Type M {Kronos OFlow "" "" "" ""}}
+  addUserKnob {3 inputfirst l "Input Range"}
+  inputfirst {{first_frame}}
+  addUserKnob {3 inputlast l "" -STARTLINE}
+  inputlast {{(last_frame-first_frame)/parent.speed+first_frame x1014 1107}}
+  addUserKnob {22 python_button l Reset -STARTLINE T "n = nuke.thisNode()\n\nfirst = n.input(0).firstFrame()\nlast = n.input(0).lastFrame()\n\nn\['inputfirst'].setValue(first)\nn\['inputlast'].setValue(last)\n\nn.begin()\nk = nuke.toNode('Kronos')\no = nuke.toNode('OFlow')\nk\['input.first'].setValue(first)\nk\['input.last'].setValue(last)\no\['input.first'].setValue(first)\no\['input.last'].setValue(last)\nn.end()"}
+  addUserKnob {3 outputfirst l "Output Range"}
+  outputfirst {{first_frame}}
+  addUserKnob {3 outputlast l "" -STARTLINE}
+  outputlast {{last_frame}}
+  addUserKnob {4 method l Method M {Frame Blend Motion}}
+  method Motion
+  addUserKnob {7 outputSpeed l "Output Speed" t "READ ONLY - DO NOT EDIT THIS KNOB" R 0 5}
+  outputSpeed {{"(inputlast - inputfirst) / (outputlast - outputfirst)"}}
+  addUserKnob {4 motionEstimation l Motion M {Regularized Local "" ""}}
+  addUserKnob {7 vectorDetail l "Vector Detail"}
+  vectorDetail 0.3
+  addUserKnob {7 strength l Strength R 0 1.5}
+  strength 1.5
+  addUserKnob {7 smoothness l Smoothness +HIDDEN}
+  smoothness 0.5
+  addUserKnob {4 filter l Filter M {Bilinear Lanczos4 Lanczos6 ""}}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -269
+   ypos 251
+  }
+  Dot {
+   name Dot1
+   xpos -235
+   ypos 315
+  }
+set N77ca0c00 [stack 0]
+  Dot {
+   name Dot2
+   xpos -96
+   ypos 315
+  }
+  OFlow2 {
+   input.first 1001
+   input.last 1184
+   retimedChannels {{{parent.Kronos.retimedChannels}}}
+   timingOutputSpeed {{parent.outputSpeed}}
+   vectorDetailLocal {{parent.vectorDetail}}
+   smoothnessLocal {{parent.smoothness}}
+   name OFlow
+   xpos -130
+   ypos 381
+  }
+  Dot {
+   name Dot3
+   xpos -96
+   ypos 448
+  }
+push $N77ca0c00
+  Kronos {
+   input.first 1001
+   input.last 1184
+   retimedChannels all
+   timingOutputSpeed {{parent.outputSpeed}}
+   motionEstimation Regularized
+   vectorDetailLocal {{parent.vectorDetail}}
+   smoothnessLocal {{parent.smoothness}}
+   vectorDetailReg {{parent.vectorDetail}}
+   strengthReg {{parent.strength}}
+   name Kronos
+   xpos -269
+   ypos 370
+  }
+  Switch {
+   inputs 2
+   which {{parent.type}}
+   name Switch1
+   selected true
+   xpos -269
+   ypos 490
+  }
+  TimeOffset {
+   time_offset {{"parent.outputfirst - parent.inputfirst"}}
+   time ""
+   name TimeOffset7
+   xpos -269
+   ypos 538
+  }
+  FrameRange {
+   first_frame {{parent.outputfirst}}
+   last_frame {{parent.outputlast}}
+   time ""
+   name FrameRange8
+   xpos -269
+   ypos 578
+  }
+  Output {
+   name Output1
+   xpos -269
+   ypos 629
+  }
+ end_group
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos 507
+  ypos 183
+ }
+ Reformat {
+  type scale
+  scale {{1/Reformat1.scale}}
+  pbb true
+  name Reformat2
+  xpos 507
+  ypos 228
+  disable {{"size == 1"}}
+ }
+ Log2Lin {
+  channels rgba
+  name Log2Lin2
+  xpos 507
+  ypos 274
+  disable {{!parent.log}}
+ }
+ BlackOutside {
+  name BlackOutside1
+  xpos 507
+  ypos 308
+ }
+ Output {
+  name Output1
+  xpos 507
+  ypos 364
+ }
+end_group

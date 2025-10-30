@@ -1,0 +1,444 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+ name Clarity
+ label "\[value size]"
+ selected true
+ xpos 6361
+ ypos -5228
+ addUserKnob {20 User}
+ addUserKnob {6 contrast_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {41 size T Blur18.size}
+ addUserKnob {18 contrast l gain R 0 4}
+ contrast 1
+ addUserKnob {6 contrast_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {18 pivot +INVISIBLE}
+ pivot 0.18
+ addUserKnob {6 pivot_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {26 ""}
+ addUserKnob {6 maxcheck l max +STARTLINE}
+ addUserKnob {41 which_2 l "" -STARTLINE T Dissolve4.which}
+ addUserKnob {6 mincheck l min +STARTLINE}
+ addUserKnob {41 which_1 l "" -STARTLINE T Dissolve3.which}
+ addUserKnob {6 log +STARTLINE}
+ addUserKnob {6 invert -STARTLINE}
+ addUserKnob {6 unp l unpremult +STARTLINE}
+ addUserKnob {6 clamp l "clamp blacks" -STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {41 which l mix T Dissolve1.which}
+ addUserKnob {26 _1 l "" +STARTLINE T "\nClarity 1.0 © Calle Granström"}
+}
+ Input {
+  inputs 0
+  name mask
+  xpos 525
+  ypos 512
+  number 1
+ }
+ Input {
+  inputs 0
+  name Input
+  xpos 792
+  ypos -1162
+ }
+ Dot {
+  name Dot15
+  xpos 826
+  ypos -963
+ }
+set N402e3400 [stack 0]
+ Dot {
+  name Dot3
+  xpos 1247
+  ypos -963
+ }
+ Dot {
+  name Dot19
+  xpos 1247
+  ypos 209
+ }
+set N55164c00 [stack 0]
+ Dot {
+  name Dot20
+  xpos 1247
+  ypos 272
+ }
+set N14b4000 [stack 0]
+ Dot {
+  name Dot7
+  xpos 1247
+  ypos 386
+ }
+set Nbd1c9000 [stack 0]
+push $N14b4000
+push $N55164c00
+ Clamp {
+  channels rgb
+  minimum_enable false
+  maximum 0
+  name Clamp2
+  xpos 946
+  ypos 206
+ }
+push $N402e3400
+ Clamp {
+  channels rgb
+  maximum_enable false
+  name Clamp1
+  xpos 792
+  ypos -887
+ }
+ Dot {
+  name Dot5
+  xpos 826
+  ypos -775
+ }
+set Nbd1c8c00 [stack 0]
+ Unpremult {
+  name Unpremult3
+  xpos 691
+  ypos -707
+ }
+ Group {
+  name BinaryAlpha
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 691
+  ypos -672
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Dot {
+  name Dot10
+  xpos 725
+  ypos -560
+ }
+push $Nbd1c8c00
+ Dot {
+  name Dot11
+  xpos 636
+  ypos -775
+ }
+set Na7371400 [stack 0]
+ Dot {
+  name Dot6
+  xpos 495
+  ypos -775
+ }
+ Blur {
+  channels rgba
+  size {{parent.Blur18.size}}
+  name Blur1
+  xpos 461
+  ypos -656
+ }
+ Unpremult {
+  name Unpremult2
+  xpos 461
+  ypos -603
+ }
+push $Na7371400
+ Merge2 {
+  inputs 2
+  operation under
+  name Merge1
+  xpos 602
+  ypos -603
+ }
+ Merge2 {
+  inputs 2
+  name Merge2
+  xpos 602
+  ypos -563
+ }
+ Dot {
+  name Dot12
+  xpos 636
+  ypos -502
+ }
+push $Nbd1c8c00
+ Switch {
+  inputs 2
+  which {{parent.unp}}
+  name unpSwitch
+  xpos 792
+  ypos -505
+ }
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace compositing_log
+  name OCIOColorSpace1
+  xpos 792
+  ypos -458
+  disable {{!parent.log}}
+ }
+ Invert {
+  channels rgb
+  name Invert1
+  xpos 792
+  ypos -422
+  disable {{!parent.invert x92 1}}
+ }
+ Dot {
+  name Dot1
+  xpos 826
+  ypos -367
+ }
+set N6dad1800 [stack 0]
+ Dot {
+  name Dot2
+  xpos 642
+  ypos -367
+ }
+ Gamma {
+  channels rgba
+  value {{1/parent.contrast.r} {1/parent.contrast.g} {1/parent.contrast.b} {curve}}
+  name Gamma2
+  xpos 608
+  ypos -304
+ }
+ Multiply {
+  channels {{{parent.Gamma1.channels}}}
+  value {{"pow(parent.pivot.r, 1-parent.contrast.r)"} {"pow(parent.pivot.r, 1-parent.contrast.g)"} {"pow(parent.pivot.r, 1-parent.contrast.b)"} {curve}}
+  name Multiply1
+  xpos 608
+  ypos -258
+ }
+ Dot {
+  name Dot22
+  xpos 642
+  ypos -178
+ }
+set N35986800 [stack 0]
+push $N35986800
+ Blur {
+  channels rgb
+  size 200
+  name Blur18
+  xpos 704
+  ypos -181
+ }
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge24
+  xpos 704
+  ypos -129
+ }
+ Dot {
+  name Dot4
+  xpos 738
+  ypos -81
+ }
+push $N6dad1800
+ Dot {
+  name Dot14
+  xpos 826
+  ypos -169
+ }
+set N74ada800 [stack 0]
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge25
+  xpos 792
+  ypos -84
+ }
+set Nf25f6800 [stack 0]
+push $N74ada800
+ Merge2 {
+  inputs 2
+  operation min
+  name Merge4
+  xpos 902
+  ypos -54
+ }
+set N8425a800 [stack 0]
+push $Nf25f6800
+push $N74ada800
+ Merge2 {
+  inputs 2
+  operation max
+  name Merge5
+  xpos 1012
+  ypos -84
+ }
+set N402e2800 [stack 0]
+ Switch {
+  inputs 2
+  which {{parent.invert}}
+  name Switch2
+  label ifinvert
+  xpos 1012
+  ypos -6
+ }
+ Dot {
+  name Dot16
+  xpos 1046
+  ypos 67
+ }
+push $N402e2800
+push $N8425a800
+ Switch {
+  inputs 2
+  which {{parent.invert}}
+  name Switch1
+  label ifinvert
+  xpos 902
+  ypos -7
+ }
+push $Nf25f6800
+ Dissolve {
+  inputs 2
+  which 1
+  name Dissolve3
+  label MIN
+  xpos 792
+  ypos -13
+  disable {{!parent.mincheck}}
+ }
+ Dissolve {
+  inputs 2
+  which 1
+  name Dissolve4
+  label MAX
+  xpos 792
+  ypos 52
+  disable {{!parent.maxcheck}}
+ }
+ Invert {
+  channels rgb
+  name Invert2
+  xpos 792
+  ypos 112
+  disable {{!parent.invert x92 1}}
+ }
+ OCIOColorSpace {
+  in_colorspace compositing_log
+  out_colorspace scene_linear
+  name OCIOColorSpace2
+  xpos 792
+  ypos 151
+  disable {{!parent.log}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge3
+  label "minus values"
+  xpos 792
+  ypos 200
+  disable {{parent.clamp}}
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy4
+  xpos 792
+  ypos 263
+  disable {{!parent.unp}}
+ }
+ Premult {
+  name Premult1
+  xpos 792
+  ypos 320
+  disable {{!parent.unp}}
+ }
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos 792
+  ypos 383
+ }
+ Dot {
+  name Dot13
+  xpos 826
+  ypos 467
+ }
+set N106de400 [stack 0]
+push $Nbd1c9000
+ Dot {
+  name Dot9
+  xpos 1247
+  ypos 515
+ }
+set Ndbcb9000 [stack 0]
+ Keymix {
+  inputs 3
+  bbox B
+  name Keymix1
+  xpos 690
+  ypos 506
+ }
+push $N106de400
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input1] ? 1 : 0"}}
+  name Switch4
+  label IFMASK
+  xpos 792
+  ypos 580
+ }
+push $Ndbcb9000
+ Dot {
+  name Dot8
+  xpos 1247
+  ypos 735
+ }
+ Dissolve {
+  inputs 2
+  which 1
+  name Dissolve1
+  xpos 792
+  ypos 726
+ }
+ Output {
+  name Output1
+  xpos 792
+  ypos 884
+ }
+end_group

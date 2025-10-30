@@ -1,0 +1,3115 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+add_layer {PointPosition_World PointPosition_World.red PointPosition_World.green PointPosition_World.blue}
+add_layer {normals normals.X normals.Y normals.Z}
+Group {
+ name TriplanarAdvanced
+ selected true
+ xpos 1276
+ ypos 267
+ addUserKnob {20 User}
+ addUserKnob {41 in l position T position.in}
+ addUserKnob {41 in_1 l normals T normals.in}
+ addUserKnob {26 map l <b>mapping</b>}
+ addUserKnob {6 posx l +X +STARTLINE}
+ posx true
+ addUserKnob {6 posy l +Y -STARTLINE}
+ posy true
+ addUserKnob {6 posz l +Z -STARTLINE}
+ posz true
+ addUserKnob {6 negx l -X +STARTLINE}
+ negx true
+ addUserKnob {6 negy l -Y -STARTLINE}
+ negy true
+ addUserKnob {6 negz l -Z -STARTLINE}
+ negz true
+ addUserKnob {41 rotate l "rotate mapping" T NormalRotation.rotate}
+ addUserKnob {13 offsetmaster l "offset mapping"}
+ addUserKnob {7 scenescale l "scene scale" R 0.001 100}
+ scenescale 1
+ addUserKnob {6 stagger l "stagger uv" +STARTLINE}
+ addUserKnob {26 texture l <b>texture</b>}
+ addUserKnob {4 textures M {1 3 "" "" "" "" "" ""}}
+ textures 3
+ addUserKnob {6 noisemergex l "noise breakup X" -STARTLINE}
+ addUserKnob {6 noisemergey l "noise breakup Y" -STARTLINE}
+ addUserKnob {6 noisemergez l "noise breakup Z" -STARTLINE}
+ addUserKnob {7 texturetiling l tiling R 0 100}
+ texturetiling 1
+ addUserKnob {6 randtile l "randomize tiling" -STARTLINE}
+ randtile true
+ addUserKnob {41 size_2 l "scale X" T Expression6.size}
+ addUserKnob {41 size_1 l "scale Y" T Expression7.size}
+ addUserKnob {41 size l "scale Z" T Expression8.size}
+ addUserKnob {7 rotX l "rotate X" R 0 360}
+ addUserKnob {7 rotY l "rotate Y" R 0 360}
+ addUserKnob {7 rotZ l "rotate Z" R 0 360}
+ addUserKnob {26 blendtext l <b>blend</b>}
+ addUserKnob {7 hardness}
+ hardness 0.5
+ addUserKnob {7 falloff l gamma R 0 5}
+ falloff 1
+ addUserKnob {7 blendnoise l "noise blend"}
+ blendnoise 1
+ addUserKnob {26 noisetext l <b>noise</b>}
+ addUserKnob {41 noisetype T P_Noise_Advanced.noisetype}
+ addUserKnob {6 invert -STARTLINE}
+ addUserKnob {41 Trunc l "blocky (trunc)" -STARTLINE T P_Noise_Advanced.Trunc}
+ addUserKnob {7 noisehardness l hardness}
+ noisehardness 0.9
+ addUserKnob {7 noisegamma l gamma R 0 5}
+ noisegamma 1
+ addUserKnob {7 noisesize l size R 0 1000}
+ noisesize 10
+ addUserKnob {41 rotate_1 l rotate T P_Noise_Advanced.rotate}
+ addUserKnob {41 translate T P_Noise_Advanced.translate}
+ addUserKnob {41 scaling l scale T P_Noise_Advanced.scaling}
+ addUserKnob {26 ""}
+ addUserKnob {26 Credits l "" +STARTLINE T "1.4 (c) Calle Granström 2025\nBased on Triplanar 1.0 by Perceval Schopp \nUsing P_Noise_Advanced v1.3.1 by Riley Gray and Owen Bulka"}
+}
+ Input {
+  inputs 0
+  name src
+  xpos -385
+  ypos -1199
+ }
+ Dot {
+  name Dot1
+  xpos -351
+  ypos -1116
+ }
+set Nd62af800 [stack 0]
+ Dot {
+  name Dot11
+  xpos -1286
+  ypos -1116
+ }
+ Dot {
+  name Dot16
+  xpos -1286
+  ypos 484
+ }
+set Nd62af000 [stack 0]
+ Dot {
+  name Dot18
+  xpos -1471
+  ypos 484
+ }
+ Dot {
+  name Dot17
+  xpos -1471
+  ypos 1683
+ }
+push $Nd62af800
+ Shuffle {
+  in PointPosition_World
+  name position
+  xpos -385
+  ypos -1046
+ }
+ Multiply {
+  channels rgb
+  value {{parent.scenescale}}
+  name Multiply1
+  xpos -385
+  ypos -1022
+ }
+ Add {
+  value {{-parent.offsetmaster} {-parent.offsetmaster} {-parent.offsetmaster} {-parent.offsetmaster}}
+  name Add1
+  xpos -385
+  ypos -468
+ }
+ Dot {
+  name Dot23
+  xpos -351
+  ypos -369
+ }
+set N29b9ec00 [stack 0]
+ Dot {
+  name Dot15
+  xpos -598
+  ypos -369
+ }
+ Group {
+  name P_Noise_Advanced
+  knobChanged "\nn = nuke.thisNode()\ntype = n\['noisetype'].value()\nblock = n\['Trunc'].getValue()\nVis = \[]\nHide = \[]\nif type in ('fBm', 'turbulent'):\n    Vis.extend(\['octaves', 'lacunarity', 'gain', 'gamma'])\n    Hide.extend(\['rays', 'range', 'invert', 'ringsSeed', 'raysSeed', 'gammaNormalize'])   \nelif type == 'p_rings':\n    Vis.extend(\['ringsSeed', 'gammaNormalize'])\n    Hide.extend(\['rays', 'range', 'invert', 'octaves', 'lacunarity', 'gain', 'gamma', 'raysSeed'])\nelif type == 'p_rays':\n    Vis.extend(\['rays', 'raysSeed', 'gammaNormalize'])\n    Hide.extend(\['range', 'invert', 'octaves', 'lacunarity', 'gain', 'gamma', 'ringsSeed'])\nelif type in ('Euclidian', 'Voronoi', 'Manhattan', 'Chebyshev'):\n    Vis.extend(\['range', 'gammaNormalize'])\n    Hide.extend(\['rays', 'invert', 'octaves', 'lacunarity', 'gain', 'gamma', 'ringsSeed', 'raysSeed'])\nelif type == 'Worley':\n    Vis.extend(\['invert', 'gammaNormalize'])\n    Hide.extend(\['rays', 'range', 'octaves', 'lacunarity', 'gain', 'gamma', 'ringsSeed', 'raysSeed'])\nfor r in Vis: n\[r].setVisible(True)\nfor x in Hide: n\[x].setVisible(False)\n\nif block == True:\n    n\['truncSize'].setVisible(True)\nelse:\n    n\['truncSize'].setVisible(False)\n"
+  label "(\[value in])"
+  xpos -632
+  ypos -333
+  addUserKnob {20 User}
+  addUserKnob {41 in l "position data" T Shuffle_Input_Channels.in}
+  addUserKnob {6 unpremultiply +STARTLINE}
+  addUserKnob {6 useAlpha l "ignore outside alpha" -STARTLINE}
+  addUserKnob {6 useGPU l "use GPU if available" -STARTLINE}
+  useGPU true
+  addUserKnob {26 ""}
+  addUserKnob {4 noisetype M {fBm turbulent p_rings p_rays Euclidian Voronoi Manhattan Chebyshev Worley "" "" "" ""}}
+  addUserKnob {6 Trunc l "blocky (trunc)" -STARTLINE}
+  addUserKnob {41 Position2d T SampleXY.Position2d}
+  addUserKnob {41 rgbSample l center T Sample.rgbSample}
+  addUserKnob {6 useCenter -STARTLINE}
+  useCenter true
+  addUserKnob {26 ""}
+  addUserKnob {18 size R 1 100}
+  size {{parent.noisesize}}
+  addUserKnob {6 size_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 size_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 size_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 size_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {18 seed}
+  seed {0 0 0}
+  addUserKnob {6 seed_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 seed_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 seed_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 seed_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 seed_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 size_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {18 truncSize l "blocky size" +HIDDEN R 0 2}
+  truncSize 0.5
+  addUserKnob {6 truncSize_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 truncSize_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 truncSize_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {26 ""}
+  addUserKnob {7 rays +HIDDEN}
+  rays 50
+  addUserKnob {7 raysSeed l "rays seed" +HIDDEN R 0 10}
+  addUserKnob {7 ringsSeed l "rings seed" +HIDDEN R 0 10}
+  addUserKnob {7 range +HIDDEN R 0 6}
+  range 1
+  addUserKnob {6 invert +HIDDEN +STARTLINE}
+  addUserKnob {3 octaves}
+  octaves 5
+  addUserKnob {7 lacunarity R 1 10}
+  lacunarity 2
+  addUserKnob {7 gain R 0.1 1}
+  gain 1
+  addUserKnob {7 gamma}
+  gamma {{parent.noisegamma}}
+  addUserKnob {7 gammaNormalize l gamma +HIDDEN R 0 2}
+  gammaNormalize {{parent.noisegamma+2}}
+  addUserKnob {26 ""}
+  addUserKnob {26 INFO l "" +STARTLINE T "v1.3.1 (c) Riley Gray and Owen Bulka 2020\nBased on \"Cell Noise v1.1\" by Matthew Shaw     "}
+  addUserKnob {26 c44_version_author l "" +STARTLINE T "<span style=\"color:#666\"><br/><b>C44Kernel v1.0</b> - <a href=\"http://www.adrianpueyo.com\" style=\"color:#666;text-decoration: none;\">adrianpueyo.com</a>, 2018</span>"}
+  addUserKnob {20 Transform}
+  addUserKnob {41 rot_order l "rotation order" T Axis1.rot_order}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+  addUserKnob {41 skew T Axis1.skew}
+  addUserKnob {41 pivot +INVISIBLE T Axis1.pivot}
+ }
+  Input {
+   inputs 0
+   name img
+   xpos 0
+   ypos -116
+  }
+  AddChannels {
+   channels alpha
+   color 1
+   name AddChannels1
+   xpos 0
+   ypos -64
+  }
+  Shuffle {
+   in rgb
+   alpha blue
+   out rgb
+   name Shuffle_Input_Channels
+   xpos 0
+   ypos -18
+  }
+  Unpremult {
+   name Unpremult1
+   xpos 0
+   ypos 16
+   disable {{!parent.unpremultiply i}}
+  }
+  Dot {
+   name Dot2
+   xpos 34
+   ypos 66
+  }
+set N5ebbb400 [stack 0]
+  Dot {
+   name Dot4
+   xpos -130
+   ypos 66
+  }
+set N5ebba400 [stack 0]
+  Dot {
+   name Dot3
+   xpos -292
+   ypos 66
+  }
+  Expression {
+   channel0 alpha
+   expr0 "a == 0 ? 1 :0"
+   channel1 none
+   channel2 none
+   channel3 {none none none -rgba.alpha}
+   name Expression1
+   xpos -326
+   ypos 751
+  }
+  Axis2 {
+   inputs 0
+   name Axis1
+   xpos 265
+   ypos 200
+  }
+push $N5ebbb400
+  Add {
+   channels rgb
+   value {{parent.Sample.rgbSample/-1} {parent.Sample.rgbSample/-1} {parent.Sample.rgbSample/-1} 0}
+   name center
+   xpos 0
+   ypos 141
+   disable {{1-parent.useCenter}}
+  }
+  Group {
+   inputs 2
+   name C44Kernel
+   help "C44Kernel v1.0 by Adrian Pueyo\n\nMultiply the rgb or rgba colors by an arbitrary 4x4 Matrix. Useful for transforming a Position pass.\n\nYou can plug in an Axis or Camera node into the axis input, to also apply its transformations.\n\nadrianpueyo.com, 2017"
+   tile_color 0xe88543ff
+   xpos 0
+   ypos 221
+   lock_connections true
+   addUserKnob {20 C44Kernel}
+   addUserKnob {41 channels T MergeIn.Achannels}
+   addUserKnob {41 matrix T Axis1.matrix}
+   addUserKnob {6 invert -STARTLINE}
+   addUserKnob {6 alpha_masking l "alpha masking" t "Apply only where rgba.alpha>0" +STARTLINE}
+   addUserKnob {20 advanced l Advanced n 1}
+   advanced 0
+   addUserKnob {6 transpose +STARTLINE}
+   addUserKnob {6 w_divide +STARTLINE}
+   addUserKnob {6 rgba_mode l "apply on Vector4" t "Usually you'll want to apply the matrix on the RGB only, which uses a white alpha. Enable this to use the full Vector4 (RGBA)." +STARTLINE}
+   addUserKnob {20 endGroup n -1}
+   addUserKnob {26 ""}
+   addUserKnob {41 mix T MergeOut.mix}
+   addUserKnob {26 version_author l "" t "C44Kernel v1.0\n23 June, 2018" +STARTLINE T "<span style=\"color:#666\"><br/><b>C44Kernel v1.0</b> - <a href=\"http://www.adrianpueyo.com\" style=\"color:#666;text-decoration: none;\">adrianpueyo.com</a>, 2018</span>"}
+   addUserKnob {20 GPU_Settings l "GPU Settings"}
+   addUserKnob {41 maxGPUMemory l "Percentage of GPU memory to use" T C44MatrixKernel.maxGPUMemory}
+   addUserKnob {41 maxTileLines l "Percentage of image height per tile" T C44MatrixKernel.maxTileLines}
+  }
+   Input {
+    inputs 0
+    name Inputaxis
+    xpos 133
+    ypos -181
+    number 1
+   }
+   Axis2 {
+    useMatrix true
+    name Axis1
+    xpos 143
+    ypos -133
+   }
+   Input {
+    inputs 0
+    name Inputimg
+    xpos -110
+    ypos -192
+   }
+set N9dddf400 [stack 0]
+   Dot {
+    name Dot1
+    xpos -76
+    ypos -161
+   }
+set N9dddf000 [stack 0]
+   Expression {
+    expr3 a>0
+    name ExpressionA
+    xpos -220
+    ypos -164
+   }
+   Switch {
+    which {{!parent.alpha_masking}}
+    name SwitchMasking
+    xpos -220
+    ypos -112
+   }
+push $N9dddf000
+push $N9dddf400
+   Remove {
+    name RemoveAll
+    xpos 34
+    ypos -196
+   }
+   Merge2 {
+    inputs 2
+    operation copy
+    Bchannels none
+    name MergeIn
+    xpos 34
+    ypos -164
+   }
+   Shuffle {
+    alpha white
+    name ShuffleWhiteA
+    xpos 34
+    ypos -140
+    disable {{parent.rgba_mode}}
+   }
+   BlinkScript {
+    recompileCount 147
+    ProgramGroup 1
+    KernelDescription "2 \"C44MatrixKernel\" iterate pixelWise 10f1841ce0aee43165aca4445fb9ce0126826eedd71da6339f12b8f8de8e52eb 2 \"src\" Read Point \"dst\" Write Point 4 \"m\" Float 16 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA== \"invert\" Int 1 AAAAAA== \"transpose\" Int 1 AAAAAA== \"w_divide\" Int 1 AAAAAA== 4 \"m\" 16 1 \"invert\" 1 1 \"transpose\" 1 1 \"w_divide\" 1 1 0"
+    kernelSource "kernel C44MatrixKernel : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint, eEdgeClamped> src;\n  Image<eWrite> dst;\n\n  param:\n    float4x4 m;\n    int invert;\n    int transpose;\n    int w_divide;\n\n  void process(int2 pos) \{\n    SampleType(src) p = src();\n    float4 result = 1.0f;\n    float4x4 mi = m;\n    mi = invert?mi.invert():mi;\n    mi = transpose?mi.transpose():mi;\n    for(int c = 0; c<dst.kComps; c++)\{\n      result\[c] = mi\[c]\[0]*p.x + mi\[c]\[1]*p.y + mi\[c]\[2]*p.z + mi\[c]\[3]*p.w;\n    \}\n    dst() = w_divide?result/result.w:result;\n  \}\n\};\n"
+    rebuild ""
+    C44MatrixKernel_m {
+        {{Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix}}
+        {{Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix}}
+        {{Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix}}
+        {{Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix} {Axis1.world_matrix}}
+      }
+    C44MatrixKernel_invert {{parent.invert}}
+    C44MatrixKernel_transpose {{parent.transpose}}
+    C44MatrixKernel_w_divide {{parent.w_divide}}
+    rebuild_finalise ""
+    name C44MatrixKernel
+    xpos 34
+    ypos -116
+   }
+push $N9dddf000
+   Merge2 {
+    inputs 2+1
+    operation copy
+    Bchannels {{{parent.MergeIn.Achannels}}}
+    output {{{parent.MergeIn.Achannels}}}
+    name MergeOut
+    xpos -110
+    ypos -112
+   }
+   Output {
+    name Output1
+    xpos -110
+    ypos -88
+   }
+  end_group
+  Add {
+   channels rgb
+   value {{parent.seed} {parent.seed} {parent.seed} {parent.seed}}
+   name Seed
+   xpos 0
+   ypos 279
+  }
+  Multiply {
+   channels rgb
+   value {{10/parent.size} {10/parent.size} {10/parent.size} {10/parent.size}}
+   name size
+   xpos 0
+   ypos 327
+  }
+  Expression {
+   expr0 trunc(r*truncScale.r)/truncScale.r/.95
+   expr1 trunc(g*truncScale.g)/truncScale.g/.95
+   expr2 trunc(b*truncScale.b)/truncScale.b/.95
+   name Trunc
+   selected true
+   xpos 0
+   ypos 391
+   disable {{1-parent.Trunc}}
+   addUserKnob {20 User}
+   addUserKnob {18 truncScale R 0.1 10}
+   truncScale {{1/parent.truncSize} {1/parent.truncSize} {1/parent.truncSize}}
+   addUserKnob {6 truncScale_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 truncScale_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 truncScale_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 truncScale_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  }
+  Dot {
+   name Dot1
+   xpos 34
+   ypos 469
+  }
+set N60fddc00 [stack 0]
+  BlinkScript {
+   recompileCount 8
+   ProgramGroup 1
+   KernelDescription "2 \"Worley\" iterate pixelWise c43d69ff326eabcf100ed47453e4953ff5e1dfe7164af31fe757e588d7f7c59e 2 \"position_pass\" Read Point \"dst\" Write Point 1 \"Invert\" Bool 1 AA== 1 \"invert\" 1 1 0"
+   kernelSource "// https://aftbit.com/cell-noise-2/\n\n// C++11\n#define rand_multiplier 48271\n#define rand_increment  0\n#define rand_modulus    2147483647\n\nstatic int lcgRandom(int seed)\n\{\n  return fabs((seed * rand_multiplier + rand_increment) % rand_modulus);\n\}\n\n// FNV Hash\n#define OFFSET_BASIS 2166136261\n#define FNV_PRIME 16777619\n\nstatic uint hash(uint i, uint j, uint k)\n\{\n  return ((((((OFFSET_BASIS ^ i) * FNV_PRIME) ^ j) * FNV_PRIME) ^ k) * FNV_PRIME);\n\}\n\n// Poisson Distribution\n#define one    393325350\n#define two   1022645910\n#define three 1861739990\n#define four  2700834071\n#define five  3372109335\n#define six   3819626178\n#define seven 4075350088\n#define eight 4203212043\n\nstatic uint probLookup(uint value)\n\{\n  if (value < one) return 1;\n  if (value < two) return 2;\n  if (value < three) return 3;\n  if (value < four) return 4;\n  if (value < five) return 5;\n  if (value < six) return 6;\n  if (value < seven) return 7;\n  if (value < eight) return 8;\n  return 9;\n\}\n\n// Distance Functions\nstatic float EuclidianDistanceFunc(float3 p1, float3 p2)\n\{\n  return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y) + (p1.z - p2.z) * (p1.z - p2.z);\n\}\n\nstatic float ManhattanDistanceFunc(float3 p1, float3 p2)\n\{\n  return fabs(p1.x - p2.x) + fabs(p1.y - p2.y) + fabs(p1.z - p2.z);\n\}\n\nstatic float ChebyshevDistanceFunc(float3 p1, float3 p2)\n\{\n  float3 diff = p1 - p2;\n  return max(max(fabs(diff.x), fabs(diff.y)), fabs(diff.z));\n\}\n\n\n// Blink Kernel\nkernel Worley : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint> position_pass;\n  Image<eWrite> dst;\n\n  param:\n    bool invert;\n\n  void define()\n  \{\n    defineParam(invert, \"Invert\", false);\n  \}\n\n  void process()\n  \{\n\n    //Declare some values for later use\n    int lastRandom, numberFeaturePoints;\n    float distance = 6666.0f;\n    float3 randomDiff, featurePoint;\n    int cubeX, cubeY, cubeZ;\n\n    float4 position = position_pass();\n    float3 input = float3(position.x, position.y, position.z);\n\n    // Determine which cube the evaluation point is in\n    int evalCubeX = floor(input.x);\n    int evalCubeY = floor(input.y);\n    int evalCubeZ = floor(input.z);\n\n    for (int i = -1; i < 2; ++i)\n    \{\n      for (int j = -1; j < 2; ++j)\n      \{\n        for (int k = -1; k < 2; ++k)\n        \{\n            cubeX = evalCubeX + i;\n            cubeY = evalCubeY + j;\n            cubeZ = evalCubeZ + k;\n\n            // Generate a reproducible random number generator for the cube\n            lastRandom = lcgRandom(hash(cubeX, cubeY, cubeZ));\n            // Determine how many feature points are in the cube\n            numberFeaturePoints = probLookup(lastRandom);\n            // Check each feature point\n            for (uint l = 0; l < numberFeaturePoints; ++l)\n            \{\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.x = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.y = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.z = float(lastRandom) / rand_modulus;\n\n              featurePoint = float3(randomDiff.x + float(cubeX), randomDiff.y + float(cubeY), randomDiff.z + float(cubeZ));\n\n              distance = min(distance, dot(input - featurePoint, input - featurePoint));\n            \}\n        \}\n      \}\n    \}\n\n    distance = sqrt(distance);\n    if (invert)\n      distance = 1.0f - distance;\n    dst() = distance;\n\n  \}\n\n\};"
+   useGPUIfAvailable {{parent.useGPU}}
+   rebuild ""
+   rebuild_finalise ""
+   name WorleyNoise
+   xpos 990
+   ypos 579
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma2
+   xpos 990
+   ypos 615
+  }
+push $N60fddc00
+  BlinkScript {
+   recompileCount 7
+   ProgramGroup 1
+   KernelDescription "2 \"ChebyshevNoise\" iterate pixelWise 56eaf5aee8e5598e630af7bfb384e4e4dec239c9cf30d5e2d455fcde4ac66905 2 \"position_pass\" Read Point \"dst\" Write Point 1 \"Range\" Float 1 AABAQA== 1 \"range\" 1 1 2 \"fRange\" Float 1 1 AAAAAA== \"iRange\" Int 1 1 AAAAAA=="
+   kernelSource "// https://aftbit.com/cell-noise-2/\n\n# define MAX_DISTANCE_ARRAY 12\n\n// C++11\n#define rand_multiplier 48271\n#define rand_increment  0\n#define rand_modulus    2147483647\n\nstatic int lcgRandom(int seed)\n\{\n  return fabs((seed * rand_multiplier + rand_increment) % rand_modulus);\n\}\n\n// FNV Hash\n#define OFFSET_BASIS 2166136261\n#define FNV_PRIME 16777619\n\nstatic uint hash(uint i, uint j, uint k)\n\{\n  return ((((((OFFSET_BASIS ^ i) * FNV_PRIME) ^ j) * FNV_PRIME) ^ k) * FNV_PRIME);\n\}\n\n// Poisson Distribution\n#define one    393325350\n#define two   1022645910\n#define three 1861739990\n#define four  2700834071\n#define five  3372109335\n#define six   3819626178\n#define seven 4075350088\n#define eight 4203212043\n\nstatic uint probLookup(uint value)\n\{\n  if (value < one) return 1;\n  if (value < two) return 2;\n  if (value < three) return 3;\n  if (value < four) return 4;\n  if (value < five) return 5;\n  if (value < six) return 6;\n  if (value < seven) return 7;\n  if (value < eight) return 8;\n  return 9;\n\}\n\n// Distance Function\nstatic float ChebyshevDistanceFunc(float3 p1, float3 p2)\n\{\n  float3 diff = p1 - p2;\n  return max(max(fabs(diff.x), fabs(diff.y)), fabs(diff.z));\n\}\n\n// Insertion Array\nstatic void insert(float arr\[], float value)\n\{\n  float temp;\n  for (int i = MAX_DISTANCE_ARRAY - 1; i >= 0; i--)\n  \{\n    if (value > arr\[i])\n      break;\n    temp = arr\[i];\n    arr\[i] = value;\n    if (i + 1 < MAX_DISTANCE_ARRAY)\n    \{\n      arr\[i + 1] = temp;\n    \}\n  \}\n\}\n\n\n// Blink Kernel\nkernel ChebyshevNoise : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint> position_pass;\n  Image<eWrite> dst;\n\n  param:\n    float range;\n\n  local:\n    float fRange;\n    int iRange;\n\n  void define()\n  \{\n    defineParam(range, \"Range\", 3.0f);\n  \}\n\n  void init()\n  \{\n    fRange = clamp(range, 0.0f, float(MAX_DISTANCE_ARRAY - 2));\n    iRange = int(fRange);\n  \}\n\n  void process()\n  \{\n\n    //Declare some values for later use\n    int lastRandom, numberFeaturePoints;\n    float3 randomDiff, featurePoint;\n    int cubeX, cubeY, cubeZ;\n\n    float distanceArray\[MAX_DISTANCE_ARRAY];\n\n    // Initialize values in distance array to large values\n    for (int i = 0; i < MAX_DISTANCE_ARRAY; i++)\n        distanceArray\[i] = 6666;\n\n    float4 position = position_pass();\n    float3 input = float3(position.x, position.y, position.z);\n\n    // Determine which cube the evaluation point is in\n    int evalCubeX = floor(input.x);\n    int evalCubeY = floor(input.y);\n    int evalCubeZ = floor(input.z);\n\n    for (int i = -1; i < 2; ++i)\n    \{\n      for (int j = -1; j < 2; ++j)\n      \{\n        for (int k = -1; k < 2; ++k)\n        \{\n            cubeX = evalCubeX + i;\n            cubeY = evalCubeY + j;\n            cubeZ = evalCubeZ + k;\n\n            // Generate a reproducible random number generator for the cube\n            lastRandom = lcgRandom(hash(cubeX, cubeY, cubeZ));\n            // Determine how many feature points are in the cube\n            numberFeaturePoints = probLookup(lastRandom);\n            // Check each feature point\n            for (uint l = 0; l < numberFeaturePoints; ++l)\n            \{\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.x = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.y = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.z = float(lastRandom) / rand_modulus;\n\n              featurePoint = float3(randomDiff.x + float(cubeX), randomDiff.y + float(cubeY), randomDiff.z + float(cubeZ));\n\n              insert(distanceArray, ChebyshevDistanceFunc(input, featurePoint));\n            \}\n        \}\n      \}\n    \}\n\n    float color = (distanceArray\[ iRange + 2 ] - distanceArray\[ iRange + 1 ]) * fmod(fRange, 1.0f) + distanceArray\[ iRange + 1] - distanceArray\[0];\n    dst() = color;\n\n  \}\n\n\};"
+   useGPUIfAvailable {{parent.useGPU}}
+   rebuild ""
+   format {{{WorleyNoise.format}}}
+   rebuild_finalise ""
+   name ChebyShevNoise
+   xpos 880
+   ypos 578
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma3
+   xpos 880
+   ypos 614
+  }
+push $N60fddc00
+  BlinkScript {
+   recompileCount 18
+   ProgramGroup 1
+   KernelDescription "2 \"ManhattanNoise\" iterate pixelWise 807d57f0de59fa1123639ced843de4cdbeab0175e4a6d76759b40e78ce285b20 2 \"position_pass\" Read Point \"dst\" Write Point 1 \"Range\" Float 1 AABAQA== 1 \"range\" 1 1 2 \"fRange\" Float 1 1 AAAAAA== \"iRange\" Int 1 1 AAAAAA=="
+   kernelSource "// https://aftbit.com/cell-noise-2/\n\n# define MAX_DISTANCE_ARRAY 12\n\n// C++11\n#define rand_multiplier 48271\n#define rand_increment  0\n#define rand_modulus    2147483647\n\nstatic int lcgRandom(int seed)\n\{\n  return fabs((seed * rand_multiplier + rand_increment) % rand_modulus);\n\}\n\n// FNV Hash\n#define OFFSET_BASIS 2166136261\n#define FNV_PRIME 16777619\n\nstatic uint hash(uint i, uint j, uint k)\n\{\n  return ((((((OFFSET_BASIS ^ i) * FNV_PRIME) ^ j) * FNV_PRIME) ^ k) * FNV_PRIME);\n\}\n\n// Poisson Distribution\n#define one    393325350\n#define two   1022645910\n#define three 1861739990\n#define four  2700834071\n#define five  3372109335\n#define six   3819626178\n#define seven 4075350088\n#define eight 4203212043\n\nstatic uint probLookup(uint value)\n\{\n  if (value < one) return 1;\n  if (value < two) return 2;\n  if (value < three) return 3;\n  if (value < four) return 4;\n  if (value < five) return 5;\n  if (value < six) return 6;\n  if (value < seven) return 7;\n  if (value < eight) return 8;\n  return 9;\n\}\n\n// Distance Function\nstatic float ManhattanDistanceFunc(float3 p1, float3 p2)\n\{\n  return fabs(p1.x - p2.x) + fabs(p1.y - p2.y) + fabs(p1.z - p2.z);\n\}\n\n// Insertion Array\nstatic void insert(float arr\[], float value)\n\{\n  float temp;\n  for (int i = MAX_DISTANCE_ARRAY - 1; i >= 0; i--)\n  \{\n    if (value > arr\[i])\n      break;\n    temp = arr\[i];\n    arr\[i] = value;\n    if (i + 1 < MAX_DISTANCE_ARRAY)\n    \{\n      arr\[i + 1] = temp;\n    \}\n  \}\n\}\n\n// Blink Kernel\nkernel ManhattanNoise : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint> position_pass;\n  Image<eWrite> dst;\n\n  param:\n    float range;\n\n  local:\n    float fRange;\n    int iRange;\n\n  void define()\n  \{\n    defineParam(range, \"Range\", 3.0f);\n  \}\n\n  void init()\n  \{\n    fRange = clamp(range, 0.0f, float(MAX_DISTANCE_ARRAY - 2));\n    iRange = int(fRange);\n  \}\n\n  void process()\n  \{\n\n    //Declare some values for later use\n    int lastRandom, numberFeaturePoints;\n    float3 randomDiff, featurePoint;\n    int cubeX, cubeY, cubeZ;\n\n    float distanceArray\[MAX_DISTANCE_ARRAY];\n\n    // Initialize values in distance array to large values\n    for (int i = 0; i < MAX_DISTANCE_ARRAY; i++)\n        distanceArray\[i] = 6666;\n\n    float4 position = position_pass();\n    float3 input = float3(position.x, position.y, position.z);\n\n    // Determine which cube the evaluation point is in\n    int evalCubeX = floor(input.x);\n    int evalCubeY = floor(input.y);\n    int evalCubeZ = floor(input.z);\n\n    for (int i = -1; i < 2; ++i)\n    \{\n      for (int j = -1; j < 2; ++j)\n      \{\n        for (int k = -1; k < 2; ++k)\n        \{\n            cubeX = evalCubeX + i;\n            cubeY = evalCubeY + j;\n            cubeZ = evalCubeZ + k;\n\n            // Generate a reproducible random number generator for the cube\n            lastRandom = lcgRandom(hash(cubeX, cubeY, cubeZ));\n            // Determine how many feature points are in the cube\n            numberFeaturePoints = probLookup(lastRandom);\n            // Check each feature point\n            for (uint l = 0; l < numberFeaturePoints; ++l)\n            \{\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.x = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.y = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.z = float(lastRandom) / rand_modulus;\n\n              featurePoint = float3(randomDiff.x + float(cubeX), randomDiff.y + float(cubeY), randomDiff.z + float(cubeZ));\n\n              insert(distanceArray, ManhattanDistanceFunc(input, featurePoint));\n            \}\n        \}\n      \}\n    \}\n\n    float color = (distanceArray\[ iRange + 2 ] - distanceArray\[ iRange + 1 ]) * fmod(fRange, 1.0f) + distanceArray\[ iRange + 1] - distanceArray\[0];\n    dst() = color;\n\n  \}\n\n\};"
+   useGPUIfAvailable {{parent.useGPU}}
+   rebuild ""
+   format {{{WorleyNoise.format}}}
+   rebuild_finalise ""
+   name ManhattanNoise
+   xpos 770
+   ypos 577
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma4
+   xpos 770
+   ypos 615
+  }
+push $N60fddc00
+  BlinkScript {
+   kernelSourceFile W:/Nuke/Nukepedia/p_Noise_Advanced/fzfdw-P_noise_blinks/Voronoi.cpp
+   recompileCount 23
+   ProgramGroup 1
+   KernelDescription "2 \"VoronoiNoise\" iterate pixelWise 9c1132acc4e928e43c519b0a87b22c13398b985c8c938be7083bb0acde8c7765 2 \"position_pass\" Read Point \"dst\" Write Point 1 \"Range\" Float 1 AABAQA== 1 \"range\" 1 1 2 \"fRange\" Float 1 1 AAAAAA== \"iRange\" Int 1 1 AAAAAA=="
+   kernelSource "# define rand_modulus 2147483647\n# define MAX_DISTANCE_ARRAY 12\n\n// Static functions for random number generation\nstatic int lcgRandom(int seed) \{\n    // Constants for random number generation\n    const uint RAND_MULTIPLIER = 48271;\n    const uint RAND_INCREMENT = 0;\n    const uint RAND_MODULUS = 2147483647;\n\n    int result = (seed * RAND_MULTIPLIER + RAND_INCREMENT) % RAND_MODULUS;\n    return fabs(result);\n\}\n\n\n// Static function for FNV hash\nstatic uint hash(uint i, uint j, uint k) \{\n    // Constants for FNV hash\n    const uint FNV_PRIME = 16777619;\n    const uint OFFSET_BASIS = 2166136261;\n    return ((((((OFFSET_BASIS ^ i) * FNV_PRIME) ^ j) * FNV_PRIME) ^ k) * FNV_PRIME);\n\}\n\n\n\n// Static function for probability lookup\nstatic uint probLookup(uint value) \{\n    // Constants for Poisson distribution\n    const uint one = 393325350;\n    const uint two = 1022645910;\n    const uint three = 1861739990;\n    const uint four = 2700834071;\n    const uint five = 3372109335;\n    const uint six = 3819626178;\n    const uint seven = 4075350088;\n    const uint eight = 4203212043;\n    if (value < one) return 1;\n    if (value < two) return 2;\n    if (value < three) return 3;\n    if (value < four) return 4;\n    if (value < five) return 5;\n    if (value < six) return 6;\n    if (value < seven) return 7;\n    if (value < eight) return 8;\n    return 9;\n\}\n\n// Insertion Array\nstatic void insert(float arr\[], int idArr\[], float value, int id)\n\{\n  float temp;\n  int tempID;\n  for (int i = MAX_DISTANCE_ARRAY - 1; i >= 0; i--)\n  \{\n    if (value > arr\[i])\n      break;\n    temp = arr\[i];\n    tempID = idArr\[i];\n    arr\[i] = value;\n    idArr\[i] = id;\n    if (i + 1 < MAX_DISTANCE_ARRAY)\n    \{\n      arr\[i + 1] = temp;\n      idArr\[i + 1] = tempID;\n    \}\n  \}\n\}\n\n\n// Blink Kernel\nkernel VoronoiNoise : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint> position_pass;\n  Image<eWrite> dst;\n\n  param:\n    float range;\n    \n  local:\n    float fRange;\n    int iRange;\n\n  void define()\n  \{\n    defineParam(range, \"Range\", 3.0f);\n  \}\n\n  void init()\n  \{\n    fRange = clamp(range, 0.0f, float(MAX_DISTANCE_ARRAY - 2));\n    iRange = int(fRange);\n  \}\n\n  void process()\n  \{\n\n    //Declare some values for later use\n    int lastRandom, id, numberFeaturePoints;\n    float3 randomDiff, featurePoint;\n    int cubeX, cubeY, cubeZ;\n\n    float distanceArray\[MAX_DISTANCE_ARRAY];\n    int idArray\[MAX_DISTANCE_ARRAY];\n\n    // Initialize values in distance array to large values\n    for (int i = 0; i < MAX_DISTANCE_ARRAY; i++)\n        distanceArray\[i] = 6666;\n\n    float4 position = position_pass();\n    float3 input = float3(position.x, position.y, position.z);\n\n    // Determine which cube the evaluation point is in\n    int evalCubeX = floor(input.x);\n    int evalCubeY = floor(input.y);\n    int evalCubeZ = floor(input.z);\n\n    for (int i = -1; i < 2; ++i)\n    \{\n      for (int j = -1; j < 2; ++j)\n      \{\n        for (int k = -1; k < 2; ++k)\n        \{\n            cubeX = evalCubeX + i;\n            cubeY = evalCubeY + j;\n            cubeZ = evalCubeZ + k;\n\n            // Generate a reproducible random number generator for the cube\n            lastRandom = lcgRandom(hash(cubeX, cubeY, cubeZ));\n            id = lastRandom;\n            // Determine how many feature points are in the cube\n            numberFeaturePoints = probLookup(lastRandom);\n            // Check each feature point\n            for (uint l = 0; l < numberFeaturePoints; ++l)\n            \{\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.x = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.y = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.z = float(lastRandom) / rand_modulus;\n\n              featurePoint = float3(randomDiff.x + float(cubeX), randomDiff.y + float(cubeY), randomDiff.z + float(cubeZ));\n\n              insert(distanceArray, idArray, length(input - featurePoint), id+l);\n            \}\n        \}\n      \}\n    \}\n\n    float3 col = float3(float(idArray\[iRange]) / rand_modulus, 0.0f, 0.0f);\n    lastRandom = lcgRandom(idArray\[iRange]);\n    col.y = float(lastRandom) / rand_modulus;\n    lastRandom = lcgRandom(lastRandom);\n    col.z = float(lastRandom) / rand_modulus;\n\n    for(int component = 0; component < 3; component++)\n      dst(component) = col\[component];\n    dst(3) = 1.0f;\n  \}\n\n\};"
+   useGPUIfAvailable {{parent.useGPU}}
+   rebuild ""
+   format {{{WorleyNoise.format}}}
+   rebuild_finalise ""
+   name VoronoiNoise
+   xpos 669
+   ypos 578
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma5
+   xpos 669
+   ypos 614
+  }
+push $N60fddc00
+  BlinkScript {
+   recompileCount 20
+   ProgramGroup 1
+   KernelDescription "2 \"EuclidianNoise\" iterate pixelWise d207442d5296fc1a0c4f07edb2388dc89268faa3a8de2045d03cb82659874004 2 \"position_pass\" Read Point \"dst\" Write Point 1 \"Range\" Float 1 AABAQA== 1 \"range\" 1 1 2 \"fRange\" Float 1 1 AAAAAA== \"iRange\" Int 1 1 AAAAAA=="
+   kernelSource "// https://aftbit.com/cell-noise-2/\n\n# define MAX_DISTANCE_ARRAY 12\n\n// C++11\n#define rand_multiplier 48271\n#define rand_increment  0\n#define rand_modulus    2147483647\n\nstatic int lcgRandom(int seed)\n\{\n  return fabs((seed * rand_multiplier + rand_increment) % rand_modulus);\n\}\n\n// FNV Hash\n#define OFFSET_BASIS 2166136261\n#define FNV_PRIME 16777619\n\nstatic uint hash(uint i, uint j, uint k)\n\{\n  return ((((((OFFSET_BASIS ^ i) * FNV_PRIME) ^ j) * FNV_PRIME) ^ k) * FNV_PRIME);\n\}\n\n// Poisson Distribution\n#define one    393325350\n#define two   1022645910\n#define three 1861739990\n#define four  2700834071\n#define five  3372109335\n#define six   3819626178\n#define seven 4075350088\n#define eight 4203212043\n\nstatic uint probLookup(uint value)\n\{\n  if (value < one) return 1;\n  if (value < two) return 2;\n  if (value < three) return 3;\n  if (value < four) return 4;\n  if (value < five) return 5;\n  if (value < six) return 6;\n  if (value < seven) return 7;\n  if (value < eight) return 8;\n  return 9;\n\}\n\n// Distance Functions\nstatic float EuclidianDistanceFunc(float3 p1, float3 p2)\n\{\n  return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y) + (p1.z - p2.z) * (p1.z - p2.z);\n\}\n\n\n// Insertion Array\nstatic void insert(float arr\[], float value)\n\{\n  float temp;\n  for (int i = MAX_DISTANCE_ARRAY - 1; i >= 0; i--)\n  \{\n    if (value > arr\[i])\n      break;\n    temp = arr\[i];\n    arr\[i] = value;\n    if (i + 1 < MAX_DISTANCE_ARRAY)\n    \{\n      arr\[i + 1] = temp;\n    \}\n  \}\n\}\n\n\n// Blink Kernel\nkernel EuclidianNoise : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint> position_pass;\n  Image<eWrite> dst;\n\n  param:\n    float range;\n\n  local:\n    float fRange;\n    int iRange;\n\n  void define()\n  \{\n    defineParam(range, \"Range\", 3.0f);\n  \}\n\n  void init()\n  \{\n    fRange = clamp(range, 0.0f, float(MAX_DISTANCE_ARRAY - 2));\n    iRange = int(fRange);\n  \}\n\n  void process()\n  \{\n\n    //Declare some values for later use\n    int lastRandom, numberFeaturePoints;\n    float3 randomDiff, featurePoint;\n    int cubeX, cubeY, cubeZ;\n\n    float distanceArray\[MAX_DISTANCE_ARRAY];\n\n    // Initialize values in distance array to large values\n    for (int i = 0; i < MAX_DISTANCE_ARRAY; i++)\n        distanceArray\[i] = 6666;\n\n    float4 position = position_pass();\n    float3 input = float3(position.x, position.y, position.z);\n\n    // Determine which cube the evaluation point is in\n    int evalCubeX = floor(input.x);\n    int evalCubeY = floor(input.y);\n    int evalCubeZ = floor(input.z);\n\n    for (int i = -1; i < 2; ++i)\n    \{\n      for (int j = -1; j < 2; ++j)\n      \{\n        for (int k = -1; k < 2; ++k)\n        \{\n            cubeX = evalCubeX + i;\n            cubeY = evalCubeY + j;\n            cubeZ = evalCubeZ + k;\n\n            // Generate a reproducible random number generator for the cube\n            lastRandom = lcgRandom(hash(cubeX, cubeY, cubeZ));\n            // Determine how many feature points are in the cube\n            numberFeaturePoints = probLookup(lastRandom);\n            // Check each feature point\n            for (uint l = 0; l < numberFeaturePoints; ++l)\n            \{\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.x = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.y = float(lastRandom) / rand_modulus;\n\n              lastRandom = lcgRandom(lastRandom);\n              randomDiff.z = float(lastRandom) / rand_modulus;\n\n              featurePoint = float3(randomDiff.x + float(cubeX), randomDiff.y + float(cubeY), randomDiff.z + float(cubeZ));\n\n              insert(distanceArray, EuclidianDistanceFunc(input, featurePoint));\n            \}\n        \}\n      \}\n    \}\n\n\n    float color = (distanceArray\[ iRange + 2 ] - distanceArray\[ iRange + 1 ]) * fmod(fRange, 1.0f) + distanceArray\[ iRange + 1] - distanceArray\[0];\n    dst() = color;\n\n  \}\n\n\};"
+   useGPUIfAvailable {{parent.useGPU}}
+   rebuild ""
+   format {{{WorleyNoise.format}}}
+   rebuild_finalise ""
+   name EuclidianNoise
+   xpos 550
+   ypos 572
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma6
+   xpos 550
+   ypos 615
+  }
+push $N60fddc00
+  Expression {
+   channel0 rgba
+   expr0 "sin( atan(r, g) *this.rays+this.rays_seed)"
+   channel1 none
+   channel2 none
+   name rays
+   xpos 400
+   ypos 582
+   addUserKnob {20 User}
+   addUserKnob {7 rays}
+   rays {{parent.rays}}
+   addUserKnob {7 rays_seed l "rays seed"}
+   rays_seed {{parent.raysSeed}}
+  }
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma7
+   xpos 400
+   ypos 606
+  }
+push $N60fddc00
+  Expression {
+   channel0 rgba
+   expr0 "sin(sqrt( r*r + g*g + b*b)+this.rings_seed)"
+   channel1 none
+   channel2 none
+   name rings
+   xpos 259
+   ypos 581
+   addUserKnob {20 User}
+   addUserKnob {7 rings_seed l "rings seed"}
+   rings_seed {{parent.ringsSeed}}
+  }
+set N80bfe000 [stack 0]
+  Gamma {
+   channels rgba
+   value {{parent.gammaNormalize}}
+   name Gamma8
+   xpos 259
+   ypos 605
+  }
+push $N60fddc00
+  Expression {
+   channel0 rgba
+   expr0 "pow(turbulence (r, g, b, this.octaves, this.lacunarity, this.gain), 1/this.gamma)"
+   channel1 none
+   channel2 none
+   channel3 {none none none -rgba.alpha}
+   name Turb
+   xpos 128
+   ypos 578
+   addUserKnob {20 User}
+   addUserKnob {3 octaves}
+   octaves {{parent.octaves}}
+   addUserKnob {7 lacunarity R 1 10}
+   lacunarity {{parent.lacunarity}}
+   addUserKnob {7 gain R 0.1 1}
+   gain {{parent.gain}}
+   addUserKnob {7 gamma}
+   gamma {{parent.gamma}}
+  }
+push $N60fddc00
+  Expression {
+   channel0 rgba
+   expr0 "pow((fBm (r, g, b, this.octaves, this.lacunarity, this.gain) +1)/2, 1/this.gamma)"
+   channel1 none
+   channel2 none
+   channel3 {none none none -rgba.alpha}
+   name FBM
+   xpos 0
+   ypos 577
+   addUserKnob {20 User}
+   addUserKnob {3 octaves}
+   octaves {{parent.octaves}}
+   addUserKnob {7 lacunarity R 1 10}
+   lacunarity {{parent.lacunarity}}
+   addUserKnob {7 gain R 0.1 1}
+   gain {{parent.gain}}
+   addUserKnob {7 gamma}
+   gamma {{parent.gamma}}
+  }
+  Switch {
+   inputs 9
+   which {{noisetype}}
+   name Type
+   xpos 0
+   ypos 692
+  }
+  Multiply {
+   inputs 1+1
+   channels rgba
+   value 0
+   name Multiply1
+   xpos 0
+   ypos 751
+   disable {{1-parent.useAlpha}}
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 885
+  }
+push $N5ebba400
+  NoOp {
+   name SampleXY
+   knobChanged "\nn = nuke.thisNode()\nrgbNode = nuke.toNode('Sample')\nposition = n.knob('Position2d').getValue()\npositionX = position\[0]\npositionY = position\[-1]\nrSample = n.sample(\"r\",positionX,positionY)\ngSample = n.sample(\"g\",positionX,positionY)\nbSample = n.sample(\"b\",positionX,positionY)\nrgbNode.knob('rgbSample').setValue(\[rSample, gSample, bSample])\n"
+   xpos -164
+   ypos 95
+   addUserKnob {20 User}
+   addUserKnob {12 Position2d}
+  }
+  NoOp {
+   inputs 0
+   name Sample
+   xpos -162
+   ypos 140
+   addUserKnob {20 User}
+   addUserKnob {18 rgbSample}
+   rgbSample {0 0 0}
+   addUserKnob {6 rgbSample_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+   addUserKnob {6 rgbSample_panelDropped_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  }
+push $N80bfe000
+  Viewer {
+   frame_range 1001-1098
+   viewerProcess AlexaV3LogCgamut.gizmo
+   name Viewer1
+   xpos 754
+   ypos 772
+  }
+ end_group
+set Na2847700 [stack 0]
+ Expression {
+  expr3 min(r,g,b)
+  name Expression2
+  label "voronoi min"
+  xpos -531
+  ypos -301
+ }
+push $Na2847700
+ Switch {
+  inputs 2
+  which {{"P_Noise_Advanced.noisetype == 5 ? 1 : 0"}}
+  name Switch2
+  xpos -632
+  ypos -265
+ }
+ Grade {
+  channels alpha
+  white 1.1
+  gamma 0.5
+  white_clamp true
+  name Grade2
+  xpos -632
+  ypos -234
+ }
+ Grade {
+  channels alpha
+  blackpoint {{parent.noisehardness>1?0.5:parent.noisehardness<0?0:parent.noisehardness/2}}
+  whitepoint {{parent.noisehardness>1?0.5:parent.noisehardness<0?1:1-parent.noisehardness/2}}
+  white_clamp true
+  name GradeHardness1
+  xpos -632
+  ypos -198
+ }
+ Invert {
+  channels alpha
+  clamp true
+  name Invert7
+  xpos -632
+  ypos -155
+  disable {{!parent.invert}}
+ }
+ Dot {
+  name Dot20
+  xpos -598
+  ypos 1
+ }
+set N2926f400 [stack 0]
+ Dot {
+  name Dot12
+  xpos -37
+  ypos 1
+ }
+set N2926f000 [stack 0]
+ Dot {
+  name Dot57
+  xpos -37
+  ypos 710
+ }
+set N2926e000 [stack 0]
+ Dot {
+  name Dot71
+  xpos -37
+  ypos 773
+ }
+ Invert {
+  channels alpha
+  name Invert5
+  xpos -150
+  ypos 764
+ }
+push $Nd62af800
+ Dot {
+  name Dot27
+  xpos 197
+  ypos -1116
+ }
+ Shuffle {
+  in normals
+  name normals
+  xpos 163
+  ypos -1045
+ }
+ Group {
+  name NormalRotation
+  xpos 163
+  ypos -1021
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Dot {
+  name Dot28
+  xpos 197
+  ypos -969
+ }
+set Nc7a18000 [stack 0]
+ Dot {
+  name Dot56
+  xpos 679
+  ypos -969
+ }
+set Nc7a18400 [stack 0]
+ Clamp {
+  channels {-rgba.red -rgba.green rgba.blue none}
+  minimum -1
+  minimum_enable false
+  maximum 0
+  name Clamp15
+  label "Z -side"
+  xpos 907
+  ypos -895
+ }
+ Multiply {
+  channels rgb
+  value {0 0 1 0}
+  name Multiply6
+  xpos 907
+  ypos -849
+ }
+ Multiply {
+  channels rgb
+  value {{parent.negz}}
+  name Multiply13
+  xpos 907
+  ypos -799
+ }
+ Dot {
+  name Dot50
+  xpos 941
+  ypos -714
+ }
+push $Nc7a18400
+ Clamp {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  minimum -1
+  minimum_enable false
+  maximum 0
+  name Clamp14
+  label "Y -side"
+  xpos 758
+  ypos -876
+ }
+ Multiply {
+  channels rgb
+  value {0 1 0 0}
+  name Multiply5
+  xpos 758
+  ypos -831
+ }
+ Multiply {
+  channels rgb
+  value {{parent.negy}}
+  name Multiply12
+  xpos 758
+  ypos -789
+ }
+ Dot {
+  name Dot51
+  xpos 792
+  ypos -753
+ }
+push $Nc7a18400
+ Clamp {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  minimum -1
+  minimum_enable false
+  maximum 0
+  name Clamp13
+  label "X -side"
+  xpos 645
+  ypos -880
+ }
+ Multiply {
+  channels rgb
+  value {1 0 0 0}
+  name Multiply7
+  xpos 645
+  ypos -832
+ }
+ Multiply {
+  channels rgb
+  value {{parent.negx}}
+  name Multiply11
+  xpos 645
+  ypos -794
+ }
+ Dot {
+  name Dot52
+  xpos 679
+  ypos -770
+ }
+push $Nc7a18000
+ Clamp {
+  channels {-rgba.red -rgba.green rgba.blue none}
+  maximum_enable false
+  name Clamp12
+  label "Z +side"
+  xpos 411
+  ypos -882
+ }
+ Multiply {
+  channels rgb
+  value {0 0 1 0}
+  name Multiply4
+  xpos 411
+  ypos -846
+ }
+ Multiply {
+  channels rgb
+  value {{parent.posz}}
+  name Multiply10
+  xpos 411
+  ypos -822
+ }
+ Dot {
+  name Dot53
+  xpos 445
+  ypos -783
+ }
+push 0
+push $Nc7a18000
+ Clamp {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  maximum_enable false
+  name Clamp10
+  label "X +side"
+  xpos 163
+  ypos -882
+ }
+ Multiply {
+  channels rgb
+  value {1 0 0 0}
+  name Multiply2
+  xpos 163
+  ypos -834
+ }
+ Multiply {
+  channels rgb
+  value {{parent.posx}}
+  name Multiply8
+  xpos 163
+  ypos -802
+ }
+push $Nc7a18000
+ Clamp {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  maximum_enable false
+  name Clamp11
+  label "Y +side"
+  xpos 292
+  ypos -882
+ }
+ Multiply {
+  channels rgb
+  value {0 1 0 0}
+  name Multiply3
+  xpos 292
+  ypos -846
+ }
+ Multiply {
+  channels rgb
+  value {{parent.posy}}
+  name Multiply9
+  xpos 292
+  ypos -822
+ }
+ Dot {
+  name Dot54
+  xpos 326
+  ypos -778
+ }
+ Merge2 {
+  inputs 6+1
+  operation plus
+  name Merge27
+  xpos 163
+  ypos -706
+ }
+ Dot {
+  name Dot49
+  xpos 197
+  ypos -671
+ }
+ Expression {
+  expr0 abs(r)
+  expr1 abs(g)
+  expr2 abs(b)
+  name Expression1
+  xpos 163
+  ypos -468
+ }
+ Gamma {
+  channels rgb
+  value {{parent.falloff}}
+  name Gamma
+  xpos 163
+  ypos -432
+ }
+ Grade {
+  blackpoint {{parent.hardness>1?0.5:parent.hardness<0?0:parent.hardness/2}}
+  whitepoint {{parent.hardness>1?0.5:parent.hardness<0?1:1-parent.hardness/2}}
+  name GradeHardness
+  xpos 163
+  ypos -392
+ }
+ Dot {
+  name Dot2
+  xpos 197
+  ypos 57
+ }
+set Nc8248800 [stack 0]
+ Dot {
+  name Dot3
+  xpos -485
+  ypos 57
+ }
+set Nc8248c00 [stack 0]
+ Dot {
+  name Dot76
+  xpos -485
+  ypos 611
+ }
+push $N29b9ec00
+ Dot {
+  name Dot79
+  xpos -351
+  ypos 137
+ }
+set Nc8249800 [stack 0]
+ Group {
+  name Pworld_transform1
+  xpos -385
+  ypos 164
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   rotate {{parent.parent.NormalRotation.Axis1.rotate.x} {parent.parent.NormalRotation.Axis1.rotate.y} {parent.parent.NormalRotation.Axis1.rotate.z}}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Group {
+  name Pworld_transform5
+  xpos -385
+  ypos 217
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   rotate {0 {parent.parent.rotY} 0}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Shuffle {
+  in rgb
+  green blue
+  blue green2
+  alpha green2
+  name Shuffle18
+  label XZ
+  xpos -385
+  ypos 273
+ }
+set N92f7b400 [stack 0]
+ Group {
+  name StaggerUV2
+  xpos -281
+  ypos 359
+  addUserKnob {20 User}
+  addUserKnob {41 size T master.size}
+ }
+  Input {
+   inputs 0
+   name UV
+   xpos -587
+   ypos -247
+  }
+  Dot {
+   name Dot68
+   xpos -553
+   ypos -178
+  }
+set N92f7bc00 [stack 0]
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression13
+   xpos -703
+   ypos -150
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size*2}}
+  }
+  Expression {
+   expr0 rint(r)
+   expr2 0
+   name Expression11
+   xpos -703
+   ypos -115
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size 0.2
+  }
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.alpha 0 3 rgba.red 0 0 rgba.red 0 0 rgba.alpha 0 3"
+   name Shuffle5
+   xpos -703
+   ypos -91
+  }
+push $N92f7bc00
+  Group {
+   name Pworld_transform105
+   xpos -485
+   ypos -142
+   addUserKnob {20 User}
+   addUserKnob {41 in l Position T Shuffle1.in}
+   addUserKnob {26 ""}
+   addUserKnob {41 translate T Axis1.translate}
+   addUserKnob {41 rotate T Axis1.rotate}
+   addUserKnob {41 scaling l scale T Axis1.scaling}
+   addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+  }
+   Input {
+    inputs 0
+    name pworld
+    label input
+    xpos 0
+   }
+   Shuffle {
+    alpha black
+    name Shuffle1
+    label "select pworld\n"
+    xpos 0
+    ypos 50
+   }
+   Expression {
+    expr0 r-parent.Axis1.world_matrix.3
+    expr1 g-parent.Axis1.world_matrix.7
+    expr2 b-parent.Axis1.world_matrix.11
+    name Expression1
+    xpos 0
+    ypos 151
+   }
+   ColorMatrix {
+    matrix {
+        {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+        {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+        {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+      }
+    invert true
+    name ColorMatrix1
+    xpos 0
+    ypos 195
+   }
+   Output {
+    name Output1
+    xpos 0
+    ypos 300
+   }
+   Axis2 {
+    inputs 0
+    translate {0 {master.size*.5} 0}
+    name Axis1
+    xpos -150
+    ypos 171
+   }
+  end_group
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression14
+   xpos -485
+   ypos -109
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+push $N92f7bc00
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression12
+   xpos -587
+   ypos -111
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+  Keymix {
+   inputs 3
+   channels rgb
+   name Keymix1
+   xpos -587
+   ypos -42
+  }
+  Output {
+   name Output1
+   xpos -587
+   ypos 32
+  }
+  NoOp {
+   inputs 0
+   name master
+   xpos -705
+   ypos -205
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 100}
+   size {{parent.parent.Expression7.size}}
+  }
+ end_group
+push $N92f7b400
+ Expression {
+  expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+  expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+  expr2 0
+  expr3 abs(a)
+  name Expression7
+  xpos -385
+  ypos 356
+  addUserKnob {20 User}
+  addUserKnob {7 size R 0 300}
+  size 10
+ }
+ Switch {
+  inputs 2
+  which {{parent.stagger}}
+  name stagger1
+  xpos -385
+  ypos 440
+ }
+ Input {
+  inputs 0
+  name imgX_main
+  xpos -720
+  ypos 173
+  number 3
+ }
+set Na4bb6000 [stack 0]
+ Group {
+  name Textile
+  xpos -833
+  ypos 225
+  disable {{!parent.randtile x25 1}}
+  addUserKnob {20 TexTile}
+  addUserKnob {41 format l "output format" T TexTileFormat.format}
+  addUserKnob {26 ""}
+  addUserKnob {7 tiling t "How many repetitions of the texture should be used - 1 will tile the texture at it's given resolution." R 1 10}
+  tiling {{parent.texturetiling}}
+  addUserKnob {7 offset t "How far the texture should deviate from default tiling" R -2 2}
+  offset 0.8
+  addUserKnob {41 scale t "Adjusts variation in scale for each sampled cell / tile." T BlinkScript2.TexTile_scale}
+  addUserKnob {41 contrast t "By default, some contrast will be lost in between voronoi cells; increasing contrast will counter this and should be adjusted based on the input image." T BlinkScript2.TexTile_contrast}
+  addUserKnob {20 gpu l GPU}
+  addUserKnob {41 "Local GPU: " T BlinkScript2.gpuName}
+  addUserKnob {41 "Use GPU if Available" T BlinkScript2.useGPUIfAvailable}
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos -81
+   ypos -141
+  }
+  BlinkScript {
+   ProgramGroup 1
+   KernelDescription "1 \"TexTile\" iterate pixelWise a835ac838bb293be4510cf5847dec90d8336ce555ff7fb19e89fc04cd1db7693 2 \"src\" Read Random \"dst\" Write Point 6 \"width\" Float 1 AAAAAA== \"height\" Float 1 AAAAAA== \"tiling\" Float 1 AAAAAA== \"offset\" Float 1 AAAAAA== \"scale\" Float 1 AAAAAA== \"contrast\" Float 1 AAAAAA=="
+   kernelSource "inline float4 mix(float4 a, float4 b, float t) \{\n  return (b - a) * clamp(t, 0.0f, 1.0f) + a;\n\}\n\nkernel TexTile: ImageComputationKernel<ePixelWise> \{\n\n    Image<eRead, eAccessRandom, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        float width;\n        float height;\n        float tiling;\n        float offset;\n        float scale;\n        float contrast;\n\n    float4 hash4(float2 p) \{\n        float4 val =  sin(float4(1.0f + dot(p, float2(37.0f, 17.0f)), \n                                 2.0f + dot(p, float2(11.0f, 47.0f)),\n                                 3.0f + dot(p, float2(41.0f, 29.0f)),\n                                 4.0f + dot(p, float2(23.0f, 31.0f)))) * 103.0f;\n        for (int i = 0; i < 4; i++)\n            val\[i] = fmod(val\[i], 1.0f);\n        return (val + 1) * 0.5f;\n    \}\n\n    void process(int2 pos)\n    \{\n        float2 uv = float2(\n            (pos.x + 0.5f) / width,\n            (pos.y + 0.5f) / height\n        );\n\n        uv *= tiling;\n\n        float2 p = floor(uv);\n        float2 f = float2(fmod(uv.x, 1.0f), fmod(uv.y, 1.0f));\n        \n        float4 va = 0;\n        float w1 = 0;\n        float w2 = 0;\n        // Iterate over adjacent voronoi cells\n        for (int j = -1; j <= 1; j++)\n            for (int i = -1; i <= 1; i++)\n            \{\n                // Create a voronoi cell point\n                float2 g = float2(float(i), float(j));                 // Adjacent cell point\n                float4 o = hash4(p + g);                               // Random offset\n                float2 r = float2(g.x - f.x + o.x, g.y - f.y + o.y);   // Resulting co-ordinate\n\n                float d = dot(r, r);                                   // length of offset\n                float w = exp(-5.0f * d);                              // gaussian falloff\n                \n                // Use the offset to pick a pseudo-random point to sample\n                // Using r instead of uv offsets from center of cell, allowing us to scale each individually\n                float randf = (o.x - 0.5f) * scale + 1.0f;\n                float x = r.x * randf + o.z * offset;\n                float y = r.y * randf + o.w * offset;\n\n                // Wrap x and y around image and sample\n                x = fmod(fmod(x, 1.0f) + 1.0f, 1.0f) * width;\n                y = fmod(fmod(y, 1.0f) + 1.0f, 1.0f) * height;\n                float4 c = bilinear(src, x, y);\n                \n                // Accumulate weighted colour\n                va += w * c;\n                w1 += w;\n                w2 += w * w;\n            \}\n        \n        // normal averaging --> lowers contrasts\n        // float4 col = va / w1;\n\n        float4 res = contrast + (va - w1 * contrast) / sqrt(w2);\n        float4 col = mix(va / w1, res, offset);\n\n\n        for (int c = 0; c < 3; c++)\n            dst(c) = col\[c];\n        dst(3) = 1;\n\n    \}\n\};"
+   rebuild ""
+   TexTile_width {{width}}
+   TexTile_height {{height}}
+   TexTile_tiling {{parent.tiling}}
+   TexTile_offset {{parent.offset}}
+   TexTile_scale 0.25
+   TexTile_contrast 0.1
+   format {{{TexTileFormat.format}}}
+   rebuild_finalise ""
+   name BlinkScript2
+   selected true
+   xpos -81
+   ypos -53
+   disable {{"!\[exists parent.parent.input3]" x25 0}}
+  }
+  Output {
+   name Output1
+   xpos -81
+   ypos 122
+  }
+  Reformat {
+   inputs 0
+   name TexTileFormat
+   xpos 43
+   ypos -63
+  }
+ end_group
+ Clamp {
+  channels alpha
+  name Clamp18
+  xpos -833
+  ypos 249
+ }
+ Group {
+  name Seamless
+  xpos -833
+  ypos 285
+  addUserKnob {20 User}
+  addUserKnob {7 softness R 0 4}
+  softness 0.2
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos 509
+   ypos 98
+  }
+  Dot {
+   name Dot21
+   xpos 543
+   ypos 142
+  }
+set N951b8000 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle13
+   xpos 388
+   ypos 139
+  }
+  BlackOutside {
+   name BlackOutside1
+   xpos 388
+   ypos 175
+  }
+  Position {
+   translate {0 {height/10*parent.softness}}
+   name Position1
+   xpos 388
+   ypos 199
+  }
+  Blur {
+   channels alpha
+   size {0 {height/10*parent.softness}}
+   name Blur4
+   xpos 388
+   ypos 229
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop3
+   xpos 388
+   ypos 300
+  }
+push $N951b8000
+push $N951b8000
+  Mirror2 {
+   flip true
+   name Mirror2_3
+   xpos 608
+   ypos 201
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix3
+   xpos 509
+   ypos 294
+  }
+  Dot {
+   name Dot22
+   xpos 543
+   ypos 365
+  }
+set Ncf43e000 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle14
+   xpos 395
+   ypos 362
+  }
+  BlackOutside {
+   name BlackOutside2
+   xpos 395
+   ypos 398
+  }
+  Position {
+   translate {{-width/10*parent.softness} 0}
+   name Position2
+   xpos 395
+   ypos 422
+  }
+  Blur {
+   channels alpha
+   size {{width/10*parent.softness} 0}
+   name Blur3
+   xpos 395
+   ypos 446
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop4
+   xpos 395
+   ypos 498
+  }
+push $Ncf43e000
+push $Ncf43e000
+  Mirror2 {
+   flop true
+   name Mirror2_4
+   xpos 611
+   ypos 424
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix4
+   xpos 509
+   ypos 492
+  }
+  Output {
+   name Output1
+   xpos 509
+   ypos 555
+  }
+ end_group
+push $Na4bb6000
+ Tile {
+  rows {{parent.Textile1.tiling}}
+  columns {{parent.Textile1.tiling}}
+  name Tile2
+  xpos -720
+  ypos 224
+  disable {{"rows == 1"}}
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input0] && parent.randtile"}}
+  name Switch1
+  xpos -720
+  ypos 326
+ }
+ Dot {
+  name Dot47
+  xpos -686
+  ypos 477
+ }
+set Nb67fac00 [stack 0]
+ Input {
+  inputs 0
+  name imgY
+  xpos -149
+  ypos 165
+  number 2
+ }
+set Nb67fb000 [stack 0]
+ Group {
+  name Textile1
+  xpos -250
+  ypos 218
+  disable {{!parent.randtile x25 1}}
+  addUserKnob {20 TexTile}
+  addUserKnob {41 format l "output format" T TexTileFormat.format}
+  addUserKnob {26 ""}
+  addUserKnob {7 tiling t "How many repetitions of the texture should be used - 1 will tile the texture at it's given resolution." R 1 10}
+  tiling {{parent.texturetiling}}
+  addUserKnob {7 offset t "How far the texture should deviate from default tiling" R -2 2}
+  offset 0.8
+  addUserKnob {41 scale t "Adjusts variation in scale for each sampled cell / tile." T BlinkScript2.TexTile_scale}
+  addUserKnob {41 contrast t "By default, some contrast will be lost in between voronoi cells; increasing contrast will counter this and should be adjusted based on the input image." T BlinkScript2.TexTile_contrast}
+  addUserKnob {20 gpu l GPU}
+  addUserKnob {41 "Local GPU: " T BlinkScript2.gpuName}
+  addUserKnob {41 "Use GPU if Available" T BlinkScript2.useGPUIfAvailable}
+ }
+  Reformat {
+   inputs 0
+   name TexTileFormat
+   xpos 43
+   ypos -63
+  }
+  Input {
+   inputs 0
+   name Input1
+   xpos -81
+   ypos -141
+  }
+  BlinkScript {
+   ProgramGroup 1
+   KernelDescription "1 \"TexTile\" iterate pixelWise a835ac838bb293be4510cf5847dec90d8336ce555ff7fb19e89fc04cd1db7693 2 \"src\" Read Random \"dst\" Write Point 6 \"width\" Float 1 AAAAAA== \"height\" Float 1 AAAAAA== \"tiling\" Float 1 AAAAAA== \"offset\" Float 1 AAAAAA== \"scale\" Float 1 AAAAAA== \"contrast\" Float 1 AAAAAA=="
+   kernelSource "inline float4 mix(float4 a, float4 b, float t) \{\n  return (b - a) * clamp(t, 0.0f, 1.0f) + a;\n\}\n\nkernel TexTile: ImageComputationKernel<ePixelWise> \{\n\n    Image<eRead, eAccessRandom, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        float width;\n        float height;\n        float tiling;\n        float offset;\n        float scale;\n        float contrast;\n\n    float4 hash4(float2 p) \{\n        float4 val =  sin(float4(1.0f + dot(p, float2(37.0f, 17.0f)), \n                                 2.0f + dot(p, float2(11.0f, 47.0f)),\n                                 3.0f + dot(p, float2(41.0f, 29.0f)),\n                                 4.0f + dot(p, float2(23.0f, 31.0f)))) * 103.0f;\n        for (int i = 0; i < 4; i++)\n            val\[i] = fmod(val\[i], 1.0f);\n        return (val + 1) * 0.5f;\n    \}\n\n    void process(int2 pos)\n    \{\n        float2 uv = float2(\n            (pos.x + 0.5f) / width,\n            (pos.y + 0.5f) / height\n        );\n\n        uv *= tiling;\n\n        float2 p = floor(uv);\n        float2 f = float2(fmod(uv.x, 1.0f), fmod(uv.y, 1.0f));\n        \n        float4 va = 0;\n        float w1 = 0;\n        float w2 = 0;\n        // Iterate over adjacent voronoi cells\n        for (int j = -1; j <= 1; j++)\n            for (int i = -1; i <= 1; i++)\n            \{\n                // Create a voronoi cell point\n                float2 g = float2(float(i), float(j));                 // Adjacent cell point\n                float4 o = hash4(p + g);                               // Random offset\n                float2 r = float2(g.x - f.x + o.x, g.y - f.y + o.y);   // Resulting co-ordinate\n\n                float d = dot(r, r);                                   // length of offset\n                float w = exp(-5.0f * d);                              // gaussian falloff\n                \n                // Use the offset to pick a pseudo-random point to sample\n                // Using r instead of uv offsets from center of cell, allowing us to scale each individually\n                float randf = (o.x - 0.5f) * scale + 1.0f;\n                float x = r.x * randf + o.z * offset;\n                float y = r.y * randf + o.w * offset;\n\n                // Wrap x and y around image and sample\n                x = fmod(fmod(x, 1.0f) + 1.0f, 1.0f) * width;\n                y = fmod(fmod(y, 1.0f) + 1.0f, 1.0f) * height;\n                float4 c = bilinear(src, x, y);\n                \n                // Accumulate weighted colour\n                va += w * c;\n                w1 += w;\n                w2 += w * w;\n            \}\n        \n        // normal averaging --> lowers contrasts\n        // float4 col = va / w1;\n\n        float4 res = contrast + (va - w1 * contrast) / sqrt(w2);\n        float4 col = mix(va / w1, res, offset);\n\n\n        for (int c = 0; c < 3; c++)\n            dst(c) = col\[c];\n        dst(3) = 1;\n\n    \}\n\};"
+   rebuild ""
+   TexTile_width {{width}}
+   TexTile_height {{height}}
+   TexTile_tiling {{parent.tiling}}
+   TexTile_offset {{parent.offset}}
+   TexTile_scale 0.25
+   TexTile_contrast 0.1
+   format {{{TexTileFormat.format}}}
+   rebuild_finalise ""
+   name BlinkScript2
+   selected true
+   xpos -81
+   ypos -70
+   disable {{"!\[exists parent.parent.input2] "}}
+  }
+  Output {
+   name Output1
+   xpos -81
+   ypos -1
+  }
+ end_group
+ Clamp {
+  channels alpha
+  name Clamp16
+  xpos -250
+  ypos 242
+ }
+ Group {
+  name Seamless1
+  xpos -250
+  ypos 278
+  addUserKnob {20 User}
+  addUserKnob {7 softness R 0 4}
+  softness 0.2
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos 509
+   ypos 98
+  }
+  Dot {
+   name Dot21
+   xpos 543
+   ypos 142
+  }
+set Nbf8c5000 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle13
+   xpos 388
+   ypos 139
+  }
+  BlackOutside {
+   name BlackOutside1
+   xpos 388
+   ypos 175
+  }
+  Position {
+   translate {0 {height/10*parent.softness}}
+   name Position1
+   xpos 388
+   ypos 199
+  }
+  Blur {
+   channels alpha
+   size {0 {height/10*parent.softness}}
+   name Blur4
+   xpos 388
+   ypos 229
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop3
+   xpos 388
+   ypos 300
+  }
+push $Nbf8c5000
+push $Nbf8c5000
+  Mirror2 {
+   flip true
+   name Mirror2_3
+   xpos 608
+   ypos 201
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix3
+   xpos 509
+   ypos 294
+  }
+  Dot {
+   name Dot22
+   xpos 543
+   ypos 365
+  }
+set N6ffc9000 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle14
+   xpos 395
+   ypos 362
+  }
+  BlackOutside {
+   name BlackOutside2
+   xpos 395
+   ypos 398
+  }
+  Position {
+   translate {{-width/10*parent.softness} 0}
+   name Position2
+   xpos 395
+   ypos 422
+  }
+  Blur {
+   channels alpha
+   size {{width/10*parent.softness} 0}
+   name Blur3
+   xpos 395
+   ypos 446
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop4
+   xpos 395
+   ypos 498
+  }
+push $N6ffc9000
+push $N6ffc9000
+  Mirror2 {
+   flop true
+   name Mirror2_4
+   xpos 611
+   ypos 424
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix4
+   xpos 509
+   ypos 492
+  }
+  Output {
+   name Output1
+   xpos 509
+   ypos 555
+  }
+ end_group
+push $Nb67fb000
+ Tile {
+  rows {{parent.Textile1.tiling}}
+  columns {{parent.Textile1.tiling}}
+  name Tile1
+  xpos -149
+  ypos 218
+  disable {{"rows == 1"}}
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] && parent.randtile"}}
+  name Switch12
+  xpos -149
+  ypos 332
+ }
+ Switch {
+  inputs 2
+  which {{"parent.textures == 0"}}
+  name Switch4
+  xpos -149
+  ypos 492
+ }
+ Dot {
+  name Dot6
+  xpos -115
+  ypos 528
+ }
+ STMap {
+  inputs 2
+  uv rgb
+  name STMap3
+  xpos -385
+  ypos 519
+ }
+ set Cba1d4400 [stack 0]
+ Copy {
+  inputs 2
+  from0 rgba.green
+  to0 rgba.alpha
+  name Copy7
+  xpos -385
+  ypos 602
+ }
+set Nba1d4800 [stack 0]
+ Merge2 {
+  inputs 2
+  operation multiply
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  name Merge8
+  xpos -260
+  ypos 764
+ }
+push $Nba1d4800
+ Grade {
+  channels alpha
+  blackpoint 1.05
+  whitepoint {{parent.hardness}}
+  white_clamp true
+  name Grade3
+  xpos -200
+  ypos 602
+ }
+push $N2926e000
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge7
+  xpos -200
+  ypos 707
+ }
+push $Nba1d4800
+ Merge2 {
+  inputs 2
+  operation from
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  mix {{parent.blendnoise}}
+  name Merge11
+  xpos -385
+  ypos 701
+ }
+ Switch {
+  inputs 2
+  which {{parent.noisemergey}}
+  name Switch19
+  label noisemerge
+  xpos -385
+  ypos 764
+ }
+ Clamp {
+  channels alpha
+  name Clamp2
+  xpos -385
+  ypos 872
+ }
+ Premult {
+  name Premult5
+  xpos -385
+  ypos 918
+ }
+ Dot {
+  name Dot9
+  xpos -351
+  ypos 1284
+ }
+ Dot {
+  name Dot26
+  xpos -920
+  ypos 1284
+ }
+set Nbbf3ec00 [stack 0]
+push 0
+push $N2926f000
+ Dot {
+  name Dot13
+  xpos 665
+  ypos 1
+ }
+ Dot {
+  name Dot14
+  xpos 665
+  ypos 703
+ }
+set Nbbf3f400 [stack 0]
+ Dot {
+  name Dot70
+  xpos 665
+  ypos 780
+ }
+ Invert {
+  channels alpha
+  name Invert4
+  xpos 555
+  ypos 771
+ }
+push $Nc8248800
+ Dot {
+  name Dot78
+  xpos 197
+  ypos 618
+ }
+push $Nc8249800
+ Dot {
+  name Dot77
+  xpos 347
+  ypos 137
+ }
+ Group {
+  name Pworld_transform2
+  xpos 313
+  ypos 185
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 150
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   selected true
+   xpos 0
+   ypos 300
+  }
+  Axis2 {
+   inputs 0
+   rotate {{parent.parent.NormalRotation.Axis1.rotate.x} {parent.parent.NormalRotation.Axis1.rotate.y} {parent.parent.NormalRotation.Axis1.rotate.z}}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Group {
+  name Pworld_transform4
+  xpos 313
+  ypos 239
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   rotate {0 0 {parent.parent.rotZ}}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Shuffle {
+  in rgb
+  blue blue2
+  alpha blue2
+  name Shuffle19
+  label XY
+  xpos 313
+  ypos 264
+ }
+set Nc9157c00 [stack 0]
+ Group {
+  name StaggerUV3
+  xpos 425
+  ypos 371
+  addUserKnob {20 User}
+  addUserKnob {41 size T master.size}
+ }
+  Input {
+   inputs 0
+   name UV
+   xpos -587
+   ypos -247
+  }
+  Dot {
+   name Dot68
+   xpos -553
+   ypos -178
+  }
+set Nc28ae400 [stack 0]
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression13
+   xpos -703
+   ypos -150
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size*2}}
+  }
+  Expression {
+   expr0 rint(r)
+   expr2 0
+   name Expression11
+   xpos -703
+   ypos -115
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size 0.2
+  }
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.alpha 0 3 rgba.red 0 0 rgba.red 0 0 rgba.alpha 0 3"
+   name Shuffle5
+   xpos -703
+   ypos -91
+  }
+push $Nc28ae400
+  Group {
+   name Pworld_transform105
+   xpos -485
+   ypos -142
+   addUserKnob {20 User}
+   addUserKnob {41 in l Position T Shuffle1.in}
+   addUserKnob {26 ""}
+   addUserKnob {41 translate T Axis1.translate}
+   addUserKnob {41 rotate T Axis1.rotate}
+   addUserKnob {41 scaling l scale T Axis1.scaling}
+   addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+  }
+   Input {
+    inputs 0
+    name pworld
+    label input
+    xpos 0
+   }
+   Shuffle {
+    alpha black
+    name Shuffle1
+    label "select pworld\n"
+    xpos 0
+    ypos 50
+   }
+   Expression {
+    expr0 r-parent.Axis1.world_matrix.3
+    expr1 g-parent.Axis1.world_matrix.7
+    expr2 b-parent.Axis1.world_matrix.11
+    name Expression1
+    xpos 0
+    ypos 151
+   }
+   ColorMatrix {
+    matrix {
+        {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+        {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+        {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+      }
+    invert true
+    name ColorMatrix1
+    xpos 0
+    ypos 195
+   }
+   Output {
+    name Output1
+    xpos 0
+    ypos 300
+   }
+   Axis2 {
+    inputs 0
+    translate {0 {master.size*.5} 0}
+    name Axis1
+    xpos -150
+    ypos 171
+   }
+  end_group
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression14
+   xpos -485
+   ypos -109
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+push $Nc28ae400
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression12
+   xpos -587
+   ypos -111
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+  Keymix {
+   inputs 3
+   channels rgb
+   name Keymix1
+   xpos -587
+   ypos -42
+  }
+  Output {
+   name Output1
+   xpos -587
+   ypos 32
+  }
+  NoOp {
+   inputs 0
+   name master
+   xpos -705
+   ypos -205
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 100}
+   size {{parent.parent.Expression8.size}}
+  }
+ end_group
+push $Nc9157c00
+ Expression {
+  expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+  expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+  expr2 0
+  expr3 abs(a)
+  name Expression8
+  xpos 313
+  ypos 373
+  addUserKnob {20 User}
+  addUserKnob {7 size R 0 300}
+  size 10
+ }
+ Switch {
+  inputs 2
+  which {{parent.stagger}}
+  name stagger2
+  xpos 313
+  ypos 450
+ }
+push $Nb67fac00
+ Input {
+  inputs 0
+  name imgZ
+  xpos 533
+  ypos 167
+  number 1
+ }
+set N90906800 [stack 0]
+ Group {
+  name Textile2
+  xpos 429
+  ypos 218
+  disable {{!parent.randtile x25 1}}
+  addUserKnob {20 TexTile}
+  addUserKnob {41 format l "output format" T TexTileFormat.format}
+  addUserKnob {26 ""}
+  addUserKnob {7 tiling t "How many repetitions of the texture should be used - 1 will tile the texture at it's given resolution." R 1 10}
+  tiling {{parent.texturetiling}}
+  addUserKnob {7 offset t "How far the texture should deviate from default tiling" R -2 2}
+  offset 0.8
+  addUserKnob {41 scale t "Adjusts variation in scale for each sampled cell / tile." T BlinkScript2.TexTile_scale}
+  addUserKnob {41 contrast t "By default, some contrast will be lost in between voronoi cells; increasing contrast will counter this and should be adjusted based on the input image." T BlinkScript2.TexTile_contrast}
+  addUserKnob {20 gpu l GPU}
+  addUserKnob {41 "Local GPU: " T BlinkScript2.gpuName}
+  addUserKnob {41 "Use GPU if Available" T BlinkScript2.useGPUIfAvailable}
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos -81
+   ypos -141
+  }
+  BlinkScript {
+   ProgramGroup 1
+   KernelDescription "1 \"TexTile\" iterate pixelWise a835ac838bb293be4510cf5847dec90d8336ce555ff7fb19e89fc04cd1db7693 2 \"src\" Read Random \"dst\" Write Point 6 \"width\" Float 1 AAAAAA== \"height\" Float 1 AAAAAA== \"tiling\" Float 1 AAAAAA== \"offset\" Float 1 AAAAAA== \"scale\" Float 1 AAAAAA== \"contrast\" Float 1 AAAAAA=="
+   kernelSource "inline float4 mix(float4 a, float4 b, float t) \{\n  return (b - a) * clamp(t, 0.0f, 1.0f) + a;\n\}\n\nkernel TexTile: ImageComputationKernel<ePixelWise> \{\n\n    Image<eRead, eAccessRandom, eEdgeClamped> src;\n    Image<eWrite> dst;\n\n    param:\n        float width;\n        float height;\n        float tiling;\n        float offset;\n        float scale;\n        float contrast;\n\n    float4 hash4(float2 p) \{\n        float4 val =  sin(float4(1.0f + dot(p, float2(37.0f, 17.0f)), \n                                 2.0f + dot(p, float2(11.0f, 47.0f)),\n                                 3.0f + dot(p, float2(41.0f, 29.0f)),\n                                 4.0f + dot(p, float2(23.0f, 31.0f)))) * 103.0f;\n        for (int i = 0; i < 4; i++)\n            val\[i] = fmod(val\[i], 1.0f);\n        return (val + 1) * 0.5f;\n    \}\n\n    void process(int2 pos)\n    \{\n        float2 uv = float2(\n            (pos.x + 0.5f) / width,\n            (pos.y + 0.5f) / height\n        );\n\n        uv *= tiling;\n\n        float2 p = floor(uv);\n        float2 f = float2(fmod(uv.x, 1.0f), fmod(uv.y, 1.0f));\n        \n        float4 va = 0;\n        float w1 = 0;\n        float w2 = 0;\n        // Iterate over adjacent voronoi cells\n        for (int j = -1; j <= 1; j++)\n            for (int i = -1; i <= 1; i++)\n            \{\n                // Create a voronoi cell point\n                float2 g = float2(float(i), float(j));                 // Adjacent cell point\n                float4 o = hash4(p + g);                               // Random offset\n                float2 r = float2(g.x - f.x + o.x, g.y - f.y + o.y);   // Resulting co-ordinate\n\n                float d = dot(r, r);                                   // length of offset\n                float w = exp(-5.0f * d);                              // gaussian falloff\n                \n                // Use the offset to pick a pseudo-random point to sample\n                // Using r instead of uv offsets from center of cell, allowing us to scale each individually\n                float randf = (o.x - 0.5f) * scale + 1.0f;\n                float x = r.x * randf + o.z * offset;\n                float y = r.y * randf + o.w * offset;\n\n                // Wrap x and y around image and sample\n                x = fmod(fmod(x, 1.0f) + 1.0f, 1.0f) * width;\n                y = fmod(fmod(y, 1.0f) + 1.0f, 1.0f) * height;\n                float4 c = bilinear(src, x, y);\n                \n                // Accumulate weighted colour\n                va += w * c;\n                w1 += w;\n                w2 += w * w;\n            \}\n        \n        // normal averaging --> lowers contrasts\n        // float4 col = va / w1;\n\n        float4 res = contrast + (va - w1 * contrast) / sqrt(w2);\n        float4 col = mix(va / w1, res, offset);\n\n\n        for (int c = 0; c < 3; c++)\n            dst(c) = col\[c];\n        dst(3) = 1;\n\n    \}\n\};"
+   rebuild ""
+   TexTile_width {{width}}
+   TexTile_height {{height}}
+   TexTile_tiling {{parent.tiling}}
+   TexTile_offset {{parent.offset}}
+   TexTile_scale 0.25
+   TexTile_contrast 0.1
+   format {{{TexTileFormat.format}}}
+   rebuild_finalise ""
+   name BlinkScript2
+   selected true
+   xpos -81
+   ypos -71
+   disable {{"!\[exists parent.parent.input1]"}}
+  }
+  Output {
+   name Output1
+   xpos -81
+   ypos -1
+  }
+  Reformat {
+   inputs 0
+   name TexTileFormat
+   xpos 43
+   ypos -63
+  }
+ end_group
+ Clamp {
+  channels alpha
+  name Clamp17
+  xpos 429
+  ypos 242
+ }
+ Group {
+  name Seamless2
+  xpos 429
+  ypos 278
+  addUserKnob {20 User}
+  addUserKnob {7 softness R 0 4}
+  softness 0.2
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos 509
+   ypos 98
+  }
+  Dot {
+   name Dot21
+   xpos 543
+   ypos 142
+  }
+set N3f4ca800 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle13
+   xpos 388
+   ypos 139
+  }
+  BlackOutside {
+   name BlackOutside1
+   xpos 388
+   ypos 175
+  }
+  Position {
+   translate {0 {height/10*parent.softness}}
+   name Position1
+   xpos 388
+   ypos 199
+  }
+  Blur {
+   channels alpha
+   size {0 {height/10*parent.softness}}
+   name Blur4
+   xpos 388
+   ypos 229
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop3
+   xpos 388
+   ypos 300
+  }
+push $N3f4ca800
+push $N3f4ca800
+  Mirror2 {
+   flip true
+   name Mirror2_3
+   xpos 608
+   ypos 201
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix3
+   xpos 509
+   ypos 294
+  }
+  Dot {
+   name Dot22
+   xpos 543
+   ypos 365
+  }
+set N4ad16800 [stack 0]
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+   name Shuffle14
+   xpos 395
+   ypos 362
+  }
+  BlackOutside {
+   name BlackOutside2
+   xpos 395
+   ypos 398
+  }
+  Position {
+   translate {{-width/10*parent.softness} 0}
+   name Position2
+   xpos 395
+   ypos 422
+  }
+  Blur {
+   channels alpha
+   size {{width/10*parent.softness} 0}
+   name Blur3
+   xpos 395
+   ypos 446
+  }
+  Crop {
+   box {0 0 {width} {height}}
+   name Crop4
+   xpos 395
+   ypos 498
+  }
+push $N4ad16800
+push $N4ad16800
+  Mirror2 {
+   flop true
+   name Mirror2_4
+   xpos 611
+   ypos 424
+  }
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix4
+   xpos 509
+   ypos 492
+  }
+  Output {
+   name Output1
+   xpos 509
+   ypos 555
+  }
+ end_group
+push $N90906800
+ Tile {
+  rows {{parent.Textile1.tiling}}
+  columns {{parent.Textile1.tiling}}
+  name Tile3
+  xpos 533
+  ypos 224
+  disable {{"rows == 1"}}
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input1] && parent.randtile"}}
+  name Switch6
+  xpos 533
+  ypos 326
+ }
+ Switch {
+  inputs 2
+  which {{"parent.textures == 0"}}
+  name Switch5
+  xpos 533
+  ypos 474
+ }
+ Dot {
+  name Dot5
+  xpos 567
+  ypos 527
+ }
+clone $Cba1d4400 {
+  inputs 2
+  xpos 313
+  ypos 518
+  selected false
+ }
+ Copy {
+  inputs 2
+  from0 rgba.blue
+  to0 rgba.alpha
+  name Copy8
+  xpos 313
+  ypos 609
+ }
+set N97cc2000 [stack 0]
+ Merge2 {
+  inputs 2
+  operation multiply
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  name Merge6
+  xpos 438
+  ypos 771
+ }
+push $N97cc2000
+ Grade {
+  channels alpha
+  blackpoint 1.05
+  whitepoint {{parent.hardness}}
+  white_clamp true
+  name Grade4
+  xpos 454
+  ypos 609
+ }
+push $Nbbf3f400
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge9
+  xpos 454
+  ypos 700
+ }
+push $N97cc2000
+ Merge2 {
+  inputs 2
+  operation from
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  mix {{parent.blendnoise}}
+  name Merge12
+  xpos 313
+  ypos 694
+ }
+ Switch {
+  inputs 2
+  which {{parent.noisemergez}}
+  name Switch18
+  label noisemerge
+  xpos 313
+  ypos 771
+ }
+ Clamp {
+  channels alpha
+  name Clamp3
+  xpos 313
+  ypos 894
+ }
+ Premult {
+  name Premult1
+  xpos 313
+  ypos 930
+ }
+ Dot {
+  name Dot10
+  xpos 347
+  ypos 1116
+ }
+ Dot {
+  name Dot24
+  xpos -1101
+  ypos 1116
+ }
+set N741da400 [stack 0]
+push $N2926f400
+ Dot {
+  name Dot59
+  xpos -598
+  ypos 713
+ }
+set N741da800 [stack 0]
+ Dot {
+  name Dot72
+  xpos -596
+  ypos 771
+ }
+ Invert {
+  channels alpha
+  name Invert6
+  xpos -713
+  ypos 762
+ }
+push $Nc8248c00
+ Dot {
+  name Dot4
+  xpos -998
+  ypos 57
+ }
+ Dot {
+  name Dot75
+  xpos -998
+  ypos 612
+ }
+push $Nc8249800
+ Dot {
+  name Dot74
+  xpos -914
+  ypos 137
+ }
+ Group {
+  name Pworld_transform
+  xpos -948
+  ypos 185
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   rotate {{parent.parent.NormalRotation.Axis1.rotate.x} {parent.parent.NormalRotation.Axis1.rotate.y} {parent.parent.NormalRotation.Axis1.rotate.z}}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Group {
+  name Pworld_transform6
+  xpos -948
+  ypos 224
+  addUserKnob {20 User}
+  addUserKnob {41 in l Position T Shuffle1.in}
+  addUserKnob {26 ""}
+  addUserKnob {41 translate T Axis1.translate}
+  addUserKnob {41 rotate T Axis1.rotate}
+  addUserKnob {41 scaling l scale T Axis1.scaling}
+  addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+ }
+  Input {
+   inputs 0
+   name pworld
+   label input
+   xpos 0
+  }
+  Shuffle {
+   alpha black
+   name Shuffle1
+   label "select pworld\n"
+   xpos 0
+   ypos 50
+  }
+  Expression {
+   expr0 r-parent.Axis1.world_matrix.3
+   expr1 g-parent.Axis1.world_matrix.7
+   expr2 b-parent.Axis1.world_matrix.11
+   name Expression1
+   xpos 0
+   ypos 151
+  }
+  ColorMatrix {
+   matrix {
+       {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+       {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+       {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+     }
+   invert true
+   name ColorMatrix1
+   xpos 0
+   ypos 195
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 300
+  }
+  Viewer {
+   frame_range 1-100
+   name Viewer1
+   xpos 0
+   ypos 326
+  }
+  Axis2 {
+   inputs 0
+   rotate {{parent.parent.rotX} 0 0}
+   name Axis1
+   xpos -150
+   ypos 171
+  }
+ end_group
+ Shuffle {
+  in rgb
+  red green
+  green blue
+  blue red2
+  alpha red2
+  name Shuffle17
+  label YZ
+  xpos -948
+  ypos 269
+ }
+set Nac08b800 [stack 0]
+ Group {
+  name StaggerUV1
+  xpos -841
+  ypos 376
+  addUserKnob {20 User}
+  addUserKnob {41 size T master.size}
+ }
+  Input {
+   inputs 0
+   name UV
+   xpos -587
+   ypos -247
+  }
+  Dot {
+   name Dot68
+   xpos -553
+   ypos -178
+  }
+set N8d9dc000 [stack 0]
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression13
+   xpos -703
+   ypos -150
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size*2}}
+  }
+  Expression {
+   expr0 rint(r)
+   expr2 0
+   name Expression11
+   xpos -703
+   ypos -115
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size 0.2
+  }
+  Shuffle2 {
+   fromInput1 {{0} B}
+   fromInput2 {{0} B}
+   mappings "4 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.alpha 0 3 rgba.red 0 0 rgba.red 0 0 rgba.alpha 0 3"
+   name Shuffle5
+   xpos -703
+   ypos -91
+  }
+push $N8d9dc000
+  Group {
+   name Pworld_transform105
+   xpos -485
+   ypos -142
+   addUserKnob {20 User}
+   addUserKnob {41 in l Position T Shuffle1.in}
+   addUserKnob {26 ""}
+   addUserKnob {41 translate T Axis1.translate}
+   addUserKnob {41 rotate T Axis1.rotate}
+   addUserKnob {41 scaling l scale T Axis1.scaling}
+   addUserKnob {41 uniform_scale l "uniform scale" T Axis1.uniform_scale}
+  }
+   Input {
+    inputs 0
+    name pworld
+    label input
+    xpos 0
+   }
+   Shuffle {
+    alpha black
+    name Shuffle1
+    label "select pworld\n"
+    xpos 0
+    ypos 50
+   }
+   Expression {
+    expr0 r-parent.Axis1.world_matrix.3
+    expr1 g-parent.Axis1.world_matrix.7
+    expr2 b-parent.Axis1.world_matrix.11
+    name Expression1
+    xpos 0
+    ypos 151
+   }
+   ColorMatrix {
+    matrix {
+        {{parent.Axis1.world_matrix.0} {parent.Axis1.world_matrix.1} {parent.Axis1.world_matrix.2}}
+        {{parent.Axis1.world_matrix.4} {parent.Axis1.world_matrix.5} {parent.Axis1.world_matrix.6}}
+        {{parent.Axis1.world_matrix.8} {parent.Axis1.world_matrix.9} {parent.Axis1.world_matrix.10}}
+      }
+    invert true
+    name ColorMatrix1
+    xpos 0
+    ypos 195
+   }
+   Output {
+    name Output1
+    xpos 0
+    ypos 300
+   }
+   Axis2 {
+    inputs 0
+    translate {0 {master.size*.5} 0}
+    name Axis1
+    xpos -150
+    ypos 171
+   }
+  end_group
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression14
+   xpos -485
+   ypos -109
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+push $N8d9dc000
+  Expression {
+   expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+   expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+   expr2 0
+   expr3 abs(a)
+   name Expression12
+   xpos -587
+   ypos -111
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 300}
+   size {{master.size}}
+  }
+  Keymix {
+   inputs 3
+   channels rgb
+   name Keymix1
+   xpos -587
+   ypos -42
+  }
+  Output {
+   name Output1
+   xpos -587
+   ypos 32
+  }
+  NoOp {
+   inputs 0
+   name master
+   xpos -705
+   ypos -205
+   addUserKnob {20 User}
+   addUserKnob {7 size R 0 100}
+   size {{parent.parent.Expression6.size}}
+  }
+ end_group
+push $Nac08b800
+ Expression {
+  expr0 r>=0?(r%size)/size:(1-(-r%size)/size)
+  expr1 g>=0?(g%size)/size:(1-(-g%size)/size)
+  expr3 abs(a)
+  name Expression6
+  xpos -948
+  ypos 374
+  addUserKnob {20 User}
+  addUserKnob {7 size R 0 300}
+  size 10
+ }
+ Switch {
+  inputs 2
+  which {{parent.stagger}}
+  name stagger
+  xpos -948
+  ypos 444
+ }
+push $Nb67fac00
+ Dot {
+  name Dot7
+  xpos -686
+  ypos 536
+ }
+clone $Cba1d4400 {
+  inputs 2
+  xpos -948
+  ypos 527
+  selected false
+ }
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.alpha
+  name Copy6
+  xpos -948
+  ypos 603
+ }
+set Nbba06c00 [stack 0]
+ Merge2 {
+  inputs 2
+  operation multiply
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  name Merge28
+  xpos -823
+  ypos 762
+ }
+push $Nbba06c00
+ Grade {
+  channels alpha
+  blackpoint 1.05
+  whitepoint {{parent.hardness}}
+  white_clamp true
+  name Grade5
+  xpos -782
+  ypos 603
+ }
+push $N741da800
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge5
+  xpos -782
+  ypos 710
+ }
+push $Nbba06c00
+ Merge2 {
+  inputs 2
+  operation from
+  Achannels alpha
+  Bchannels alpha
+  output alpha
+  mix {{parent.blendnoise}}
+  name Merge10
+  xpos -948
+  ypos 704
+ }
+ Switch {
+  inputs 2
+  which {{parent.noisemergex}}
+  name Switch20
+  label noisemerge
+  xpos -948
+  ypos 762
+ }
+ Clamp {
+  channels alpha
+  name Clamp1
+  xpos -948
+  ypos 872
+ }
+set N29300400 [stack 0]
+ Premult {
+  name Premult4
+  xpos -948
+  ypos 908
+ }
+ Dot {
+  name Dot8
+  xpos -914
+  ypos 1200
+ }
+set N29300c00 [stack 0]
+ Merge2 {
+  inputs 3+1
+  operation screen
+  name Merge4
+  xpos -1135
+  ypos 1325
+ }
+ Clamp {
+  channels alpha
+  name Clamp6
+  xpos -1135
+  ypos 1349
+ }
+ Dot {
+  name Dot25
+  xpos -1101
+  ypos 1412
+ }
+push $Nbbf3ec00
+push $N29300c00
+push $N741da400
+push $N29300400
+ Dot {
+  name Dot21
+  xpos -1062
+  ypos 881
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name Shuffle1
+  xpos -1096
+  ypos 923
+ }
+ Dot {
+  name Dot19
+  xpos -1062
+  ypos 974
+ }
+push $Nd62af000
+ Remove {
+  name Remove1
+  xpos -1320
+  ypos 597
+ }
+ Dot {
+  name Dot22
+  xpos -1286
+  ypos 895
+ }
+set N807b0c00 [stack 0]
+ Merge2 {
+  inputs 2
+  name Merge13
+  xpos -1241
+  ypos 971
+ }
+push $N807b0c00
+ Switch {
+  inputs 2
+  which {{"parent.posx == 1 && parent.posy == 1 && parent.posz == 1 && parent.negx == 1 && parent.negy == 1 && parent.negz == 1 && parent.noisemergex == 0 && parent.noisemergey == 0 && parent.noisemergez == 0" x67 0 1}}
+  name Switch3
+  label "IFF ALL FLOOD ALPHA"
+  xpos -1320
+  ypos 1032
+ }
+ Merge2 {
+  inputs 2
+  name Merge3
+  xpos -1320
+  ypos 1113
+  disable {{"\[exists parent.input1] || parent.textures == 0 ? 0 : 1" x17 1 x67 1 x70 1 x92 1}}
+ }
+ Merge2 {
+  inputs 2
+  name Merge1
+  xpos -1320
+  ypos 1197
+  disable {{"\[exists parent.input3] ? 0 : 1" x67 1 1 x70 1 x92 1}}
+ }
+ Merge2 {
+  inputs 2
+  name Merge2
+  xpos -1320
+  ypos 1281
+  disable {{"\[exists parent.input2] || parent.textures == 0 ? 0 : 1" x67 1 x70 1 x92 1}}
+ }
+set Nc338c000 [stack 0]
+ Unpremult {
+  name Unpremult1
+  xpos -1245
+  ypos 1373
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos -1245
+  ypos 1403
+ }
+ Premult {
+  name Premult2
+  xpos -1245
+  ypos 1439
+ }
+push $Nc338c000
+ Switch {
+  inputs 2
+  which {{"parent.noisemergex || parent.noisemergey || parent.noisemergez"}}
+  name Switch8
+  label "NOISE BREAKUP ALPHA"
+  xpos -1320
+  ypos 1502
+ }
+ Clamp {
+  channels alpha
+  name Clamp4
+  xpos -1320
+  ypos 1604
+ }
+ Merge2 {
+  inputs 2
+  operation mask
+  name Merge14
+  xpos -1320
+  ypos 1680
+ }
+ Output {
+  name Output1
+  xpos -1320
+  ypos 1753
+ }
+end_group

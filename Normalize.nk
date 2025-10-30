@@ -1,0 +1,1151 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+ name Normalize
+ selected true
+ xpos 3501
+ ypos -2597
+ addUserKnob {20 User}
+ addUserKnob {6 _1_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {26 whitediv l Whitepoint}
+ addUserKnob {6 whitepoint l Luma +STARTLINE}
+ whitepoint true
+ addUserKnob {6 whitecolor l Color -STARTLINE}
+ whitecolor true
+ addUserKnob {7 whiteblur l blur}
+ addUserKnob {41 whitepointsampler l whitepoint T whitesampler.color}
+ addUserKnob {26 blackdiv l Blackpoint}
+ addUserKnob {6 blackpoint l Luma +STARTLINE}
+ blackpoint true
+ addUserKnob {6 blackcolor l Color -STARTLINE}
+ blackcolor true
+ addUserKnob {7 blackblur l blur}
+ addUserKnob {41 color l blackpoint T blacksampler.color}
+ addUserKnob {26 enddiv l "" +STARTLINE}
+ addUserKnob {6 bpremult l "source is premultiplied" +STARTLINE}
+ addUserKnob {6 apremult l "dst is premultiplied" +STARTLINE}
+ apremult true
+ addUserKnob {6 maskwitha l "mask with dest" +STARTLINE}
+ maskwitha true
+ addUserKnob {6 sample l "sample values" +STARTLINE}
+ sample true
+ addUserKnob {3 res l Quality t "Resolution that Normalize is done\n200px x 200px for instance"}
+ res 200
+ addUserKnob {4 output l Output M {Normalize Reverse Whitepoint Blackpoint "" ""}}
+ addUserKnob {22 generategrade l "Generate Grade Current Frame" T "\nthis = nuke.thisNode()\n\nthis.begin() \nblackpoint = nuke.toNode('export').knob('black').getValue()\nwhitepoint = nuke.toNode('export').knob('white').getValue()\nthis.end()\n\nnuke.root().begin()\n\nnormalize = nuke.createNode('Grade')\n\nnormalize.setXYpos( this.xpos(), this.ypos()+50)\n\nnormalize\['blackpoint'].setValue(blackpoint)\nnormalize\['whitepoint'].setValue(whitepoint)\n\n\n" +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {41 which l mix T Dissolve1MIX.which}
+ addUserKnob {26 info l "" t "Tool for mapping darkest value in plate to 0 and brightest to 1. Basically normalizing the input dynamicaly on the fly without curvetool sampling. Could be used to whitebalance or to match flickering in plate. Can also be used to transfer blackpoint & whitepoint from one element to another (from source to dest), in this case use output mode reverse." +STARTLINE T "\nNormalize 1.0 Calle Granström"}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x252525ff
+  label "NORMALIZE BLACKS"
+  note_font_size 42
+  xpos 641
+  ypos -736
+  bdwidth 454
+  bdheight 451
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0xe2ffe2ff
+  label "NORMALIZE WHITE"
+  note_font_size 42
+  xpos 642
+  ypos 14
+  bdwidth 452
+  bdheight 472
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode3
+  tile_color 0x7171c600
+  label export
+  note_font_size 42
+  xpos 1284
+  ypos 153
+  bdwidth 241
+  bdheight 381
+ }
+ Input {
+  inputs 0
+  name source
+  xpos 651
+  ypos -1661
+ }
+ Dot {
+  name Dot22
+  xpos 685
+  ypos -1490
+ }
+set N596f8800 [stack 0]
+ Dot {
+  name Dot10
+  xpos 592
+  ypos -1490
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  name Shuffle1
+  xpos 558
+  ypos -1437
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 558
+  ypos -1395
+ }
+ Dot {
+  name Dot11
+  xpos 592
+  ypos -1327
+ }
+push $N596f8800
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name Shuffle6
+  xpos 651
+  ypos -1435
+ }
+ Switch {
+  inputs 2
+  which {{bpremult}}
+  name Switch3
+  label premult
+  xpos 651
+  ypos -1336
+  disable {{"\[exists parent.input0] ? 0 : 1"}}
+ }
+ Dot {
+  name Dot35
+  xpos 685
+  ypos -1204
+ }
+set Nbb5bb800 [stack 0]
+ Dot {
+  name Dot30
+  xpos 685
+  ypos -1082
+ }
+set Nbb5bb400 [stack 0]
+ Input {
+  inputs 0
+  name dst
+  xpos 1210
+  ypos -1668
+  number 1
+ }
+ Dot {
+  name Dot37
+  xpos 1244
+  ypos -1489
+ }
+set Nbb5bb000 [stack 0]
+ Dot {
+  name Dot39
+  xpos 1151
+  ypos -1489
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  name Shuffle5
+  xpos 1117
+  ypos -1436
+ }
+ Unpremult {
+  name Unpremult6
+  xpos 1117
+  ypos -1394
+ }
+ Dot {
+  name Dot40
+  xpos 1151
+  ypos -1326
+ }
+push $Nbb5bb000
+ Switch {
+  inputs 2
+  which {{apremult}}
+  name Switch2
+  label premult
+  xpos 1210
+  ypos -1335
+  disable {{"\[exists parent.input0] ? 0 : 1"}}
+ }
+ Dot {
+  name Dot1
+  xpos 1244
+  ypos -1200
+ }
+set N6aa75000 [stack 0]
+ Dot {
+  name Dot4
+  xpos 898
+  ypos -1200
+ }
+ Dot {
+  name Dot34
+  xpos 898
+  ypos -1035
+ }
+push $Nbb5bb800
+ Dot {
+  name Dot36
+  xpos 806
+  ypos -1204
+ }
+ Remove {
+  name Remove3
+  xpos 772
+  ypos -1156
+ }
+ Merge2 {
+  inputs 2
+  name Merge7
+  xpos 772
+  ypos -1038
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input1] ? 0 : 1" x392 1}}
+  name aswitch
+  label "IF A PLATE EXIST"
+  xpos 651
+  ypos -1044
+ }
+ Dot {
+  name Dot2
+  xpos 685
+  ypos -983
+ }
+set N3ce4dc00 [stack 0]
+ Dot {
+  name Dot7
+  xpos 515
+  ypos -984
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  name Shuffle2
+  xpos 481
+  ypos 1235
+ }
+ Dot {
+  name Dot9
+  xpos 515
+  ypos 1283
+ }
+set Na587f800 [stack 0]
+ Dot {
+  name Dot25
+  xpos 515
+  ypos 1345
+ }
+ Dot {
+  name Dot29
+  xpos 515
+  ypos 1542
+ }
+set N89345000 [stack 0]
+ Dot {
+  name Dot26
+  xpos 515
+  ypos 1599
+ }
+push $Na587f800
+push $Nbb5bb400
+ Dot {
+  name Dot33
+  xpos 962
+  ypos -1082
+ }
+set Nc3cb8800 [stack 0]
+push $N6aa75000
+ Dot {
+  name Dot32
+  xpos 1500
+  ypos -1200
+ }
+ Input {
+  inputs 0
+  name mask
+  xpos 1703
+  ypos -1661
+  number 2
+ }
+ Dot {
+  name Dot41
+  xpos 1737
+  ypos -956
+ }
+ Merge2 {
+  inputs 2
+  name Merge4
+  xpos 1466
+  ypos -959
+  disable {{!maskwitha x1 1}}
+ }
+push $Nc3cb8800
+ Dot {
+  name Dot31
+  xpos 1251
+  ypos -1082
+ }
+ Remove {
+  name Remove2
+  xpos 1217
+  ypos -1043
+ }
+ Merge2 {
+  inputs 2
+  bbox A
+  name Merge8
+  xpos 1217
+  ypos -959
+ }
+push $Nc3cb8800
+ Dot {
+  name Dot14
+  xpos 1085
+  ypos -1039
+ }
+ Merge2 {
+  inputs 2
+  operation mask
+  bbox A
+  name Merge3
+  xpos 1051
+  ypos -959
+ }
+ Dot {
+  name Dot23
+  xpos 1085
+  ypos -910
+ }
+set N68603c00 [stack 0]
+ Switch {
+  inputs 2
+  which {{"maskwitha && \[exists parent.input1] ? 0 : 1" x392 1}}
+  name maskswitch1
+  label "MASK WITH A"
+  xpos 928
+  ypos -919
+ }
+push $N68603c00
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] ? 0 : 1" x392 1}}
+  name maskswitch
+  label "IF MASK PLATE EXIST"
+  xpos 928
+  ypos -873
+ }
+ Dot {
+  name Dot13
+  xpos 962
+  ypos -824
+ }
+set N6b45c400 [stack 0]
+ Dot {
+  name Dot3
+  xpos 862
+  ypos -824
+ }
+ Dot {
+  name Dot16
+  xpos 862
+  ypos -707
+ }
+ P:/_PIPELINE4/tools/nuke/filmgategizmos/Util/CropBoundingBox.gizmo {
+  name CropBoundingBox1
+  note_font Verdana
+  xpos 828
+  ypos -689
+  disable {{"\[exists parent.input2] || maskwitha ? 0 : 1"}}
+ }
+ Saturation {
+  saturation 0
+  name Saturation2
+  xpos 828
+  ypos -658
+  disable {{parent.blackcolor}}
+ }
+ Reformat {
+  type "to box"
+  box_width {{parent.res}}
+  box_height {{parent.res}}
+  box_fixed true
+  resize distort
+  filter impulse
+  name Reformat14
+  xpos 828
+  ypos -616
+ }
+set N472de800 [stack 0]
+ Unpremult {
+  name Unpremult2
+  xpos 718
+  ypos -616
+ }
+ Group {
+  name BinaryAlpha3
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 718
+  ypos -592
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{res}}
+  name Blur3
+  xpos 718
+  ypos -551
+ }
+ Unpremult {
+  name Unpremult4
+  xpos 718
+  ypos -521
+ }
+push $N472de800
+ Blur {
+  channels rgb
+  size {{res*blackblur}}
+  name Blur1
+  xpos 828
+  ypos -571
+ }
+ Merge2 {
+  inputs 2
+  operation under
+  name Merge9
+  xpos 828
+  ypos -521
+  disable {{"(\[exists parent.input1] && apremult) || (!\[exists parent.input1] && bpremult) ? 0 : 1" x1 1}}
+ }
+ Dilate {
+  channels rgb
+  size {{-parent.res}}
+  name Dilate9
+  xpos 828
+  ypos -487
+ }
+set N8cf0e800 [stack 0]
+push $N8cf0e800
+push $N8cf0e800
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 rgba.alpha 0 3 rgba.alpha 0 3"
+  name Shuffle3
+  xpos 985
+  ypos -487
+ }
+ Group {
+  inputs 2
+  name Color_Merge
+  tile_color 0xff55d4ff
+  xpos 985
+  ypos -449
+  addUserKnob {20 tab1 l "Color Merge"}
+  addUserKnob {41 mix_1 l "Color Transfer" T Copy3.mix}
+  addUserKnob {41 maskChannelMask_1 l "" -STARTLINE T Copy3.maskChannelMask}
+  addUserKnob {41 mix l "Luma Transfer" T Copy2.mix}
+  addUserKnob {41 maskChannelMask l "" -STARTLINE T Copy2.maskChannelMask}
+ }
+  Viewer {
+   inputs 0
+   frame_range 13-75
+   fps 23.97602463
+   name Viewer1
+   xpos 38
+   ypos -252
+  }
+  Input {
+   inputs 0
+   name B
+   xpos -325
+   ypos -759
+  }
+  Dot {
+   name Dot1
+   xpos -291
+   ypos -710
+  }
+set N95343800 [stack 0]
+  Dot {
+   name Dot2
+   xpos 4
+   ypos -710
+  }
+  Dot {
+   name Dot4
+   xpos 4
+   ypos -336
+  }
+  Input {
+   inputs 0
+   name mask
+   xpos -149
+   ypos -549
+   number 2
+  }
+set Nadcda400 [stack 0]
+  Dot {
+   name Dot3
+   xpos -115
+   ypos -471
+  }
+  Input {
+   inputs 0
+   name A
+   xpos -539
+   ypos -626
+   number 1
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace1
+   xpos -539
+   ypos -549
+  }
+set Nadcdb000 [stack 0]
+  Dot {
+   name Dot6
+   xpos -505
+   ypos -471
+  }
+push $Nadcda400
+push $Nadcdb000
+push $N95343800
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace2
+   xpos -325
+   ypos -635
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.red
+   to0 rgba.red
+   mix 0
+   name Copy2
+   xpos -325
+   ypos -555
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.green
+   to0 rgba.green
+   from1 rgba.blue
+   to1 rgba.blue
+   name Copy3
+   xpos -325
+   ypos -488
+  }
+  Colorspace {
+   colorspace_in CIE-Lab
+   name Colorspace3
+   xpos -325
+   ypos -413
+  }
+  Switch {
+   inputs 2
+   which {{parent.disable}}
+   name Switch1
+   xpos -325
+   ypos -339
+  }
+  Output {
+   name Output1
+   xpos -325
+   ypos -276
+  }
+ end_group
+ Switch {
+  inputs 2
+  which {{blackpoint}}
+  name onlycolour
+  xpos 828
+  ypos -449
+ }
+ Crop {
+  box {0 0 {width} {height}}
+  crop false
+  name Crop9
+  xpos 828
+  ypos -417
+ }
+ NoOp {
+  name blacksampler
+  xpos 828
+  ypos -388
+  addUserKnob {20 User}
+  addUserKnob {18 color l blackpoint}
+  color {{"sample ? \[sample this red width/2 height/2] : 0"} {"sample ? \[sample this green width/2 height/2] : 0"} {"sample ? \[sample this blue width/2 height/2] : 0"}}
+  addUserKnob {6 color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ }
+ Reformat {
+  type "to box"
+  box_width {{parent.FormatFromMASTER.format.u}}
+  box_height {{parent.FormatFromMASTER.format.v}}
+  box_fixed true
+  resize distort
+  filter impulse
+  name Reformat15
+  xpos 828
+  ypos -356
+ }
+ Dot {
+  name Dot27
+  xpos 862
+  ypos -323
+ }
+set N123e400 [stack 0]
+ Dot {
+  name Dot19
+  xpos 1118
+  ypos -323
+ }
+ Dot {
+  name Dot20
+  xpos 1118
+  ypos 1178
+ }
+push $N6b45c400
+ Dot {
+  name Dot18
+  xpos 962
+  ypos 57
+ }
+ P:/_PIPELINE4/tools/nuke/filmgategizmos/Util/CropBoundingBox.gizmo {
+  name CropBoundingBox2
+  note_font Verdana
+  xpos 928
+  ypos 75
+  disable {{"\[exists parent.input2] || maskwitha ? 0 : 1"}}
+ }
+ Saturation {
+  saturation 0
+  name Saturation1
+  xpos 928
+  ypos 114
+  disable {{parent.whitecolor}}
+ }
+ Reformat {
+  type "to box"
+  box_width {{parent.res i}}
+  box_height {{parent.res i}}
+  box_fixed true
+  resize distort
+  filter impulse
+  name Reformat16
+  xpos 928
+  ypos 152
+ }
+set N400e400 [stack 0]
+ Unpremult {
+  name Unpremult3
+  xpos 818
+  ypos 152
+ }
+ Group {
+  name BinaryAlpha1
+  tile_color 0x2a2a2aff
+  label "(\[value an] --> \[value output1])"
+  note_font Verdana
+  note_font_color 0xfffff9ff
+  xpos 818
+  ypos 176
+  addUserKnob {20 BinaryAlpha}
+  addUserKnob {4 an l Analyze: M {rgb rgba alpha "" "" ""}}
+  addUserKnob {4 output1 l Output: M {rgba alpha "" "" "" ""}}
+  output1 alpha
+  addUserKnob {20 info l Info}
+  addUserKnob {26 creator l Creator: T "<b><big>Tony Lyons"}
+  addUserKnob {26 desc l Description: t "Analyzes channel input and creates a binary result 0 or 1 and outputs it into output channel" T BinaryAlpha}
+  addUserKnob {26 ver l Version: T v03}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -398
+   ypos 275
+  }
+  Expression {
+   temp_name0 rgb_an
+   temp_expr0 "r !=0 || g!=0 || b!=0?1:0"
+   temp_name1 rgba_an
+   temp_expr1 "r!=0 || g!=0 || b!=0 || a!=0?1:0"
+   temp_name2 alpha_an
+   temp_expr2 a!=0?1:0
+   expr3 "parent.an == 0 ? rgb_an : parent.an == 1 ? rgba_an : alpha_an"
+   name Expression
+   xpos -398
+   ypos 341
+  }
+  Shuffle {
+   red alpha
+   green alpha
+   blue alpha
+   name Shuffle
+   label "\[value in]"
+   xpos -398
+   ypos 367
+   disable {{parent.output1}}
+  }
+  Output {
+   name Output1
+   xpos -398
+   ypos 456
+  }
+ end_group
+ Blur {
+  channels rgba
+  size {{res}}
+  name Blur4
+  xpos 818
+  ypos 222
+ }
+ Unpremult {
+  name Unpremult5
+  xpos 818
+  ypos 246
+ }
+push $N400e400
+ Blur {
+  channels rgb
+  size {{res*whiteblur}}
+  name Blur2
+  xpos 928
+  ypos 187
+ }
+ Merge2 {
+  inputs 2
+  operation under
+  name Merge6
+  xpos 928
+  ypos 246
+  disable {{"(\[exists parent.input1] && apremult) || (!\[exists parent.input1] && bpremult) ? 0 : 1" x1 1}}
+ }
+set N818a8c00 [stack 0]
+push $N818a8c00
+push $N818a8c00
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 white -1 -1 rgba.red 0 0 white -1 -1 rgba.green 0 1 white -1 -1 rgba.blue 0 2 rgba.alpha 0 3 rgba.alpha 0 3"
+  name Shuffle4
+  xpos 1035
+  ypos 246
+ }
+ Group {
+  inputs 2
+  name Color_Merge1
+  tile_color 0xff55d4ff
+  xpos 1035
+  ypos 307
+  addUserKnob {20 tab1 l "Color Merge"}
+  addUserKnob {41 mix_1 l "Color Transfer" T Copy3.mix}
+  addUserKnob {41 maskChannelMask_1 l "" -STARTLINE T Copy3.maskChannelMask}
+  addUserKnob {41 mix l "Luma Transfer" T Copy2.mix}
+  addUserKnob {41 maskChannelMask l "" -STARTLINE T Copy2.maskChannelMask}
+ }
+  Viewer {
+   inputs 0
+   frame_range 13-75
+   fps 23.97602463
+   name Viewer1
+   xpos 38
+   ypos -252
+  }
+  Input {
+   inputs 0
+   name B
+   xpos -325
+   ypos -759
+  }
+  Dot {
+   name Dot1
+   xpos -291
+   ypos -710
+  }
+set Nfcad3c00 [stack 0]
+  Dot {
+   name Dot2
+   xpos 4
+   ypos -710
+  }
+  Dot {
+   name Dot4
+   xpos 4
+   ypos -336
+  }
+  Input {
+   inputs 0
+   name mask
+   xpos -149
+   ypos -549
+   number 2
+  }
+set N94064800 [stack 0]
+  Dot {
+   name Dot3
+   xpos -115
+   ypos -471
+  }
+  Input {
+   inputs 0
+   name A
+   xpos -539
+   ypos -626
+   number 1
+  }
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace1
+   xpos -539
+   ypos -549
+  }
+set N94065400 [stack 0]
+  Dot {
+   name Dot6
+   xpos -505
+   ypos -471
+  }
+push $N94064800
+push $N94065400
+push $Nfcad3c00
+  Colorspace {
+   colorspace_out CIE-Lab
+   name Colorspace2
+   xpos -325
+   ypos -635
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.red
+   to0 rgba.red
+   mix 0
+   name Copy2
+   xpos -325
+   ypos -555
+  }
+  Copy {
+   inputs 2+1
+   from0 rgba.green
+   to0 rgba.green
+   from1 rgba.blue
+   to1 rgba.blue
+   name Copy3
+   xpos -325
+   ypos -488
+  }
+  Colorspace {
+   colorspace_in CIE-Lab
+   name Colorspace3
+   xpos -325
+   ypos -413
+  }
+  Switch {
+   inputs 2
+   which {{parent.disable}}
+   name Switch1
+   xpos -325
+   ypos -339
+  }
+  Output {
+   name Output1
+   xpos -325
+   ypos -276
+  }
+ end_group
+ Switch {
+  inputs 2
+  which {{whitepoint}}
+  name onlycolourwhite
+  xpos 928
+  ypos 307
+ }
+ Dilate {
+  channels rgb
+  size {{parent.res}}
+  name Dilate1
+  xpos 928
+  ypos 344
+ }
+ Crop {
+  box {0 0 {width} {height}}
+  crop false
+  name Crop5
+  xpos 928
+  ypos 375
+ }
+ NoOp {
+  name whitesampler
+  xpos 928
+  ypos 412
+  addUserKnob {20 User}
+  addUserKnob {18 color l blackpoint}
+  color {{"sample ? \[sample this red width/2 height/2] : 0"} {"sample ? \[sample this green width/2 height/2] : 0"} {"sample ? \[sample this blue width/2 height/2] : 0"}}
+  addUserKnob {6 color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ }
+ Reformat {
+  type "to box"
+  box_width {{parent.FormatFromMASTER.format.u}}
+  box_height {{parent.FormatFromMASTER.format.v}}
+  box_fixed true
+  resize distort
+  filter impulse
+  name Reformat17
+  xpos 928
+  ypos 445
+ }
+ Dot {
+  name Dot24
+  xpos 962
+  ypos 883
+ }
+set N9ea0ac00 [stack 0]
+ Dot {
+  name Dot21
+  xpos 962
+  ypos 1083
+ }
+push $N9ea0ac00
+push $N123e400
+ Dot {
+  name Dot8
+  xpos 862
+  ypos -136
+ }
+set N9ea0b400 [stack 0]
+push $N3ce4dc00
+ Dot {
+  name Dot15
+  xpos 685
+  ypos -656
+ }
+ Dot {
+  name Dot6
+  xpos 685
+  ypos -255
+ }
+set N9ea0bc00 [stack 0]
+ Dot {
+  name Dot5
+  xpos 797
+  ypos -255
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge2
+  xpos 763
+  ypos -70
+  disable {{"!parent.blackpoint && !parent.blackcolor"}}
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge1
+  xpos 763
+  ypos 963
+  disable {{"!parent.whitepoint && !parent.whitecolor"}}
+ }
+push $N9ea0ac00
+push $N9ea0b400
+push $N9ea0bc00
+ Merge2 {
+  inputs 2
+  operation from
+  name Merge24
+  xpos 651
+  ypos -139
+  disable {{"!parent.blackpoint && !parent.blackcolor" x1040 1 x1061 1}}
+ }
+ Dot {
+  name Dot17
+  xpos 685
+  ypos 82
+ }
+ Dot {
+  name Dot38
+  xpos 685
+  ypos 790
+ }
+ MergeExpression {
+  inputs 2
+  expr0 Ar>0?(Br/Ar):0
+  expr1 Ag>0?(Bg/Ag):0
+  expr2 Ab>0?(Bb/Ab):0
+  channel3 {none none none -rgba.alpha}
+  name DivideReversed
+  help "Like Merge (divide) but with switched inputs. Alpha pass through as default, add the expression for alpha if needed!"
+  xpos 651
+  ypos 880
+  disable {{"!parent.whitepoint && !parent.whitecolor"}}
+  addUserKnob {20 info}
+ }
+ Switch {
+  inputs 4
+  which {{parent.output}}
+  name MODE
+  xpos 651
+  ypos 1175
+ }
+set Nbeeefc00 [stack 0]
+ Dot {
+  name Dot12
+  xpos 613
+  ypos 1242
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos 579
+  ypos 1385
+ }
+ Premult {
+  name Premult1
+  xpos 579
+  ypos 1421
+ }
+push $Na587f800
+push $Nbeeefc00
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy2
+  xpos 651
+  ypos 1274
+ }
+ Switch {
+  inputs 2
+  which {{"(!\[exists parent.input1] ? 0 : 1 && apremult) || (\[exists parent.input0] ? 0 : 1 && bpremult)"}}
+  name Switch1
+  label premult
+  xpos 651
+  ypos 1466
+ }
+push $N89345000
+ Dissolve {
+  inputs 2
+  which 1
+  name Dissolve1MIX
+  xpos 651
+  ypos 1533
+ }
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos 651
+  ypos 1596
+ }
+ Output {
+  name Output1
+  xpos 651
+  ypos 1649
+ }
+ NoOp {
+  inputs 0
+  name NoOp1
+  xpos 1380
+  ypos 363
+  addUserKnob {20 User}
+  addUserKnob {22 currentframegrade l "Generate Grade" T "\nthis = nuke.thisNode()\n\nthis.begin() \nblackpoint = nuke.toNode('blacksampler').knob('color').getValue()\nwhitepoint = nuke.toNode('whitesampler').knob('color').getValue()\nthis.end()\n\nnuke.root().begin()\n\nnormalize = nuke.createNode('Grade')\n\nnormalize.setXYpos( this.xpos(), this.ypos()+50)\n\nnormalize\['whitepoint'].setValue(whitepoint)\nnormalize\['blackpoint'].setValue(blackpoint)\n\n" +STARTLINE}
+ }
+ NoOp {
+  inputs 0
+  name export
+  xpos 1376
+  ypos 272
+  addUserKnob {20 User}
+  addUserKnob {19 black l blackpoint}
+  black {{parent.blacksampler.color} {parent.blacksampler.color} {parent.blacksampler.color} 1}
+  addUserKnob {6 black_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {19 white l whitepoint}
+  white {{parent.whitesampler.color} {parent.whitesampler.color} {parent.whitesampler.color} 1}
+  addUserKnob {6 white_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {22 animated l "Generate Animated Grade" T "export = nuke.thisNode()\nexportblack = export\['black']\nexportwhite = export\['white']\nblack = nuke.toNode('blacksampler')\nwhite = nuke.toNode('whitesampler')\nblackknob = black\['color']\nwhiteknob = white\['color']\n\nfirstFrame = int(nuke.root()\['first_frame'].getValue())\nlastFrame = int(nuke.root()\['last_frame'].getValue())\n\nexportblack.clearAnimated()\nexportwhite.clearAnimated()\nfor frame in range(firstFrame, lastFrame):\n\texportblack.setValueAt(frame, blackknob.getValue())\n\texportwhite.setValueAt(frame, whiteknob.getValue())" +STARTLINE}
+  addUserKnob {6 color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ }
+ Shuffle2 {
+  inputs 0
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name Shuffle7
+  xpos 1290
+  ypos -1437
+ }
+push $N596f8800
+ Dot {
+  name Dot28
+  xpos 932
+  ypos -1490
+ }
+ NoOp {
+  name FormatFromMASTER
+  xpos 898
+  ypos -1430
+  addUserKnob {20 User}
+  addUserKnob {30 format l Format}
+  format {{width} {height}}
+ }
+end_group

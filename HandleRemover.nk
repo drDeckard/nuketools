@@ -1,0 +1,40 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+name HandleRemover
+selected true
+xpos 216
+ypos -849
+addUserKnob {20 User}
+addUserKnob {41 handleshead l Head T FrameRange1.handleshead}
+addUserKnob {41 handlestail l Tail T FrameRange1.handlestail}
+addUserKnob {41 first_frame l "frame range" T FrameRange1.first_frame}
+addUserKnob {41 last_frame l "" -STARTLINE T FrameRange1.last_frame}
+}
+Input {
+inputs 0
+name Input1
+xpos 631
+ypos -289
+}
+FrameRange {
+first_frame {{input.first_frame+handleshead}}
+last_frame {{input.last_frame-handlestail}}
+time ""
+name FrameRange1
+selected true
+xpos 631
+ypos -232
+addUserKnob {20 User}
+addUserKnob {3 handleshead l Head}
+handleshead 8
+addUserKnob {3 handlestail l Tail}
+handlestail 8
+}
+Output {
+name Output1
+xpos 631
+ypos -149
+}
+end_group

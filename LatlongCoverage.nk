@@ -1,0 +1,1769 @@
+set cut_paste_input [stack 0]
+version 14.0 v5
+push $cut_paste_input
+Group {
+name Latlong_Coverage
+selected true
+xpos 2902
+ypos 565
+addUserKnob {20 hdricoverage l "Latlong Coverage"}
+addUserKnob {26 before l "Before Autocrop"}
+addUserKnob {41 startframe_1 l "Frame Range" T FrameBlend1.startframe}
+addUserKnob {41 endframe_1 l "" -STARTLINE T FrameBlend1.endframe}
+addUserKnob {6 customframe l "Override Framerange" +STARTLINE}
+addUserKnob {41 startframe l "" -STARTLINE T FrameBlend2.startframe}
+addUserKnob {41 endframe l "" -STARTLINE T FrameBlend2.endframe}
+addUserKnob {6 hdristencil l "Mask with Latlong alpha" +STARTLINE}
+addUserKnob {6 maskfgrender l "Mask with FG Render" +STARTLINE}
+addUserKnob {41 overscan l Overscan T CamSettings.overscan}
+addUserKnob {7 far l "Far Clipping Plane" R 0 3e+06}
+far 2100000
+addUserKnob {41 run l "Run Autocrop" T AutoCropCtrl.run}
+addUserKnob {41 reset l "Reset AutoCrop" T AutoCropCtrl.reset}
+addUserKnob {26 Settings l "After Autocrop"}
+addUserKnob {6 usecrop l "Use Autocrop" +STARTLINE}
+usecrop true
+addUserKnob {6 reformatbbox l "Reformat to BBox" +STARTLINE}
+addUserKnob {6 showcoverage l "Show Coverage" +STARTLINE}
+showcoverage true
+addUserKnob {6 overlayfg l "Overlay FG Render" +STARTLINE}
+overlayfg true
+addUserKnob {6 multichannel l "Multichannel Output" +STARTLINE}
+multichannel true
+addUserKnob {26 Clipping l "Clipping Planes" +INVISIBLE}
+addUserKnob {7 near +INVISIBLE R 0 3e+07}
+near 1
+addUserKnob {26 upscale l Upscale}
+addUserKnob {6 autoupscale l "Auto Upscale" t "Compares resolution of HDRI and what res a latlong would need to cover output format with current lens." +STARTLINE}
+addUserKnob {7 manualupscale l "Manual Upscale" R 1 4}
+manualupscale 1
+addUserKnob {7 upscaleout l Upscale R 1 4}
+upscaleout {{"autoupscale == true ? GetFOV.scalemult : manualupscale"}}
+addUserKnob {41 filter T Reformat2.filter}
+addUserKnob {6 upscaleinlog l "Upscale in log" +STARTLINE}
+upscaleinlog true
+addUserKnob {26 exportcrop l "Export Crop"}
+addUserKnob {22 createcrop l "Bake crop node" T "\nthis = nuke.thisNode()\n\nthis.begin() \nfromcrop = nuke.toNode('CropExport').knob('box').getValue()\nthis.end()\n\nnuke.root().begin()\n\ntocrop = nuke.createNode('Crop')\n\ntocrop.setXYpos( this.xpos(), this.ypos()+50)\n\ntocrop\['box'].setValue(fromcrop)\n\n" +STARTLINE}
+addUserKnob {22 expressioncrop l "Expression linked crop" T "this = nuke.thisNode()\nthisName = nuke.thisNode().name()\n\nnuke.root().begin()\n\ntocrop = nuke.createNode('Crop')\ntocrop.setXYpos( this.xpos(), this.ypos()+50)\n\ntocrop\['box'].setExpression( thisName + '.CropExport.box' )\n\ntocrop.setSelected(True)" +STARTLINE}
+addUserKnob {26 revtext l "Reverse DMP"}
+addUserKnob {22 reversedmp l "Create reverse transform" T "\nthis = nuke.thisNode()\n\nthis.begin() \nreversevalue = nuke.toNode('TransformReverse').knob('translate').getValue()\nHDRIFormat = nuke.toNode('HDRIFormatExport').knob('box').getValue()\nthis.end()\n\nnuke.root().begin()\nthis = nuke.selectedNode()\ndot = nuke.createNode('Dot')\n\ndot.setXYpos( this.xpos(), this.ypos()+300)\n\n\ndot.knob('label').setValue(\"Input DMP\")\nreversetransform = nuke.createNode('Transform')\nmerge = nuke.createNode('Merge')\n\nout = nuke.createNode('Dot')\nout.knob('label').setValue(\"DMP in HDRI Format\")\n\nconstant = nuke.createNode('Constant')\nconstant.setXYpos(dot.xpos()+200, dot.ypos()-100)\n\nHDRIBG = nuke.createNode('Crop')\n\nHDRIBG\['box'].setValue(HDRIFormat)\nHDRIBG\['reformat'].setValue(1)\n\nreversetransform.knob('translate').setValue(reversevalue)\nmerge.connectInput(1, HDRIBG)\nmerge\['bbox'].setValue(\"A\")" +STARTLINE}
+addUserKnob {20 output l "Output Projection" n 1}
+output 0
+addUserKnob {6 projection l "Use Projection" +STARTLINE}
+addUserKnob {3 scanlineoverscan l "Scanline Overscan"}
+scanlineoverscan 5000
+addUserKnob {3 projectframe l Frame}
+projectframe 1001
+addUserKnob {41 run_1 l "Autocrop Projection" T AutoCropCtrlProjection.run}
+addUserKnob {41 reset_1 l "Reset AutoCrop" T AutoCropCtrlProjection.reset}
+addUserKnob {20 endGroup n -1}
+addUserKnob {20 debug l "Reverse DMP" t "Using DMP input to test reversing to HDRI format" n 1}
+debug 0
+addUserKnob {6 reverse l "Reverse From DMP" +STARTLINE}
+addUserKnob {6 solidalpha l "Solid Alpha" +STARTLINE}
+solidalpha true
+addUserKnob {6 overhdri l "Merge Over HDRI" +STARTLINE}
+addUserKnob {20 endGroup_1 l endGroup n -1}
+addUserKnob {26 info2 l "" +STARTLINE T "\nLatlong Coverage 1.1 (c) Calle Granström"}
+addUserKnob {26 helptext l "" +STARTLINE T ""}
+addUserKnob {20 infotab l Info}
+addUserKnob {26 help_1 l "" +STARTLINE T "HOW TO USE Latlong Coverage\n\n\n1. Pipe in Latlong, Camera and the Sphere (Make sure camera include overscan)\n2. If you need FG reference, plug in FG_Render\n3. If only need cropping for a specific framerange, choose a custom framerange.\nNot setting a custom frame range will use frame range from current shot.\nMost often recomended.\n4. Auto upscale will determine if more resolution is needed for output format/lens.\n5. Render output as with either multiple tiffs or use a multichannel EXR\n6. Click \"Create reverse transform\" and doublecheck your export matches your skydome.\n7. Get DMP back and reverse back into the Latlong format\nThe DMP must have exact same format as sent to DMP, if not, reformat to correct format with\n preserve boundingbox.\n8. To project DMP using rendercamera, use the Output Projection tab,\nalso in combo with the Reverse DMP tab.\n\nNotes / Ideas?\ncalle.granstrom@gmail.com"}
+}
+BackdropNode {
+inputs 0
+name BackdropNode1
+tile_color 0x7171c600
+label "REPROJECT DMP WITH RENDERCAMERA"
+note_font_size 42
+xpos 2267
+ypos 1329
+bdwidth 847
+bdheight 1098
+z_order -930006
+}
+BackdropNode {
+inputs 0
+name BackdropNode7
+tile_color 0x388e8e00
+label SkyDome
+note_font_size 56
+xpos -1317
+ypos -197
+bdwidth 694
+bdheight 1083
+z_order -751602
+}
+NoOp {
+inputs 0
+name CamSettings
+xpos -341
+ypos 22
+addUserKnob {20 User}
+addUserKnob {7 overscan l Overscan R 1 2}
+overscan 1.1
+}
+Input {
+inputs 0
+name Camera
+xpos -475
+ypos -162
+number 1
+}
+Camera {
+projection_mode {{"\[expression \[value the_cam]projection_mode(\[value the_frame])]"}}
+focal {{"\[expression \[value the_cam]focal(\[value the_frame])]"}}
+haperture {{"\[expression \[value the_cam]haperture(\[value the_frame])]"}}
+vaperture {{"\[expression \[value the_cam]vaperture(\[value the_frame])]"}}
+near {{"\[expression \[value the_cam]near(\[value the_frame])]"}}
+far {{"\[expression \[value the_cam]far(\[value the_frame])]"}}
+win_translate {{"\[expression \[value the_cam]win_translate.u(\[value the_frame])]"} {"\[expression \[value the_cam]win_translate.v(\[value the_frame])]"}}
+win_scale {{"\[expression \[value the_cam]win_scale.u(\[value the_frame])]"} {"\[expression \[value the_cam]win_scale.v(\[value the_frame])]"}}
+winroll {{"\[expression \[value the_cam]winroll(\[value the_frame])]"}}
+focal_point {{"\[expression \[value the_cam]focal_point(\[value the_frame])]"}}
+fstop {{"\[expression \[value the_cam]fstop(\[value the_frame])]"}}
+name DummyCam
+help "DummyCam by Adrian Pueyo\n\nCamera that apart from the matrices also grabs all the \"Projection\" values from the upstream camera that it's connected to. Turns into a default Camera if no Camera connected. Can also be used inside of groups and gizmos, as many levels deep as you want :D All using live and super fast TCL.\n\nUpdated v1.1: Now grabs the correct frame too (thanks Erwan Leroy for the idea).\n\nUpdated v1.3: Now accepts Nuke13's Camera3\n\nadrianpueyo.com, 2019-2021"
+onCreate "n = nuke.thisNode()\nfor k in \[\"projection_mode\",\"focal\",\"haperture\",\"vaperture\",\"near\",\"far\",\"win_translate\",\"win_scale\",\"winroll\",\"focal_point\",\"fstop\"]:\n    n\[k].setFlag(0x0000000010000000)"
+xpos -465
+ypos -104
+addUserKnob {20 DummyCam l Defaults}
+addUserKnob {43 the_cam +INVISIBLE}
+the_cam "\[\n#DummyCam v1.3 - Updated 5 May 2021.\nset starting_point \"this.input0\"\nset default \"this.d_\"\n\n# If cam has no inputs, return the default.\nif \{\[exists \$starting_point]\} \{\n    set x \[node \$starting_point]\n\} \{ \n    return \$default\n\}\n\nset finished 0\nwhile \{\$finished != 1\} \{\n\n    # First look for a Cam or Input or topnode.\n    while \{\[class \$x] != \"Camera3\" && \[class \$x] != \"Camera2\" && \[class \$x] != \"Camera\" && \[class \$x] != \"Input\" && \$x != \[topnode \$x]\} \{\n        set x \[node \$x.input0]\n    \}\n\n    # Then, check if node is a cam (and return), and otherwise, if it's an input, see if the parent exists and move to it.\n    if \{\[class \$x]==\"Camera3\"||\[class \$x]==\"Camera2\"||\[class \$x]==\"Camera\"\} \{\n        set x \[append x \".\"]\n        return \$x\n    \} \{ \n        if \{ \[class \$x]==\"Input\" \} \{ \n            set inp \"\$x.parent.input\"\n            set inputNum \[value \$x.number]\n            set inp \[append inp \$inputNum]\n            if \{ \[exists \$inp] \} \{\n                set x \[node \$inp]\n            \} \{ \n                set finished 1\n            \}\n        \} \{ \n            set finished 1\n        \}\n    \}\n\}\nreturn \$default\n]"
+addUserKnob {43 the_frame +INVISIBLE}
+the_frame "\[\nset the_camera \[string trimright \[value the_cam] .]\nif \{\[exists \$the_camera]\} \{\n    return \[value \$the_camera.frame]\n\} \{ \n    return \[frame]\n\}\n]"
+addUserKnob {4 d_projection_mode l projection M {perspective orthographic uv spherical ""}}
+addUserKnob {7 d_focal l "focal length" R 0 100}
+d_focal 50
+addUserKnob {7 d_haperture l "horiz aperture" R 0 50}
+d_haperture 24.576
+addUserKnob {7 d_vaperture l "vert aperture" R 0 50}
+d_vaperture 18.672
+addUserKnob {7 d_near l near R 0 10}
+d_near 0.1
+addUserKnob {7 d_far l far R 0 10000}
+d_far 10000
+addUserKnob {30 d_win_translate l "window translate"}
+addUserKnob {30 d_win_scale l "window scale"}
+d_win_scale {1 1}
+addUserKnob {7 d_winroll l "window roll" R 0 45}
+d_winroll 1
+addUserKnob {7 d_focal_point l "focal distance" R 0 10}
+d_focal_point 2
+addUserKnob {7 d_fstop l fstop R 0 30}
+d_fstop 16
+addUserKnob {26 version l " " t "Updated 5 May 2021" T "<span style=\"color:#666\"><br/><b>DummyCam v1.3</b> - <a href=\"http://www.adrianpueyo.com\" style=\"color:#666;text-decoration: none;\">adrianpueyo.com</a>, 2019-2021</span>"}
+}
+Sphere {
+inputs 0
+uniform_scale {{parent.far}}
+name Sphere1
+xpos -908
+ypos -355
+}
+Crop {
+inputs 0
+box {0 0 {Latlong_Coverage.NewFormatHDRI.format.u x1050 inf} {Latlong_Coverage.NewFormatHDRI.format.v}}
+reformat true
+crop false
+name HDRIFormatExport
+xpos -1401
+ypos 2169
+}
+Camera2 {
+inputs 0
+useMatrix true
+matrix {
+    {{Latlong_Coverage.DummyCam.world_matrix.0} {Latlong_Coverage.DummyCam.world_matrix.1} {Latlong_Coverage.DummyCam.world_matrix.2} {Latlong_Coverage.DummyCam.world_matrix.3}}
+    {{Latlong_Coverage.DummyCam.world_matrix.4} {Latlong_Coverage.DummyCam.world_matrix.5} {Latlong_Coverage.DummyCam.world_matrix.6} {Latlong_Coverage.DummyCam.world_matrix.7}}
+    {{Latlong_Coverage.DummyCam.world_matrix.8} {Latlong_Coverage.DummyCam.world_matrix.9} {Latlong_Coverage.DummyCam.world_matrix.10} {Latlong_Coverage.DummyCam.world_matrix.11}}
+    {{Latlong_Coverage.DummyCam.world_matrix.12} {Latlong_Coverage.DummyCam.world_matrix.13} {Latlong_Coverage.DummyCam.world_matrix.14} {Latlong_Coverage.DummyCam.world_matrix.15}}
+  }
+focal {{Latlong_Coverage.DummyCam.focal}}
+haperture {{Latlong_Coverage.DummyCam.haperture}}
+vaperture {{Latlong_Coverage.DummyCam.vaperture}}
+near 10
+far {{Sphere1.uniform_scale}}
+name Camera2
+xpos -967
+ypos -19
+}
+Dot {
+name Dot16
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -949
+ypos 59
+}
+set Na1ef6400 [stack 0]
+Constant {
+inputs 0
+color 1
+name Constant4
+xpos -1110
+ypos -113
+}
+Dot {
+name Dot65
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1082
+ypos -41
+}
+set Ncc6c7800 [stack 0]
+Project3D2 {
+inputs 2
+name Project3D2
+xpos -1110
+ypos 61
+}
+Dot {
+name Dot17
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1082
+ypos 203
+}
+Input {
+inputs 0
+name Sphere
+xpos -908
+ypos -285
+number 2
+}
+Dot {
+name Dot24
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -880
+ypos 129
+}
+set N5d91b800 [stack 0]
+Dot {
+name Dot49
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 129
+}
+ApplyMaterial {
+inputs 2
+name ApplyMaterial1
+xpos -1236
+ypos 205
+}
+Constant {
+inputs 0
+channels rgb
+format "1024 512 0 0 1024 512 1 1K_LatLong"
+name Constant3
+xpos -1090
+ypos 344
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender2
+xpos -1236
+ypos 367
+}
+Dot {
+name Dot19
+tile_color 0x949494ff
+label "WITHOUT OVERSCAN TO\nDRAW COVERAGE CORRECT"
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 562
+}
+set N2ee4e400 [stack 0]
+FrameBlend {
+channels rgba
+numframes 1
+startframe 1001
+endframe 1001
+userange true
+name FrameBlend2
+xpos -1118
+ypos 653
+}
+set Cdff2e800 [stack 0]
+push $N2ee4e400
+FrameBlend {
+channels rgba
+numframes 110
+startframe {{root.first_frame}}
+endframe {{root.last_frame}}
+userange true
+name FrameBlend4
+xpos -1236
+ypos 650
+}
+Switch {
+inputs 2
+which {{customframe}}
+name Switch2
+label "Custom Framerange"
+xpos -1236
+ypos 702
+}
+Expression {
+expr3 r+g+b>0.00001?1:0
+name Expression2
+xpos -1236
+ypos 755
+}
+Expression {
+expr0 a
+expr1 a
+expr2 a
+expr3 a
+name Expression1
+xpos -1236
+ypos 781
+}
+Dot {
+name Dot44
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 886
+}
+Dot {
+name Dot18
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 1002
+}
+set N86252800 [stack 0]
+Dot {
+name Dot23
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1752
+ypos 1002
+}
+Crop {
+box {{Latlong_Coverage.CurveTool3.autocropdata.x} {Latlong_Coverage.CurveTool3.autocropdata.y} {Latlong_Coverage.CurveTool3.autocropdata.r} {Latlong_Coverage.CurveTool3.autocropdata.t}}
+name Crop1
+xpos -1780
+ypos 1095
+}
+Reformat {
+type "to box"
+format "19722 9861 0 0 19722 9861 1 "
+box_width {{Latlong_Coverage.FormatFromHDRI.format.u}}
+box_height {{Latlong_Coverage.FormatFromHDRI.format.v}}
+box_fixed true
+name Reformat6
+xpos -1780
+ypos 1191
+}
+set N3150f000 [stack 0]
+push $N3150f000
+Dot {
+name Dot29
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1584
+ypos 1189
+}
+CheckerBoard2 {
+inputs 0
+format "4096 2048 0 0 4096 2048 1 4K_LatLong"
+name CheckerBoard1
+xpos 562
+ypos -222
+}
+Input {
+inputs 0
+name Latlong
+xpos 713
+ypos -266
+}
+Switch {
+inputs 2
+which {{"\[exists parent.input0] ? 0 : 1"}}
+name Switch8
+xpos 713
+ypos -199
+}
+Dot {
+name Dot8
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 741
+ypos -123
+}
+set N5cf81800 [stack 0]
+Dot {
+name Dot7
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 939
+ypos -123
+}
+set N5cf80c00 [stack 0]
+push $N5d91b800
+Dot {
+name Dot50
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -180
+ypos 129
+}
+set N4351dc00 [stack 0]
+Dot {
+name Dot25
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 827
+ypos 129
+}
+set Nba975000 [stack 0]
+ApplyMaterial {
+inputs 2
+name ApplyMaterial5
+xpos 911
+ypos 187
+}
+push $N5cf81800
+Remove {
+name Remove5
+xpos 713
+ypos 209
+}
+Dot {
+name Dot11
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 741
+ypos 384
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender1
+xpos 911
+ypos 386
+}
+Shuffle {
+alpha white
+name Shuffle4
+label "\[value in]"
+xpos 911
+ypos 817
+}
+Reformat {
+type scale
+name Reformat1
+xpos 911
+ypos 930
+}
+NoOp {
+name FormatFromHDRI
+xpos 911
+ypos 996
+addUserKnob {20 User}
+addUserKnob {30 format l HdriFormat}
+format {{width} {height}}
+}
+Dot {
+name Dot27
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 939
+ypos 1361
+}
+Dot {
+name Dot9
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -350
+ypos 1361
+}
+set N7ac7fc00 [stack 0]
+Copy {
+inputs 2
+from0 rgba.alpha
+to0 rgba.alpha
+name Copy2
+xpos -1612
+ypos 1357
+}
+CopyBBox {
+inputs 2
+name CopyBBox4
+xpos -1780
+ypos 1480
+}
+set N7283a400 [stack 0]
+Dot {
+name Dot33
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1322
+ypos 1478
+}
+add_layer {coverage coverage.red coverage.green coverage.blue coverage.alpha}
+Shuffle {
+red alpha
+green alpha
+blue alpha
+out coverage
+name Shuffle2
+label "\[value in]"
+xpos -1350
+ypos 1568
+}
+Dot {
+name Dot36
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1322
+ypos 2003
+}
+push $Na1ef6400
+Dot {
+name Dot61
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1642
+ypos 59
+}
+set N1ef03400 [stack 0]
+Input {
+inputs 0
+name FG_Render
+xpos 1692
+ypos -166
+number 3
+}
+Remove {
+operation keep
+channels rgba
+name Remove3
+xpos 1692
+ypos -68
+}
+set N1ef03800 [stack 0]
+Project3D2 {
+inputs 2
+name Project3D3
+xpos 1692
+ypos 79
+}
+Dot {
+name Dot10
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1720
+ypos 188
+}
+push $Nba975000
+Dot {
+name Dot51
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1574
+ypos 129
+}
+set Nee607c00 [stack 0]
+ApplyMaterial {
+inputs 2
+name ApplyMaterial3
+xpos 1546
+ypos 190
+}
+push $N5cf80c00
+Dot {
+name Dot31
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1362
+ypos -123
+}
+Remove {
+name Remove1
+xpos 1334
+ypos -20
+}
+Dot {
+name Dot32
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1362
+ypos 383
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender4
+xpos 1546
+ypos 385
+}
+Dot {
+name Dot52
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1574
+ypos 812
+}
+set N8ba9d000 [stack 0]
+Dot {
+name Dot55
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1413
+ypos 812
+}
+set N8ba9cc00 [stack 0]
+Dot {
+name Dot54
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1270
+ypos 812
+}
+FrameHold {
+firstFrame {{root.first_frame}}
+name FrameHold_FirstFrame
+xpos 1242
+ypos 912
+}
+Dot {
+name Dot5
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1270
+ypos 1009
+}
+push $N8ba9cc00
+FrameHold {
+firstFrame {{root.last_frame}}
+name FrameHold_LastFrame1
+xpos 1385
+ypos 916
+}
+Merge2 {
+inputs 2
+name Merge5
+xpos 1385
+ypos 1011
+}
+Dot {
+name Dot53
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1413
+ypos 1119
+}
+push $N8ba9d000
+FrameHold {
+firstFrame {{ceil((root.last_frame-root.first_frame)/2)+root.first_frame}}
+name FrameHold1_MidFrame
+xpos 1546
+ypos 913
+}
+Merge2 {
+inputs 2
+name Merge6
+xpos 1546
+ypos 1121
+}
+Dot {
+name Dot30
+tile_color 0x949494ff
+label "FG RENDER ON DOME"
+note_font_size 22
+note_font_color 0xffffffff
+xpos 1574
+ypos 1511
+}
+Switch {
+which {{"\[exists parent.input3] ? 0 : 1"}}
+name Switch3
+label "FG RENDER"
+xpos -225
+ypos 1507
+}
+set N3a992400 [stack 0]
+Dot {
+name Dot6
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -528
+ypos 1511
+}
+set N4a009800 [stack 0]
+add_layer {FGrender FGrender.red FGrender.green FGrender.blue FGrender.alpha}
+Shuffle {
+out FGrender
+name Shuffle1
+label "\[value in]"
+xpos -556
+ypos 1800
+}
+set Nd8062400 [stack 0]
+Dot {
+name Dot26
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -528
+ypos 1924
+}
+push $N86252800
+Crop {
+box {{Latlong_Coverage.CurveTool3.autocropdata.x} {Latlong_Coverage.CurveTool3.autocropdata.y} {Latlong_Coverage.CurveTool3.autocropdata.r} {Latlong_Coverage.CurveTool3.autocropdata.t}}
+name Crop5
+label "USE AUTOCROP"
+xpos -908
+ypos 998
+disable {{!usecrop}}
+}
+set Nd8063c00 [stack 0]
+Reformat {
+type "to box"
+format "19722 9861 0 0 19722 9861 1 "
+box_width {{Latlong_Coverage.FormatFromHDRI.format.u x1150 inf}}
+box_height {{Latlong_Coverage.FormatFromHDRI.format.v}}
+box_fixed true
+filter impulse
+name Reformat13
+xpos -908
+ypos 1121
+}
+set N6923c800 [stack 0]
+push $N6923c800
+Dot {
+name Dot28
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -674
+ypos 1119
+}
+push $N7ac7fc00
+Dot {
+name Dot39
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -350
+ypos 1218
+}
+Copy {
+inputs 2
+from0 rgba.alpha
+to0 rgba.alpha
+name Copy1
+xpos -702
+ypos 1214
+}
+CopyBBox {
+inputs 2
+name CopyBBox3
+xpos -908
+ypos 1220
+}
+set Nac06c400 [stack 0]
+Dot {
+name Dot69
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -777
+ypos 1302
+}
+Dot {
+name Dot42
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -777
+ypos 1433
+}
+add_layer {HDRI HDRI.red HDRI.green HDRI.blue HDRI.alpha}
+Shuffle {
+out HDRI
+name Shuffle3
+label "\[value in]"
+xpos -805
+ypos 1690
+}
+Dot {
+name Dot43
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -777
+ypos 1838
+}
+push $N4a009800
+push $N4a009800
+push $Nac06c400
+Premult {
+name Premult1
+xpos -908
+ypos 1301
+disable {{!showcoverage}}
+}
+Dot {
+name Dot3
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -880
+ypos 1433
+}
+Merge2 {
+inputs 2
+bbox B
+name Merge1
+xpos -908
+ypos 1513
+disable {{!parent.overlayfg}}
+}
+Copy {
+inputs 2
+from0 rgba.alpha
+to0 rgba.alpha
+bbox B
+name Copy4
+xpos -908
+ypos 1560
+disable {{!parent.overlayfg}}
+}
+set Nbe2fd000 [stack 0]
+Dot {
+name Dot74
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -669
+ypos 1564
+}
+Dot {
+name Dot41
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -669
+ypos 1692
+}
+set N5d7df800 [stack 0]
+Copy {
+inputs 2
+from0 -rgba.alpha
+to0 -rgba.alpha
+channels HDRI
+bbox B
+name Copy8
+xpos -697
+ypos 1828
+}
+Copy {
+inputs 2
+from0 -rgba.alpha
+to0 -rgba.alpha
+channels FGrender
+bbox B
+name Copy5
+xpos -697
+ypos 1914
+}
+Copy {
+inputs 2
+from0 -rgba.alpha
+to0 -rgba.alpha
+channels coverage
+bbox B
+name Copy7
+xpos -697
+ypos 1993
+}
+Remove {
+operation keep
+channels HDRI
+channels2 FGrender
+channels3 coverage
+channels4 rgba
+name Remove4
+xpos -697
+ypos 2062
+}
+Dot {
+name Dot37
+tile_color 0x949494ff
+label "MULTICHANNEL EXPORT"
+note_font_size 22
+note_font_color 0xffffffff
+xpos -669
+ypos 2166
+}
+push $Nbe2fd000
+Switch {
+inputs 2
+which {{multichannel}}
+name Switch6
+label "MULTICHANNEL EXPORT"
+xpos -908
+ypos 2162
+}
+Log2Lin {
+operation lin2log
+name Log2Lin1
+xpos -908
+ypos 2274
+disable {{!upscaleinlog}}
+}
+Reformat {
+type scale
+scale {{upscaleout}}
+filter Lanczos6
+name Reformat2
+xpos -908
+ypos 2300
+}
+set Cef82bc00 [stack 0]
+Log2Lin {
+name Log2Lin2
+xpos -908
+ypos 2326
+disable {{!upscaleinlog}}
+}
+BlackOutside {
+name BlackOutside1
+xpos -908
+ypos 2402
+disable {{"\[exists parent.input0] ? 0 : 1"}}
+}
+Dot {
+name Dot15
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -880
+ypos 2500
+}
+set Nef82a400 [stack 0]
+Crop {
+box {{parent.Crop2.box} {parent.Crop2.box} {parent.Crop2.box} {parent.Crop2.box}}
+reformat {{parent.Crop2.reformat}}
+name CropExport
+xpos -691
+ypos 2502
+}
+push $N5cf81800
+Dot {
+name Dot35
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1
+ypos -123
+}
+FrameHold {
+firstFrame 1001
+name FrameHold1
+xpos -29
+ypos -46
+}
+Reformat {
+type scale
+scale 0.01
+name Reformat7
+xpos -29
+ypos -8
+}
+Dot {
+name Dot34
+tile_color 0x949494ff
+label "Mask with HDRI Alpha"
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1
+ypos 31
+}
+push $N4351dc00
+ApplyMaterial {
+inputs 2
+name ApplyMaterial4
+xpos -29
+ypos 193
+}
+Constant {
+inputs 0
+channels rgb
+format "1024 512 0 0 1024 512 1 1K_LatLong"
+name Constant5
+xpos 118
+ypos 350
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+filter impulse
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender5
+xpos -29
+ypos 373
+}
+Dot {
+name Dot48
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1
+ypos 811
+}
+Camera2 {
+inputs 0
+useMatrix true
+matrix {
+    {{Latlong_Coverage.DummyCam.world_matrix.0} {Latlong_Coverage.DummyCam.world_matrix.1} {Latlong_Coverage.DummyCam.world_matrix.2} {Latlong_Coverage.DummyCam.world_matrix.3}}
+    {{Latlong_Coverage.DummyCam.world_matrix.4} {Latlong_Coverage.DummyCam.world_matrix.5} {Latlong_Coverage.DummyCam.world_matrix.6} {Latlong_Coverage.DummyCam.world_matrix.7}}
+    {{Latlong_Coverage.DummyCam.world_matrix.8} {Latlong_Coverage.DummyCam.world_matrix.9} {Latlong_Coverage.DummyCam.world_matrix.10} {Latlong_Coverage.DummyCam.world_matrix.11}}
+    {{Latlong_Coverage.DummyCam.world_matrix.12} {Latlong_Coverage.DummyCam.world_matrix.13} {Latlong_Coverage.DummyCam.world_matrix.14} {Latlong_Coverage.DummyCam.world_matrix.15}}
+  }
+focal {{Latlong_Coverage.DummyCam.focal*(1/CamSettings.overscan)}}
+haperture {{Latlong_Coverage.DummyCam.haperture}}
+vaperture {{Latlong_Coverage.DummyCam.vaperture}}
+near 10
+far {{Sphere1.uniform_scale}}
+name Camera1
+xpos -463
+ypos -1
+}
+Dot {
+name Dot1
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -445
+ypos 99
+}
+set Nc00a5000 [stack 0]
+push $N1ef03800
+Dot {
+name Dot59
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2158
+ypos -70
+}
+Project3D2 {
+inputs 2
+name Project3D4
+xpos 2130
+ypos 101
+}
+push $Nee607c00
+Dot {
+name Dot56
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2075
+ypos 129
+}
+set Nb0293000 [stack 0]
+ApplyMaterial {
+inputs 2
+name ApplyMaterial6
+xpos 2130
+ypos 188
+}
+Constant {
+inputs 0
+channels rgb
+format "1024 512 0 0 1024 512 1 1K_LatLong"
+name Constant6
+xpos 2271
+ypos 369
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender6
+xpos 2130
+ypos 392
+}
+Invert {
+channels alpha
+name Invert1
+xpos 2130
+ypos 418
+}
+Shuffle {
+red alpha
+green alpha
+blue alpha
+name Shuffle5
+label "\[value in]"
+xpos 2130
+ypos 456
+}
+Dot {
+name Dot57
+tile_color 0x949494ff
+label "MASK WITH FGRENDER"
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2158
+ypos 494
+}
+push $Nc00a5000
+push $Ncc6c7800
+Dot {
+name Dot64
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -717
+ypos -41
+}
+Project3D2 {
+inputs 2
+name Project3D1
+xpos -745
+ypos 101
+}
+Dot {
+name Dot45
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -717
+ypos 214
+}
+push $N5d91b800
+ApplyMaterial {
+inputs 2
+name ApplyMaterial2
+xpos -908
+ypos 216
+}
+Constant {
+inputs 0
+channels rgb
+format "1024 512 0 0 1024 512 1 1K_LatLong"
+name Constant1
+xpos -762
+ypos 349
+}
+ScanlineRender {
+inputs 2
+conservative_shader_sampling false
+projection_mode uv
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender3
+xpos -908
+ypos 372
+}
+Merge2 {
+inputs 2
+operation multiply
+name Merge7
+xpos -908
+ypos 496
+disable {{"\[exists parent.input3] ? !parent.maskfgrender : 1"}}
+}
+Dot {
+name Dot46
+tile_color 0x949494ff
+label "WITH OVERSCAN AND HDRI ALPHA STENCIL"
+note_font_size 22
+note_font_color 0xffffffff
+xpos -880
+ypos 560
+}
+set N8dff7800 [stack 0]
+clone $Cdff2e800 {
+xpos -790
+ypos 628
+selected false
+}
+push $N8dff7800
+FrameBlend {
+channels rgba
+numframes 159
+startframe {{root.first_frame}}
+endframe {{root.last_frame}}
+userange true
+name FrameBlend1
+xpos -908
+ypos 623
+}
+Switch {
+inputs 2
+which {{customframe}}
+name Switch5
+label "Custom Framerange"
+xpos -908
+ypos 671
+}
+Expression {
+expr3 r+g+b>0.00001?1:0
+name Expression7
+xpos -908
+ypos 722
+}
+Expression {
+expr0 a
+expr1 a
+expr2 a
+expr3 a
+name Expression6
+xpos -908
+ypos 772
+}
+Merge2 {
+inputs 2
+operation mask
+name Merge4
+xpos -908
+ypos 813
+disable {{!hdristencil x993 1 x1009 1}}
+}
+Dot {
+name Dot4
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -880
+ypos 895
+}
+Dot {
+name Dot2
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -727
+ypos 895
+}
+CurveTool {
+operation "Auto Crop"
+ROI {0 0 1024 512}
+autocropdata {0 0 1024 512}
+intensitydata {{curve}}
+name CurveTool3
+xpos -755
+ypos 958
+}
+push $N7283a400
+Premult {
+name Premult2
+xpos -1780
+ypos 1588
+disable {{!showcoverage}}
+}
+Reformat {
+type scale
+filter Lanczos6
+name Reformat5
+xpos -1780
+ypos 1637
+}
+clone $Cef82bc00 {
+xpos -1780
+ypos 1804
+selected false
+}
+Crop {
+box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
+reformat {{reformatbbox x1206 0}}
+crop false
+name Crop6
+xpos -1780
+ypos 1883
+}
+Dot {
+name Dot38
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1752
+ypos 1957
+}
+push $N5cf81800
+NoOp {
+name GetFOV
+xpos 587
+ypos -13
+addUserKnob {20 User}
+addUserKnob {7 lensmm l Lens R 0 1000}
+lensmm {{Camera1.focal}}
+addUserKnob {7 diagonal l "Diagonal Filmback" R 0 100}
+diagonal {{"sqrt(Camera1.haperture ** 2 + Camera1.vaperture ** 2)"}}
+addUserKnob {7 fov l "Diagonal FOV" R 0 180}
+fov {{"degrees(2 * atan (diagonal / (2 * lensmm)))"}}
+addUserKnob {7 vfov l "Vertical FOV" R 0 180}
+vfov {{"degrees(2 * atan ( Camera1.vaperture/ (2 * lensmm)))"}}
+addUserKnob {7 hfov l "Horizontal FOV" R 0 180}
+hfov {{"degrees(2 * atan ( Camera1.haperture/ (2 * lensmm)))"}}
+addUserKnob {7 widthlatlong l "Width Latlong" R 0 32768}
+widthlatlong {{(360/fov)*root.width}}
+addUserKnob {7 heightlatlong l "Height Latlong" R 0 16384}
+heightlatlong {{widthlatlong/2}}
+addUserKnob {7 scalemult l Upscale R 1 2}
+scalemult {{clamp(widthlatlong/width,1,1000)}}
+}
+NoOp {
+inputs 0
+name AutoCropCtrl
+xpos -553
+ypos 913
+addUserKnob {20 User}
+addUserKnob {22 run l "Run Autocrop" T "curvetool = nuke.toNode('CurveTool3')\nknob = curvetool\['autocropdata']\nknob.clearAnimated()\nknob.setValue(\[0,0,1024,512])\nnuke.execute(curvetool, 1001, 1001) " +STARTLINE}
+addUserKnob {22 reset l "Reset AutoCrop" T "curvetool = nuke.toNode('CurveTool3')\nknob = curvetool\['autocropdata']\nknob.clearAnimated()\nknob.setValue(\[0,0,1024,512])" +STARTLINE}
+}
+push $N1ef03400
+Dot {
+name Dot62
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2730
+ypos 59
+}
+Dot {
+name Dot66
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2730
+ypos 1422
+}
+set N45bcf000 [stack 0]
+Dot {
+name Dot63
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2730
+ypos 1794
+}
+push $Nd8063c00
+Dot {
+name Dot71
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 565
+ypos 1002
+}
+Dot {
+name Dot72
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 565
+ypos 1651
+}
+push $Nb0293000
+Dot {
+name Dot60
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2619
+ypos 129
+}
+Dot {
+name Dot68
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2619
+ypos 1520
+}
+set N9211e800 [stack 0]
+ApplyMaterial {
+inputs 2
+name ApplyMaterial7
+xpos 2591
+ypos 1653
+}
+push 0
+ScanlineRender {
+inputs 3
+conservative_shader_sampling false
+overscan {{parent.scanlineoverscan}}
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender7
+xpos 2591
+ypos 1796
+}
+FrameHold {
+firstFrame {{parent.projectframe}}
+name FrameHold2
+xpos 2591
+ypos 1907
+}
+Crop {
+box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
+reformat true
+crop false
+name CropFromBBox
+xpos 2591
+ypos 2006
+}
+set Nef4de000 [stack 0]
+Dot {
+name Dot70
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2484
+ypos 2004
+}
+CurveTool {
+operation "Auto Crop"
+ROI {0 0 13840 12160}
+autocropdata {{curve x1001 4047} {curve x1001 4485} {curve x1001 9689} {curve x1001 9759}}
+intensitydata {{curve}}
+name CurveTool1
+xpos 2456
+ypos 2075
+}
+NoOp {
+inputs 0
+name AutoCropCtrlProjection
+xpos 2299
+ypos 2066
+addUserKnob {20 User}
+addUserKnob {22 run l "Autocrop Projection" T "curvetool = nuke.toNode('CurveTool1')\nknob = curvetool\['autocropdata']\nknob.clearAnimated()\nknob.setValue(\[0,0,1024,512])\nnuke.execute(curvetool, 1001, 1001) \n\nnuke.toNode('Crop4')\['disable'].setValue(0)" +STARTLINE}
+addUserKnob {22 reset l "Reset AutoCrop" T "curvetool = nuke.toNode('CurveTool1')\nknob = curvetool\['autocropdata']\n\nknob.clearAnimated()\n\nnuke.toNode('Crop4')\['disable'].setValue(1)\n\n" +STARTLINE}
+}
+push $Nef4de000
+Crop {
+box {{parent.CurveTool1.autocropdata} {parent.CurveTool1.autocropdata} {parent.CurveTool1.autocropdata} {parent.CurveTool1.autocropdata}}
+name Crop4
+xpos 2591
+ypos 2073
+}
+Reformat {
+resize none
+pbb true
+name Reformat4
+xpos 2591
+ypos 2149
+}
+push $N45bcf000
+Dot {
+name Dot76
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2998
+ypos 1422
+}
+Dot {
+name Dot77
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2998
+ypos 1796
+}
+push $Nef82a400
+Dot {
+name Dot22
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1010
+ypos 2500
+}
+Dot {
+name Dot21
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1010
+ypos 2668
+}
+AdjBBox {
+numpixels 1
+name AdjBBox1
+xpos -1213
+ypos 2670
+}
+Input {
+inputs 0
+name DMP
+xpos -1780
+ypos 2168
+number 4
+}
+Shuffle {
+alpha white
+name Shuffle16
+label "\[value in]"
+xpos -1780
+ypos 2298
+disable {{!parent.solidalpha}}
+}
+Transform {
+translate {{Latlong_Coverage.Crop6.box.x} {Latlong_Coverage.Crop6.box.y}}
+center {2947 1987}
+shutteroffset centred
+name TransformReverse
+xpos -1780
+ypos 2421
+}
+push $Nd8062400
+push $N3a992400
+push $N3a992400
+push $N7ac7fc00
+Merge2 {
+inputs 2
+bbox B
+name Merge2
+xpos -378
+ypos 1553
+disable {{!parent.overlayfg x1001 1}}
+}
+Copy {
+inputs 2
+from0 rgba.alpha
+to0 rgba.alpha
+bbox B
+name Copy3
+xpos -378
+ypos 1579
+disable {{!parent.overlayfg x1001 1}}
+}
+Copy {
+inputs 2
+from0 -rgba.alpha
+to0 -rgba.alpha
+channels FGrender
+name Copy6
+xpos -378
+ypos 1794
+}
+Dot {
+name Dot20
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -350
+ypos 1866
+}
+Dot {
+name Dot14
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 1866
+}
+clone $Cef82bc00 {
+xpos -1236
+ypos 1953
+selected false
+}
+NoOp {
+name NewFormatHDRI
+xpos -1236
+ypos 2260
+addUserKnob {20 User}
+addUserKnob {30 format l HdriFormat}
+format {{width} {height}}
+}
+Remove {
+name Remove2
+xpos -1236
+ypos 2470
+disable {{parent.overhdri}}
+}
+Dot {
+name Dot13
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1208
+ypos 2551
+}
+Merge2 {
+inputs 2
+name Merge3
+xpos -1780
+ypos 2553
+}
+CopyBBox {
+inputs 2
+name CopyBBox2
+xpos -1780
+ypos 2670
+disable {{!usecrop}}
+}
+Dot {
+name Dot12
+tile_color 0x949494ff
+label "REVERSED DMP"
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1752
+ypos 2770
+}
+set Nac23c000 [stack 0]
+Dot {
+name Dot67
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 147
+ypos 2770
+}
+push $N5d7df800
+Switch {
+inputs 2
+which {{parent.reverse}}
+name Switch7
+xpos 119
+ypos 1694
+}
+push $N9211e800
+Dot {
+name Dot78
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2887
+ypos 1520
+}
+ApplyMaterial {
+inputs 2
+name ApplyMaterial8
+xpos 2859
+ypos 1694
+}
+push 0
+ScanlineRender {
+inputs 3
+conservative_shader_sampling false
+overscan {{parent.scanlineoverscan}}
+shutteroffset centred
+motion_vectors_type distance
+name ScanlineRender8
+xpos 2859
+ypos 1798
+}
+FrameHold {
+firstFrame {{parent.projectframe}}
+name FrameHold3
+xpos 2859
+ypos 1903
+}
+Dot {
+name Dot79
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2887
+ypos 2236
+}
+CopyBBox {
+inputs 2
+name CopyBBox1
+xpos 2591
+ypos 2238
+}
+Dot {
+name Dot47
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos 2619
+ypos 2959
+}
+push $Nac23c000
+Dot {
+name Dot40
+tile_color 0x949494ff
+note_font_size 22
+note_font_color 0xffffffff
+xpos -1752
+ypos 2870
+}
+push $Nef82a400
+Crop {
+box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
+reformat {{reformatbbox}}
+crop false
+name Crop2
+xpos -908
+ypos 2657
+}
+Switch {
+inputs 2
+which {{parent.reverse}}
+name Switch4
+label "REVERSE DMP"
+xpos -908
+ypos 2866
+}
+Switch {
+inputs 2
+which {{parent.projection}}
+name Switch1
+label PROJECTION
+xpos -908
+ypos 2955
+}
+Output {
+name Output1
+xpos -908
+ypos 3072
+}
+end_group

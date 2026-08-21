@@ -7,8 +7,8 @@ Group {
  tile_color 0x890074ff
  label "(Plate \[value morph])"
  selected true
- xpos 269
- ypos -1
+ xpos 4295
+ ypos -710
  addUserKnob {20 User}
  addUserKnob {7 morph l Morph t "Morphs between input 0 and input 1"}
  addUserKnob {26 ""}
@@ -45,14 +45,14 @@ Group {
   xpos 1389
   ypos -72
  }
-set Nc392dc00 [stack 0]
+set Ndba6800 [stack 0]
  Dot {
   name Dot8
   tile_color 0xcccccc00
   xpos 1389
   ypos 1115
  }
-push $Nc392dc00
+push $Ndba6800
  Dot {
   name Dot13
   tile_color 0xcccccc00
@@ -94,7 +94,7 @@ push $Nc392dc00
   xpos 10
   ypos -75
  }
-set N180b5400 [stack 0]
+set N178d6400 [stack 0]
  Dot {
   name Dot14
   tile_color 0xcccccc00
@@ -137,14 +137,14 @@ set N180b5400 [stack 0]
   xpos 684
   ypos 124
  }
-set N180d4800 [stack 0]
+set N4ded1c00 [stack 0]
  Dot {
   name Dot2
   tile_color 0xcccccc00
   xpos 985
   ypos 124
  }
-set N180d4c00 [stack 0]
+set N31fbf800 [stack 0]
  Dot {
   name Dot5
   xpos 1153
@@ -152,8 +152,9 @@ set N180d4c00 [stack 0]
  }
  Group {
   name RIFE
+  selected true
   xpos 1119
-  ypos 278
+  ypos 277
   addUserKnob {20 RIFE}
   addUserKnob {26 localGPU l "Local GPU:" T ""}
   addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3080 Ti"}
@@ -174,7 +175,7 @@ set N180d4c00 [stack 0]
   timingFrame {{(frame-1001)*2+1001+parent.morph}}
   addUserKnob {7 outputFrame l "Output Frame" +INVISIBLE R 0 1000}
   outputFrame {{"\[python -execlocal n\\ =\\ nuke.thisNode()\\noutput_frame\\ =\\ nuke.expression(\\\"timing\\ ==\\ 0\\ ?\\ clamp(speed.integrate(in,\\ frame)\\ +\\ in,\\ in,\\ out)\\ :\\ timingFrame\\\")\\nuse_speed\\ =\\ n\\\[\\\"timing\\\"\\].getValue()\\ ==\\ 0\\nn\\\[\\\"timingFrame\\\"\\].setVisible(not\\ use_speed)\\nn\\\[\\\"speed\\\"\\].setVisible(use_speed)\\nn\\\[\\\"outputFrameText\\\"\\].setValue(str(round(output_frame,4)))\\nret\\ =\\ output_frame]"}}
-  addUserKnob {26 outputFrameText l "Output Frame" t "Displays the current output frame." T 1531.0}
+  addUserKnob {26 outputFrameText l "Output Frame" t "Displays the current output frame." T 1049.0}
   addUserKnob {4 downrez l Downrez t "Scales down the input to optimize optical flow calculation.  \n\nBy reducing the input size, memory requirements are lowered. For some 4K shots with significant motion, this preprocessing can also refine the quality of the retime." M {"1/1 (Full Res)" 1/2 1/4}}
   addUserKnob {3 detail l Detail t "This parameter control the processing resolution for the optical flow model.\n\nThe recommended values for:\n• <b>HD</b>: 3 (+/- 1)\n• <b>UHD/4K</b>: 2 (+/- 1).\n\nThe <b>maximum</b> value is <b>4</b>.\n\nHigher values pick up finer movement, but also uses more memory."}
   detail 3
@@ -229,7 +230,7 @@ set N180d4c00 [stack 0]
    xpos -226
    ypos -390
   }
-set Nb9a1c00 [stack 0]
+set N4ded2000 [stack 0]
   Colorspace {
    colorspace_out sRGB
    name Colorspace1
@@ -270,35 +271,35 @@ set Nb9a1c00 [stack 0]
    xpos -260
    ypos -58
   }
-set Nb9cb000 [stack 0]
+set N31fc1000 [stack 0]
   FrameHold {
    firstFrame {{"clamp(int(parent.outputFrame), parent.in, parent.out)"}}
    name FrameHold1
    xpos -260
    ypos 8
   }
-set Nc393d700 [stack 0]
+set N88cdcc00 [stack 0]
   Dot {
    name Dot3
    xpos -226
    ypos 498
   }
-set Nb9cb400 [stack 0]
+set N736c1400 [stack 0]
   Dot {
    name Dot10
    xpos -226
    ypos 714
   }
-set Nb9cb800 [stack 0]
-push $Nb9cb000
+set N736c1800 [stack 0]
+push $N31fc1000
   FrameHold {
    firstFrame {{"clamp(int(parent.outputFrame)+1, parent.in, parent.out)"}}
    name FrameHold2
    xpos -150
    ypos 8
   }
-set Nbcc4000 [stack 0]
-push $Nc393d700
+set N88cdd180 [stack 0]
+push $N88cdcc00
   Shuffle2 {
    inputs 2
    fromInput1 {{1} B A}
@@ -315,15 +316,14 @@ push $Nc393d700
    scale {{"2 ** (parent.downrez * -1.0)"}}
    name Reformat1
    label downrez
-   selected true
    xpos -150
    ypos 128
   }
   Inference {
    useGPUIfAvailable {{parent.useGPU}}
-   modelFile P:/_PIPELINE4/tools/nuke/Cattery/RIFE/RIFE.cat
+   modelFile nuke/Cattery/RIFE/RIFE.cat
    halfPrecision true
-   serialiseKnob {timestep:{"parent.outputFrame - int(parent.outputFrame)"};scale:{"2**(min(5, max(0, parent.detail))-3)"};optical_flow:{"parent.retimedChannels == 0 | parent.downrez !=0"};ensemble:false;}
+   serialiseKnob {}
    name Inference1
    onCreate "\nthis = nuke.thisNode()\ngpuName = this.knob(\"gpuName\").value()\nthis.parent().knob(\"gpuName\").setValue(gpuName)\n"
    label "timestep \[value timestep]\nscale \[value scale]"
@@ -335,13 +335,13 @@ push $Nc393d700
    xpos -116
    ypos 330
   }
-set Nbcd6c00 [stack 0]
+set N62ffc800 [stack 0]
   Dot {
    name Dot6
    xpos 214
    ypos 330
   }
-set Nbcd7000 [stack 0]
+set Nf416000 [stack 0]
   Reformat {
    type scale
    scale {{2**(parent.downrez)}}
@@ -360,7 +360,7 @@ set Nbcd7000 [stack 0]
    xpos 180
    ypos 536
   }
-push $Nbcd6c00
+push $N62ffc800
   Expression {
    temp_name0 stmap_x
    temp_expr0 (x+0.5)/width
@@ -387,8 +387,8 @@ push $Nbcd6c00
    xpos -150
    ypos 440
   }
-set Nbcfc400 [stack 0]
-push $Nb9cb400
+set N53793000 [stack 0]
+push $N736c1400
   STMap {
    inputs 2
    uv rgb
@@ -396,8 +396,8 @@ push $Nb9cb400
    xpos -150
    ypos 563
   }
-  set Cbcfcc00 [stack 0]
-push $Nbcfc400
+  set C53793800 [stack 0]
+push $N53793000
   Shuffle2 {
    fromInput1 {{0} B}
    fromInput2 {{0} B}
@@ -406,7 +406,7 @@ push $Nbcfc400
    xpos -40
    ypos 518
   }
-push $Nbcc4000
+push $N88cdd180
   Dot {
    name Dot8
    xpos 104
@@ -417,7 +417,7 @@ push $Nbcc4000
    xpos 104
    ypos 522
   }
-clone $Cbcfcc00 {
+clone $C53793800 {
    inputs 2
    xpos -40
    ypos 563
@@ -429,7 +429,7 @@ clone $Cbcfcc00 {
    xpos -40
    ypos 632
   }
-push $Nbcd7000
+push $Nf416000
   Dot {
    name Dot5
    xpos 434
@@ -455,7 +455,7 @@ push $Nbcd7000
    xpos -40
    ypos 698
   }
-push $Nb9cb800
+push $N736c1800
   Merge2 {
    inputs 2
    operation copy
@@ -479,7 +479,7 @@ push $Nb9cb800
    xpos -260
    ypos 854
   }
-push $Nb9a1c00
+push $N4ded2000
   Dot {
    name Dot1
    xpos 544
@@ -509,7 +509,7 @@ push $Nb9a1c00
   xpos 1153
   ypos 863
  }
-push $N180d4c00
+push $N31fbf800
  Kronos {
   retimedChannels all
   timing2 Frame
@@ -527,7 +527,7 @@ push $N180d4c00
   xpos 985
   ypos 858
  }
-push $N180d4800
+push $N4ded1c00
  Dot {
   name Dot10
   tile_color 0xcccccc00
@@ -548,7 +548,7 @@ push $N180d4800
   xpos 415
   ypos 350
  }
-set N18106000 [stack 0]
+set N4a0f4c00 [stack 0]
  Shuffle {
   in backward
   blue black
@@ -566,7 +566,7 @@ set N18106000 [stack 0]
   xpos 217
   ypos 484
  }
-push $N18106000
+push $N4a0f4c00
  Shuffle {
   in forward
   blue black
@@ -584,7 +584,7 @@ push $N18106000
   xpos 560
   ypos 414
  }
-push $N18106000
+push $N4a0f4c00
  Copy {
   inputs 2
   from0 forward.u
@@ -607,7 +607,7 @@ push $N18106000
   xpos 381
   ypos 478
  }
-set N18107000 [stack 0]
+set N4b60e000 [stack 0]
  Retime {
   input.first 1000
   input.first_lock true
@@ -634,11 +634,10 @@ set N18107000 [stack 0]
   uv forward
   uv_scale {{1-parent.morph}}
   name IDistort2
-  selected true
   xpos 459
   ypos 691
  }
-push $N18107000
+push $N4b60e000
  Retime {
   input.first 1001
   input.first_lock true
@@ -688,7 +687,7 @@ push $N18107000
   xpos 627
   ypos 946
  }
-push $N180b5400
+push $N178d6400
  Dot {
   name Dot7
   tile_color 0xcccccc00

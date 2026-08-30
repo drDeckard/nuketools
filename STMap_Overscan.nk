@@ -4,8 +4,8 @@ push $cut_paste_input
 Group {
  name STMap_Overscan
  selected true
- xpos 169
- ypos -9
+ xpos 361
+ ypos -57
  addUserKnob {20 User}
  addUserKnob {6 repeat l "Remove Repeated Values" t "Finding and removing stretched pixels with same value, giving the extension wrong result if included." +STARTLINE}
  repeat true
@@ -13,16 +13,9 @@ Group {
  addUserKnob {7 overscan l Overscan t "Format * Overscan = New Format" R 1 2}
  overscan 1.2
  addUserKnob {7 erode l Erode t "If STMap has \"crap\" values in the edges. Erode to avoid including this in extend." R 0 200}
- erode 1
  addUserKnob {41 size l Blur t "To reduce artifacts, higher values needed when pushing very distorted maps into very big overscans." T Blur5.size}
- addUserKnob {41 size_1 l "Distance Blur" T Blur1Dist.size}
  addUserKnob {7 blend l "Edge Blend" t "Softness pixels in edge between original STMap and extension." R 0 50}
  blend 1
- addUserKnob {26 ""}
- addUserKnob {4 lenscenter l "Lens Center" M {"Format center" "Sampled center" ""}}
- addUserKnob {12 centerpos l "" -STARTLINE}
- centerpos {{"lenscenter == 0 ? width/2 : this.CurveTool1.minlumapixdata.x"} {"lenscenter == 0 ? height/2 : this.CurveTool1.minlumapixdata.y"}}
- addUserKnob {41 go l "Sample Center" -STARTLINE T CurveTool1.go}
  addUserKnob {26 ""}
  addUserKnob {4 method l Method t "Linear can work good for really small extends but most often Least Squares Regression is the best." M {Linear Quadratic "Least Squares Regression" "" ""}}
  method "Least Squares Regression"
@@ -30,10 +23,8 @@ Group {
  addUserKnob {41 STMapOverscan_rayCount l rayCount t "How many rays per pixel, higher values can be good for reducing artifacts in wide heavy distorted maps." T stmap_kernel.STMapOverscan_rayCount}
  addUserKnob {41 STMapOverscan_raySpread l raySpread t "How much should the rays spread per pixel in degrees. Seems best under 1 as higher values can add noise instead of opposite." T stmap_kernel.STMapOverscan_raySpread}
  addUserKnob {41 STMapOverscan_raySamples l raySamples t "How many samples along ray." T stmap_kernel.STMapOverscan_raySamples}
- addUserKnob {41 STMapOverscan_fanBlendDistance l fanBlendDistance t "How far away from edge we get maximum fanSpread" T stmap_kernel.STMapOverscan_fanBlendDistance}
- addUserKnob {6 preview l Preview +STARTLINE}
  addUserKnob {26 ""}
- addUserKnob {26 credits l "" +STARTLINE T "Based on Marty Blumens STMapExtension 2.0\n\nSTMap_Overscan 1.3 Calle Granström"}
+ addUserKnob {26 credits l "" +STARTLINE T "Based on Marty Blumens STMapExtension 2.0\n\nSTMap_Overscan 1.2 Calle Granström"}
 }
  Input {
   inputs 0
@@ -60,7 +51,7 @@ Group {
   xpos 543
   ypos -441
  }
-set Ndfede400 [stack 0]
+set N18c81c00 [stack 0]
  BlinkScript {
   recompileCount 1
   ProgramGroup 1
@@ -71,13 +62,13 @@ set Ndfede400 [stack 0]
   rebuild_finalise ""
   name BlinkScript1
   xpos 606
-  ypos -384
+  ypos -383
  }
-push $Ndfede400
+push $N18c81c00
  Expression {
   expr3 "r !=0 || g!=0 || b!=0?1:0"
   name Expression1
-  xpos 427
+  xpos 428
   ypos -375
  }
  Switch {
@@ -85,310 +76,104 @@ push $Ndfede400
   which {{repeat}}
   name Switch1
   label "Remove repeat"
+  selected true
   xpos 507
-  ypos -296
+  ypos -299
  }
  BlackOutside {
   name BlackOutside1
   xpos 507
   ypos -240
  }
-set N74762800 [stack 0]
  Dilate {
   channels alpha
   size {{-parent.erode}}
   name Dilate1
   xpos 507
-  ypos -170
+  ypos -181
  }
-set Naebd7c00 [stack 0]
+set N1ca5d000 [stack 0]
  FilterErode {
   size {{parent.blend}}
   filter quadratic
   name FilterErode1
   xpos 507
-  ypos -112
+  ypos -121
   disable {{"size <= 0"}}
  }
  Premult {
   name Premult1
   xpos 507
-  ypos -43
+  ypos -54
  }
-set Ne1e8b000 [stack 0]
- Dot {
-  name Dot4
-  xpos 650
-  ypos -40
- }
- Dot {
-  name Dot3
-  xpos 650
-  ypos 207
- }
-push $Ne1e8b000
-push $Naebd7c00
+push $N1ca5d000
  Dilate {
   channels alpha
   size -1
   name Dilate5
   xpos 374
-  ypos -170
+  ypos -181
  }
  AdjBBox {
   numpixels {{ceil(abs(width*overscan)-width)/2} {ceil(abs(height*overscan)-height)/2}}
   name AdjBBox1
   xpos 374
-  ypos -109
+  ypos -119
  }
  BlinkScript {
   kernelSourceFile C:/Users/calle.granstrom/.nuke/STMapOverscan_kernel.rpp
-  recompileCount 30
+  recompileCount 13
   ProgramGroup 1
-  KernelDescription "2 \"STMapOverscan\" iterate pixelWise 605f2771257f74baa4ea22daa3075a7cfc84b9ab8b53ffef0a2fc36c87499023 2 \"src\" Read Random \"dst\" Write Point 10 \"order\" Int 1 AwAAAA== \"edgeDistance\" Int 1 ZAAAAA== \"rayCount\" Int 1 BQAAAA== \"raySpread\" Float 1 AADwQQ== \"raySamples\" Int 1 DwAAAA== \"rayBlendFalloff\" Float 1 AAAAQA== \"fanBlendDistance\" Float 1 AABIQg== \"useBBoxCenter\" Bool 1 AQ== \"lensCenter\" Float 2 AABwRAAAB0Q= \"distanceNormMax\" Float 1 AABIQw== 10 \"order\" 1 1 \"edgeDistance\" 1 1 \"rayCount\" 1 1 \"raySpread\" 1 1 \"raySamples\" 1 1 \"rayBlendFalloff\" 1 1 \"fanBlendDistance\" 1 1 \"useBBoxCenter\" 1 1 \"lensCenter\" 2 1 \"distanceNormMax\" 1 1 6 \"srcOrigin\" Int 2 1 AAAAAAAAAAA= \"srcSize\" Int 2 1 AAAAAAAAAAA= \"srcMaxX\" Int 1 1 AAAAAA== \"srcMaxY\" Int 1 1 AAAAAA== \"centerF\" Float 2 1 AAAAAAAAAAA= \"spreadRad\" Float 1 1 AAAAAA=="
-  kernelSource "kernel STMapOverscan : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessRandom, eEdgeClamped> src;\n  Image<eWrite> dst;\n\n  param:\n    int    order;           // 1=Anchored Linear, 2=Anchored Quadratic, 3=Anchored Least Squares\n    int    edgeDistance;    // Max pixels inward from the alpha edge to sample\n    int    rayCount;        // Amount of rays to shoot per pixel (e.g., 3, 5, 7)\n    float  raySpread;       // Total maximum width of the ray fan in degrees\n    int    raySamples;      // How many samples to take along each ray\n    float  rayBlendFalloff; // Gaussian falloff for outer rays\n    float  fanBlendDistance;// Distance over which the fanning ramps up from 0 to full spread\n    \n    bool   useBBoxCenter;   // Toggle for automatic bounding box center\n    float2 lensCenter;      // User-defined optical center\n    \n    float  distanceNormMax; // The pixel distance at which the blue output reaches 1.0\n\n  local:\n    int2   srcOrigin;\n    int2   srcSize;\n    int    srcMaxX;\n    int    srcMaxY;\n    float2 centerF;\n    float  spreadRad;\n\n  void define() \{\n    defineParam(order,            \"order\",            3);\n    defineParam(edgeDistance,     \"edgeDistance\",     100); \n    defineParam(rayCount,         \"rayCount\",         5);\n    defineParam(raySpread,        \"raySpread\",        30.0f);\n    defineParam(raySamples,       \"raySamples\",       15);\n    defineParam(rayBlendFalloff,  \"rayBlendFalloff\",  2.0f);\n    defineParam(fanBlendDistance, \"fanBlendDistance\", 50.0f); \n    \n    defineParam(useBBoxCenter,    \"useBBoxCenter\",    true);\n    defineParam(lensCenter,       \"lensCenter\",       float2(960.0f, 540.0f)); \n    \n    defineParam(distanceNormMax,  \"distanceNormMax\",  200.0f); // Default ramps to 1.0 over 200px\n  \}\n\n  void init() \{\n    srcOrigin = int2(src.bounds.x1, src.bounds.y1);\n    srcSize   = int2(src.bounds.x2 - src.bounds.x1,\n                     src.bounds.y2 - src.bounds.y1);\n                     \n    srcMaxX = srcOrigin.x + srcSize.x - 1;\n    srcMaxY = srcOrigin.y + srcSize.y - 1;\n    \n    if (useBBoxCenter) \{\n      centerF = float2(srcOrigin.x + float(srcSize.x) / 2.0f, \n                       srcOrigin.y + float(srcSize.y) / 2.0f);\n    \} else \{\n      centerF = lensCenter;\n    \}\n                       \n    spreadRad = raySpread * 3.1415926535f / 180.0f;\n  \}\n\n  float fastAlphaCheck(float2 p) \{\n    int px = clamp(int(p.x), srcOrigin.x, srcMaxX);\n    int py = clamp(int(p.y), srcOrigin.y, srcMaxY);\n    return src(px, py).w;\n  \}\n\n  float sampleAlpha_bilinear(float2 p) \{\n    int x0 = int(floor(p.x)); int y0 = int(floor(p.y));\n    int x1 = x0 + 1;          int y1 = y0 + 1;\n\n    float tx = p.x - float(x0);\n    float ty = p.y - float(y0);\n\n    x0 = clamp(x0, srcOrigin.x, srcMaxX); x1 = clamp(x1, srcOrigin.x, srcMaxX);\n    y0 = clamp(y0, srcOrigin.y, srcMaxY); y1 = clamp(y1, srcOrigin.y, srcMaxY);\n\n    float c00 = src(x0, y0).w; float c10 = src(x1, y0).w;\n    float c01 = src(x0, y1).w; float c11 = src(x1, y1).w;\n\n    return c00 * (1.0f - tx) * (1.0f - ty) + c10 * tx * (1.0f - ty) + \n           c01 * (1.0f - tx) * ty + c11 * tx * ty;\n  \}\n\n  float2 sampleUV_bilinear_strict(float2 p) \{\n    int x0 = int(floor(p.x)); int y0 = int(floor(p.y));\n    int x1 = x0 + 1;          int y1 = y0 + 1;\n\n    float tx = p.x - float(x0); float ty = p.y - float(y0);\n\n    x0 = clamp(x0, srcOrigin.x, srcMaxX); x1 = clamp(x1, srcOrigin.x, srcMaxX);\n    y0 = clamp(y0, srcOrigin.y, srcMaxY); y1 = clamp(y1, srcOrigin.y, srcMaxY);\n\n    float4 s00 = src(x0, y0); float4 s10 = src(x1, y0);\n    float4 s01 = src(x0, y1); float4 s11 = src(x1, y1);\n\n    float w00 = (1.0f - tx) * (1.0f - ty) * (s00.w > 0.0f ? 1.0f : 0.0f);\n    float w10 = tx * (1.0f - ty) * (s10.w > 0.0f ? 1.0f : 0.0f);\n    float w01 = (1.0f - tx) * ty * (s01.w > 0.0f ? 1.0f : 0.0f);\n    float w11 = tx * ty * (s11.w > 0.0f ? 1.0f : 0.0f);\n\n    float totalWeight = w00 + w10 + w01 + w11;\n    if (totalWeight > 0.0f) \{\n      return (float2(s00.x, s00.y) * w00 + float2(s10.x, s10.y) * w10 +\n              float2(s01.x, s01.y) * w01 + float2(s11.x, s11.y) * w11) / totalWeight;\n    \}\n    return float2(s00.x, s00.y);\n  \}\n\n  float2 quadEval(float t, float2 f0, float2 f1, float2 f2, float b1, float b2) \{\n    float L0 = (t + b1) * (t + b2) / (b1 * b2);\n    float L1 = -t * (t + b2) / (b1 * (b2 - b1));\n    float L2 =  t * (t + b1) / (b2 * (b2 - b1));\n    return f0 * L0 + f1 * L1 + f2 * L2;\n  \}\n\n  void process(int2 pos) \{\n    float2 posF = float2(pos.x, pos.y);\n    \n    // Quick exit if inside STMap (Distance is exactly 0.0)\n    if (fastAlphaCheck(posF) > 0.0f) \{\n      if (sampleAlpha_bilinear(posF) > 0.0f) \{\n        float2 rawUV = sampleUV_bilinear_strict(posF);\n        // Original pixels output 0.0 in Blue, keeping original Alpha behavior\n        dst() = float4(rawUV.x, rawUV.y, 0.0f, 1.0f);\n        return;\n      \}\n    \}\n\n    float2 baseDirOut = posF - centerF;\n    float distToCenter = length(baseDirOut);\n    if (distToCenter < 0.001f) \{\n      dst() = float4(0.0f, 0.0f, 0.0f, 1.0f);\n      return;\n    \}\n    \n    baseDirOut /= distToCenter;\n    float2 baseDirIn = -baseDirOut;\n\n    // =======================================================================\n    // 1. FIND THE SINGLE LOCKED ANCHOR \n    // =======================================================================\n    float2 current = posF;\n    bool foundEdge = false;\n    int maxJumps = int(ceil(distToCenter / 8.0f)) + 1;\n    float2 jumpDir = baseDirIn * 8.0f;\n    \n    for (int i = 0; i <= maxJumps; i++) \{\n      if (fastAlphaCheck(current) > 0.0f) \{\n        foundEdge = true;\n        break;\n      \}\n      current += jumpDir;\n    \}\n    \n    if (!foundEdge) \{\n      dst() = float4(0.0f, 0.0f, 0.0f, 1.0f);\n      return;\n    \}\n\n    if (current.x != posF.x || current.y != posF.y) \{\n      current -= jumpDir;\n      for (int j = 0; j <= 9; j++) \{\n        current += baseDirIn;\n        if (sampleAlpha_bilinear(current) > 0.0f) break;\n      \}\n    \}\n    \n    float2 anchor = current;\n    \n    // --> THIS IS THE EXACT DISTANCE TO THE EDGE <--\n    float distFromAnchor = length(posF - anchor); \n    \n    float2 anchorUV = sampleUV_bilinear_strict(anchor);\n\n    // =======================================================================\n    // 2. CALCULATE SPREAD MULTIPLIER \n    // =======================================================================\n    float blendDist = max(1.0f, fanBlendDistance);\n    float spreadMult = clamp(distFromAnchor / blendDist, 0.0f, 1.0f);\n    spreadMult = spreadMult * spreadMult * (3.0f - 2.0f * spreadMult); \n\n    // =======================================================================\n    // 3. FAN RAYS INWARD & EXTRAPOLATE\n    // =======================================================================\n    float2 totalExtrapolatedUV = float2(0.0f, 0.0f);\n    float validRays = 0.0f;\n    int totalAngles = max(1, rayCount);\n    float maxSearchDist = max(2.0f, float(edgeDistance)); \n    int N = max(2, raySamples);\n\n    for (int a = 0; a < totalAngles; a++) \{\n      float2 rayDirIn = baseDirIn;\n      float rayWeight = 1.0f; \n      \n      if (totalAngles > 1) \{\n        float t = float(a) / float(totalAngles - 1);\n        \n        float offsetAngle = (t - 0.5f) * spreadRad * spreadMult; \n        \n        float cA = cos(offsetAngle);\n        float sA = sin(offsetAngle);\n        rayDirIn = float2(baseDirIn.x * cA - baseDirIn.y * sA, \n                          baseDirIn.x * sA + baseDirIn.y * cA);\n                           \n        float normalizedT = (t - 0.5f) * 2.0f; \n        rayWeight = exp(-rayBlendFalloff * (normalizedT * normalizedT));\n      \}\n      \n      float2 extrapolatedUV = anchorUV; \n\n      if (order <= 2) \{\n        float b2 = maxSearchDist;\n        float b1 = maxSearchDist * 0.5f; \n        float invB1 = 1.0f / b1;\n        float2 sumUV1 = float2(0.0f, 0.0f); float w1 = 0.0f;\n        float2 sumUV2 = float2(0.0f, 0.0f); float w2 = 0.0f;\n\n        for (int i = 0; i < N; i++) \{\n          float curveFactor = float(i) / float(N - 1);\n          float curve = curveFactor * curveFactor; \n          float inwardDist = curve * maxSearchDist; \n          \n          float2 p = anchor + rayDirIn * inwardDist;\n          \n          if (fastAlphaCheck(p) > 0.0f) \{ \n            float2 sUV = sampleUV_bilinear_strict(p);\n            float weight1 = max(0.0f, 1.0f - fabs(inwardDist - b1) * invB1); \n            float weight2 = max(0.0f, 1.0f - fabs(inwardDist - b2) * invB1); \n            sumUV1 += sUV * weight1; w1 += weight1;\n            sumUV2 += sUV * weight2; w2 += weight2;\n          \}\n        \}\n        \n        float2 f0 = anchorUV; \n        float2 f1 = w1 > 0.0f ? sumUV1 / w1 : f0;\n        float2 f2 = w2 > 0.0f ? sumUV2 / w2 : f1;\n        float2 delta = float2(0.0f, 0.0f);\n        \n        if (distFromAnchor > 0.0f) \{\n          if (order == 2) \{\n            float2 q = quadEval(distFromAnchor, f0, f1, f2, b1, b2);\n            delta = q - f0;\n          \} else \{ \n            float2 slope = (f0 - f1) * invB1;\n            delta = slope * distFromAnchor;\n          \}\n        \}\n        extrapolatedUV = f0 + delta;\n\n      \} else \{\n        float S2 = 0.0f, S3 = 0.0f, S4 = 0.0f;\n        float2 V1_p = float2(0.0f, 0.0f);\n        float2 V2_p = float2(0.0f, 0.0f);\n        float count = 0.0f;\n\n        for (int i = 0; i < N; i++) \{\n          float curveFactor = float(i) / float(N - 1);\n          float d_norm = curveFactor * curveFactor; \n          float inwardDist = d_norm * maxSearchDist;\n          \n          float2 p = anchor + rayDirIn * inwardDist;\n          \n          if (fastAlphaCheck(p) > 0.0f) \{\n            float2 sUV = sampleUV_bilinear_strict(p);\n            float2 deltaUV = sUV - anchorUV; \n            float weight = 1.0f - (d_norm * 0.9f); \n            float x2 = d_norm * d_norm; float x3 = x2 * d_norm; float x4 = x3 * d_norm;\n            S2 += weight * x2; S3 += weight * x3; S4 += weight * x4;\n            V1_p += weight * d_norm * deltaUV; V2_p += weight * x2 * deltaUV;\n            count += 1.0f;\n          \}\n        \}\n        \n        if (count >= 2.0f) \{\n          bool useQuadratic = (count >= 3.0f);\n          \n          float d_out_norm = -distFromAnchor / maxSearchDist;\n\n          if (useQuadratic) \{\n            float D = S2 * S4 - S3 * S3;\n            if (fabs(D) > 1e-6f) \{ \n              float invD = 1.0f / D;\n              float2 c1 = (V1_p * S4 - V2_p * S3) * invD; \n              float2 c2 = (S2 * V2_p - S3 * V1_p) * invD; \n              extrapolatedUV = anchorUV + c1 * d_out_norm + c2 * (d_out_norm * d_out_norm);\n            \} else \{\n              useQuadratic = false; \n            \}\n          \}\n          if (!useQuadratic && fabs(S2) > 1e-6f) \{ \n            float2 c1 = V1_p / S2;\n            extrapolatedUV = anchorUV + c1 * d_out_norm;\n          \}\n        \}\n      \}\n      \n      totalExtrapolatedUV += extrapolatedUV * rayWeight;\n      validRays += rayWeight;\n    \}\n    \n    float2 finalExtrapolatedUV = float2(0.0f, 0.0f);\n    if (validRays > 0.0f) \{\n      finalExtrapolatedUV = totalExtrapolatedUV / validRays;\n    \}\n\n    // =======================================================================\n    // 4. WRITE DISTANCE OUTPUT TO BLUE (Alpha remains 1.0)\n    // =======================================================================\n    float outputDistance = clamp(distFromAnchor / max(1.0f, distanceNormMax), 0.0f, 1.0f);\n    \n    dst() = float4(finalExtrapolatedUV.x, finalExtrapolatedUV.y, outputDistance, 1.0f);\n  \}\n\};"
+  KernelDescription "2 \"STMapOverscan\" iterate pixelWise e45d93fc57debcf77e13e850509058e94703545d92ac6e57cddd1a8e9426005f 2 \"src\" Read Random \"dst\" Write Point 5 \"order\" Int 1 AwAAAA== \"edgeDistance\" Int 1 ZAAAAA== \"rayCount\" Int 1 AwAAAA== \"raySpread\" Float 1 AACgQA== \"raySamples\" Int 1 DwAAAA== 5 \"order\" 1 1 \"edgeDistance\" 1 1 \"rayCount\" 1 1 \"raySpread\" 1 1 \"raySamples\" 1 1 6 \"srcOrigin\" Int 2 1 AAAAAAAAAAA= \"srcSize\" Int 2 1 AAAAAAAAAAA= \"srcMaxX\" Int 1 1 AAAAAA== \"srcMaxY\" Int 1 1 AAAAAA== \"centerF\" Float 2 1 AAAAAAAAAAA= \"spreadRad\" Float 1 1 AAAAAA=="
+  kernelSource "kernel STMapOverscan : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessRandom, eEdgeClamped> src;\n  Image<eWrite> dst;\n\n  param:\n    int   order;           // 1=Anchored Linear, 2=Anchored Quadratic, 3=Anchored Least Squares\n    int   edgeDistance;    // Max pixels inward from the alpha edge to sample\n    int   rayCount;        // Amount of rays to shoot per pixel (e.g., 1, 3, 5)\n    float raySpread;       // Total width of the ray fan in degrees\n    int   raySamples;      // How many samples to take along each ray\n\n  local:\n    int2   srcOrigin;\n    int2   srcSize;\n    int    srcMaxX;\n    int    srcMaxY;\n    float2 centerF;\n    float  spreadRad;\n\n  void define() \{\n    defineParam(order,        \"order\",        3);\n    defineParam(edgeDistance, \"edgeDistance\", 100); \n    defineParam(rayCount,     \"rayCount\",     3);\n    defineParam(raySpread,    \"raySpread\",    5.0f);\n    defineParam(raySamples,   \"raySamples\",   15);\n  \}\n\n  void init() \{\n    srcOrigin = int2(src.bounds.x1, src.bounds.y1);\n    srcSize   = int2(src.bounds.x2 - src.bounds.x1,\n                     src.bounds.y2 - src.bounds.y1);\n                     \n    // Cache min/max bounds so the pixel loop doesn't have to calculate them\n    srcMaxX = srcOrigin.x + srcSize.x - 1;\n    srcMaxY = srcOrigin.y + srcSize.y - 1;\n    \n    // Dynamically calculate the center of the STMap\n    centerF   = float2(srcOrigin.x + float(srcSize.x) / 2.0f, \n                       srcOrigin.y + float(srcSize.y) / 2.0f);\n                       \n    spreadRad = raySpread * 3.1415926535f / 180.0f;\n  \}\n\n  // ULTRA-FAST 1-pixel lookup: Used only for jumping through empty space\n  float fastAlphaCheck(float2 p) \{\n    int px = clamp(int(p.x), srcOrigin.x, srcMaxX);\n    int py = clamp(int(p.y), srcOrigin.y, srcMaxY);\n    return src(px, py).w;\n  \}\n\n  // Standard bilinear sampling for alpha\n  float sampleAlpha_bilinear(float2 p) \{\n    int x0 = int(floor(p.x));\n    int y0 = int(floor(p.y));\n    int x1 = x0 + 1;\n    int y1 = y0 + 1;\n\n    float tx = p.x - float(x0);\n    float ty = p.y - float(y0);\n\n    x0 = clamp(x0, srcOrigin.x, srcMaxX);\n    x1 = clamp(x1, srcOrigin.x, srcMaxX);\n    y0 = clamp(y0, srcOrigin.y, srcMaxY);\n    y1 = clamp(y1, srcOrigin.y, srcMaxY);\n\n    float c00 = src(x0, y0).w;\n    float c10 = src(x1, y0).w;\n    float c01 = src(x0, y1).w;\n    float c11 = src(x1, y1).w;\n\n    return c00 * (1.0f - tx) * (1.0f - ty) + \n           c10 * tx * (1.0f - ty) + \n           c01 * (1.0f - tx) * ty + \n           c11 * tx * ty;\n  \}\n\n  // Strict UV sampling: Excludes any pixel with alpha == 0\n  float2 sampleUV_bilinear_strict(float2 p) \{\n    int x0 = int(floor(p.x));\n    int y0 = int(floor(p.y));\n    int x1 = x0 + 1;\n    int y1 = y0 + 1;\n\n    float tx = p.x - float(x0);\n    float ty = p.y - float(y0);\n\n    x0 = clamp(x0, srcOrigin.x, srcMaxX);\n    x1 = clamp(x1, srcOrigin.x, srcMaxX);\n    y0 = clamp(y0, srcOrigin.y, srcMaxY);\n    y1 = clamp(y1, srcOrigin.y, srcMaxY);\n\n    float4 s00 = src(x0, y0);\n    float4 s10 = src(x1, y0);\n    float4 s01 = src(x0, y1);\n    float4 s11 = src(x1, y1);\n\n    float w00 = (1.0f - tx) * (1.0f - ty) * (s00.w > 0.0f ? 1.0f : 0.0f);\n    float w10 = tx * (1.0f - ty) * (s10.w > 0.0f ? 1.0f : 0.0f);\n    float w01 = (1.0f - tx) * ty * (s01.w > 0.0f ? 1.0f : 0.0f);\n    float w11 = tx * ty * (s11.w > 0.0f ? 1.0f : 0.0f);\n\n    float totalWeight = w00 + w10 + w01 + w11;\n\n    if (totalWeight > 0.0f) \{\n      return (float2(s00.x, s00.y) * w00 +\n              float2(s10.x, s10.y) * w10 +\n              float2(s01.x, s01.y) * w01 +\n              float2(s11.x, s11.y) * w11) / totalWeight;\n    \}\n    return float2(s00.x, s00.y);\n  \}\n\n  float2 quadEval(float t, float2 f0, float2 f1, float2 f2, float b1, float b2) \{\n    float L0 = (t + b1) * (t + b2) / (b1 * b2);\n    float L1 = -t * (t + b2) / (b1 * (b2 - b1));\n    float L2 =  t * (t + b1) / (b2 * (b2 - b1));\n    return f0 * L0 + f1 * L1 + f2 * L2;\n  \}\n\n  void process(int2 pos) \{\n    float2 posF = float2(pos.x, pos.y);\n    \n    // Quick exit if inside STMap\n    if (fastAlphaCheck(posF) > 0.0f) \{\n      float alphaHere = sampleAlpha_bilinear(posF);\n      if (alphaHere > 0.0f) \{\n        float2 rawUV = sampleUV_bilinear_strict(posF);\n        dst() = float4(rawUV.x, rawUV.y, 0.0f, 1.0f);\n        return;\n      \}\n    \}\n\n    float2 baseDirOut = posF - centerF;\n    float distToCenter = length(baseDirOut);\n    if (distToCenter < 0.001f) \{\n      dst() = float4(0.0f, 0.0f, 0.0f, 1.0f);\n      return;\n    \}\n    \n    // Normalize base direction (No Trig required!)\n    baseDirOut /= distToCenter;\n\n    float2 totalExtrapolatedUV = float2(0.0f, 0.0f);\n    float validRays = 0.0f;\n    int totalAngles = max(1, rayCount);\n    \n    float maxSearchDist = max(2.0f, float(edgeDistance)); \n\n    for (int a = 0; a < totalAngles; a++) \{\n      float2 rayDirOut = baseDirOut;\n      \n      // Fast 2D Rotation Matrix for fan rays (Bypasses atan2 completely)\n      if (totalAngles > 1) \{\n        float t = float(a) / float(totalAngles - 1);\n        float offsetAngle = (t - 0.5f) * spreadRad; \n        float cA = cos(offsetAngle);\n        float sA = sin(offsetAngle);\n        rayDirOut = float2(baseDirOut.x * cA - baseDirOut.y * sA, \n                           baseDirOut.x * sA + baseDirOut.y * cA);\n      \}\n      \n      float2 rayDirIn = -rayDirOut;                     \n      float2 rayStartPos = centerF + rayDirOut * distToCenter;\n      float2 current = rayStartPos;\n      float2 anchor = centerF;\n      bool foundEdge = false;\n\n      // 1. Extreme Jump Raymarch (Jumps 8 pixels at a time using fast nearest neighbor lookup)\n      int maxJumps = int(ceil(distToCenter / 8.0f));\n      float2 jumpDir = rayDirIn * 8.0f;\n      \n      for (int i = 0; i <= maxJumps; i++) \{\n        if (fastAlphaCheck(current) > 0.0f) \{\n          foundEdge = true;\n          break;\n        \}\n        current += jumpDir;\n      \}\n      \n      if (!foundEdge) continue;\n\n      // 2. Precision Crawl (Steps back 8 pixels and crawls 1x1 with high-precision bilinear alpha)\n      if (current.x != rayStartPos.x || current.y != rayStartPos.y) \{\n        current -= jumpDir;\n        for (int j = 0; j <= 9; j++) \{ // 9 to be safe\n          current += rayDirIn;\n          if (sampleAlpha_bilinear(current) > 0.0f) \{\n            anchor = current;\n            break;\n          \}\n        \}\n      \} else \{\n        anchor = current;\n      \}\n\n      float distFromAnchor = length(rayStartPos - anchor);\n      float2 anchorUV = sampleUV_bilinear_strict(anchor);\n      \n      int N = max(2, raySamples); \n      float2 extrapolatedUV = anchorUV; \n\n      if (order <= 2) \{\n        // --- MODES 1 & 2: Anchored Clustered Buckets ---\n        float b2 = maxSearchDist;\n        float b1 = maxSearchDist * 0.5f; \n        float invB1 = 1.0f / b1; // Precalculated to avoid division in loop\n        \n        float2 sumUV1 = float2(0.0f, 0.0f); float w1 = 0.0f;\n        float2 sumUV2 = float2(0.0f, 0.0f); float w2 = 0.0f;\n\n        for (int i = 0; i < N; i++) \{\n          float curveFactor = float(i) / float(N - 1);\n          float curve = curveFactor * curveFactor; \n          float inwardDist = curve * maxSearchDist; \n          float2 p = anchor + rayDirIn * inwardDist;\n          \n          if (fastAlphaCheck(p) > 0.0f) \{ // Fast check before heavy math\n            float2 sUV = sampleUV_bilinear_strict(p);\n            \n            float weight1 = max(0.0f, 1.0f - fabs(inwardDist - b1) * invB1); \n            float weight2 = max(0.0f, 1.0f - fabs(inwardDist - b2) * invB1); \n\n            sumUV1 += sUV * weight1; w1 += weight1;\n            sumUV2 += sUV * weight2; w2 += weight2;\n          \}\n        \}\n        \n        float2 f0 = anchorUV; \n        float2 f1 = w1 > 0.0f ? sumUV1 / w1 : f0;\n        float2 f2 = w2 > 0.0f ? sumUV2 / w2 : f1;\n\n        float2 delta = float2(0.0f, 0.0f);\n        if (distFromAnchor > 0.0f) \{\n          if (order == 2) \{\n            float2 q = quadEval(distFromAnchor, f0, f1, f2, b1, b2);\n            delta = q - f0;\n          \} else \{ \n            float2 slope = (f0 - f1) * invB1;\n            delta = slope * distFromAnchor;\n          \}\n        \}\n        extrapolatedUV = f0 + delta;\n\n      \} else \{\n        // --- MODE 3: Anchored Weighted Least Squares (2x2 Matrix) ---\n        float S2 = 0.0f, S3 = 0.0f, S4 = 0.0f;\n        float2 V1_p = float2(0.0f, 0.0f);\n        float2 V2_p = float2(0.0f, 0.0f);\n        float count = 0.0f;\n\n        for (int i = 0; i < N; i++) \{\n          float curveFactor = float(i) / float(N - 1);\n          float d_norm = curveFactor * curveFactor; \n          float inwardDist = d_norm * maxSearchDist;\n          \n          float2 p = anchor + rayDirIn * inwardDist;\n          \n          if (fastAlphaCheck(p) > 0.0f) \{\n            float2 sUV = sampleUV_bilinear_strict(p);\n            float2 deltaUV = sUV - anchorUV; \n            \n            float weight = 1.0f - (d_norm * 0.9f); \n            \n            float x2 = d_norm * d_norm;\n            float x3 = x2 * d_norm;\n            float x4 = x3 * d_norm;\n            \n            S2 += weight * x2;\n            S3 += weight * x3;\n            S4 += weight * x4;\n            \n            V1_p += weight * d_norm * deltaUV;\n            V2_p += weight * x2 * deltaUV;\n            count += 1.0f;\n          \}\n        \}\n        \n        if (count >= 2.0f) \{\n          bool useQuadratic = (count >= 3.0f);\n          float d_out_norm = -distFromAnchor / maxSearchDist;\n\n          if (useQuadratic) \{\n            float D = S2 * S4 - S3 * S3;\n            \n            if (fabs(D) > 1e-6f) \{ \n              float invD = 1.0f / D;\n              float2 c1 = (V1_p * S4 - V2_p * S3) * invD; \n              float2 c2 = (S2 * V2_p - S3 * V1_p) * invD; \n\n              extrapolatedUV = anchorUV + c1 * d_out_norm + c2 * (d_out_norm * d_out_norm);\n            \} else \{\n              useQuadratic = false; \n            \}\n          \}\n\n          if (!useQuadratic) \{ \n            if (fabs(S2) > 1e-6f) \{ \n              float2 c1 = V1_p / S2;\n              extrapolatedUV = anchorUV + c1 * d_out_norm;\n            \}\n          \}\n        \}\n      \}\n      \n      totalExtrapolatedUV += extrapolatedUV;\n      validRays += 1.0f;\n    \}\n    \n    float2 finalExtrapolatedUV = float2(0.0f, 0.0f);\n    if (validRays > 0.0f) \{\n      finalExtrapolatedUV = totalExtrapolatedUV / validRays;\n    \}\n\n    dst() = float4(finalExtrapolatedUV.x, finalExtrapolatedUV.y, 0.0f, 1.0f);\n  \}\n\};"
   rebuild ""
   STMapOverscan_order {{parent.method+1}}
-  STMapOverscan_edgeDistance 1000
-  STMapOverscan_rayCount 3
-  STMapOverscan_raySpread 10
-  STMapOverscan_fanBlendDistance 100
-  STMapOverscan_useBBoxCenter {{!parent.lenscenter}}
-  STMapOverscan_lensCenter {{parent.centerpos} {parent.centerpos}}
-  STMapOverscan_distanceNormMax {{STMapOverscan_fanBlendDistance*2}}
+  STMapOverscan_edgeDistance 2500
+  STMapOverscan_raySpread 0.5
   format "5160 3606 0 0 5160 3606 1 overscan_5160x3606"
   rebuild_finalise ""
   name stmap_kernel
   xpos 374
-  ypos -69
+  ypos -74
  }
-set N5c9ebc00 [stack 0]
-push $N5c9ebc00
- Shuffle2 {
-  fromInput1 {{0} B}
-  fromInput2 {{0} B}
-  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.blue 0 2 rgba.alpha 0 3"
-  name Shuffle2
-  xpos 428
-  ypos -5
- }
- Dot {
-  name Dot5
-  xpos 462
-  ypos 35
- }
-push $N5c9ebc00
+set N1ca94400 [stack 0]
+push $N1ca94400
  Blur {
-  channels {rgba.red rgba.green -rgba.blue}
+  channels rgb
   size 10
   name Blur5
-  xpos 256
-  ypos -10
- }
- Blur {
-  inputs 1+1
-  channels {rgba.red rgba.green -rgba.blue}
-  size 100
-  name Blur1Dist
-  xpos 256
-  ypos 26
+  xpos 289
+  ypos -8
  }
  CopyBBox {
   inputs 2
   name CopyBBox1
   xpos 374
-  ypos 70
- }
- Shuffle2 {
-  fromInput1 {{0} B}
-  fromInput2 {{0} B}
-  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 rgba.alpha 0 3 rgba.alpha 0 3"
-  name Shuffle1
-  xpos 374
-  ypos 107
+  ypos 42
  }
  Unpremult {
   name Unpremult1
   xpos 374
-  ypos 131
+  ypos 79
  }
  Merge2 {
   inputs 2
   name Merge15
   xpos 507
-  ypos 131
+  ypos 79
  }
-set N87a3dc00 [stack 0]
- Copy {
-  inputs 2
-  from0 rgba.alpha
-  to0 rgba.alpha
-  name Copy1
-  xpos 507
-  ypos 198
- }
-set Nad293000 [stack 0]
- Dot {
-  name Dot13
-  xpos 654
-  ypos 266
- }
- Crop {
-  box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
-  reformat true
-  crop false
-  name CropBoundingBox4
-  xpos 620
-  ypos 327
- }
-set N406d0800 [stack 0]
- Dot {
-  name Dot12
-  xpos 654
-  ypos 446
- }
-set N26b0c00 [stack 0]
- Dot {
-  name Dot14
-  xpos 654
-  ypos 509
- }
-push $N26b0c00
-push $N406d0800
-push $N87a3dc00
- Remove {
-  name Remove1
-  xpos 699
-  ypos 125
- }
- Dot {
-  name Dot8
-  xpos 822
-  ypos 134
- }
-set N26b1c00 [stack 0]
- Dot {
-  name Dot6
-  xpos 908
-  ypos 134
- }
- Crop {
-  box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
-  reformat true
-  crop false
-  name CropBoundingBox2
-  xpos 874
-  ypos 156
- }
- Grid {
-  number {{ceil(width/100)}}
-  size {{ceil(width/2000)}}
-  color {0 0 0 1}
-  name Grid1
-  xpos 874
-  ypos 180
- }
- Transform {
-  translate {{parent.CropBoundingBox2.box} {parent.CropBoundingBox2.box}}
-  scale 1.5
-  center {{width/2} {height/2}}
-  name Transform2
-  xpos 874
-  ypos 204
- }
-push $N26b1c00
- Dot {
-  name Dot9
-  xpos 822
-  ypos 250
- }
- Merge2 {
-  inputs 2
-  name Merge1
-  selected true
-  xpos 874
-  ypos 247
- }
- STMap {
-  inputs 2
-  uv rgb
-  name STMap1
-  xpos 874
-  ypos 321
- }
- Dot {
-  name Dot10
-  xpos 908
-  ypos 405
- }
-push $N406d0800
- Merge2 {
-  inputs 2
-  name Merge2
-  xpos 715
-  ypos 402
- }
- Grade {
-  inputs 1+1
-  white 0.8
-  name Grade1
-  xpos 715
-  ypos 443
- }
- Copy {
-  inputs 2
-  from0 rgba.alpha
-  to0 rgba.alpha
-  name Copy2
-  xpos 715
-  ypos 500
- }
- Dot {
-  name Dot11
-  xpos 749
-  ypos 564
- }
-push $Nad293000
  Crop {
   box {{input.bbox.x} {input.bbox.y} {input.bbox.r} {input.bbox.t}}
   reformat true
   crop false
   name CropBoundingBox
   xpos 507
-  ypos 327
-  disable {{!parent.crop x83 1}}
- }
- Switch {
-  inputs 2
-  which {{parent.preview}}
-  name Switch3
-  xpos 507
-  ypos 561
+  ypos 127
+  disable {{!parent.crop}}
  }
  Output {
   name Output1
   xpos 507
-  ypos 632
- }
-push $N74762800
- Expression {
-  expr3 "sqrt(pow(r - 0.5, 2) + pow(g - 0.5, 2))"
-  name Expression2
-  xpos 742
-  ypos -240
- }
- CurveTool {
-  operation "Max Luma Pixel"
-  channels alpha
-  ROI {0 0 5792 4854}
-  autocropdata {1448 1213 4344 3640}
-  intensitydata {{curve}}
-  maxlumapixdata {{curve x1 0} {curve x1 0}}
-  maxlumapixvalue {{curve x1 0.7071067691} {curve x1 0} {curve x1 0}}
-  minlumapixdata {{curve x1 0} {curve x1 0}}
-  minlumapixvalue {{curve x1 0.7071067691} {curve x1 0} {curve x1 0}}
-  name CurveTool1
-  xpos 742
-  ypos -188
+  ypos 207
  }
 end_group
